@@ -1,0 +1,1 @@
+export type SportFilter = "Todos" | "Fútbol 5" | "Baloncesto" | "Voleibol" | "Tenis" | "Pádel";

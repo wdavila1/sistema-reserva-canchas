@@ -1,0 +1,6 @@
+node_modules/
+.env
+*.log
+.github/workflows/deployment.yml
+./sql/db.sql
+./sql/init.sql

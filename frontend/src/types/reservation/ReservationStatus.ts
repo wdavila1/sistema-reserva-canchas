@@ -1,0 +1,1 @@
+export type ReservationStatus = "confirmada" | "pendiente" | "cancelada" | "completada";
