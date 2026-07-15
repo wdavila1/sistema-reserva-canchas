@@ -9,7 +9,7 @@ import { BLOQUEADOS } from "../mocks/bloqueados";
 //UTILS
 import { formatCurrency } from "../utils/formatCurrency";
 import { sportColor } from "../utils/sportColor";
-import { sportEmoji } from "../utils/sportEmoji";
+
 
 //HOOKS
 import { useAuth } from "../hooks/useAuth";
@@ -61,7 +61,7 @@ function CanchaDetailPage() {
             <div>
               <div className="flex items-center gap-3 flex-wrap mb-2">
                 <Badge className={sportColor[court.deporte]}>
-                  {sportEmoji[court.deporte]} {court.deporte}
+                   {court.deporte}
                 </Badge>
                 {court.techada && <Badge className="bg-slate-100 text-slate-600 border-slate-200">🏠 Techada</Badge>}
                 <Badge className={court.disponible ? "bg-emerald-100 text-emerald-700 border-emerald-200" : "bg-slate-100 text-slate-500 border-slate-200"}>
@@ -174,7 +174,7 @@ function CanchaDetailPage() {
 
               {court.disponible ? (
                 <Button
-                  variant="accent"
+                  variant="primary"
                   size="lg"
                   className="w-full"
                   onClick={() => {

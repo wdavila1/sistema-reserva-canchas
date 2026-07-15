@@ -40,20 +40,22 @@ function Navbar() {
 
     return (
         <header
-            className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${scrolled ? "bg-white/95 backdrop-blur shadow-sm" : "bg-white"
-                } border-b border-border`}
+            //Reemplazamos el "shadow-sm" por el "shadow-[0_4px_0px_0px_#ff6b2b]" naranja
+            className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 border-b border-border ${
+                scrolled ? "bg-white backdrop-blur shadow-[0_4px_0px_0px_#ff6b2b]" : "bg-white"
+            }`}
         >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-6">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-4">
                 {/* Logo */}
                 <button
                     onClick={() => goTo("/")}
-                    className="flex items-center gap-2 flex-shrink-0"
+                    className="flex items-center gap-3 flex-shrink-0 group outline-none"
                 >
-                    <span className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white font-bold text-sm" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+                    <span className="w-12 h-12 bg-primary flex items-center justify-center text-primary-foreground font-headline-md text-xl border-2 border-primary group-hover:bg-secondary group-hover:border-secondary transition-colors">
                         Logo
                     </span>
-                    <span className="font-bold text-foreground text-lg tracking-tight" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
-                        Un nombre<span className="text-primary"> Inventado</span>
+                    <span className="font-headline-md text-foreground text-2xl uppercase tracking-tight hidden sm:block">
+                        Proyecto<span className="text-primary group-hover:text-secondary transition-colors"> Expertos</span>
                     </span>
                 </button>
 
@@ -63,7 +65,7 @@ function Navbar() {
                         <button
                             key={l.path}
                             onClick={() => goTo(l.path)}
-                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${location.pathname === l.path
+                            className={`px-6 py-4 rounded-lg text-md font-large transition-colors ${location.pathname === l.path
                                 ? "text-primary bg-secondary"
                                 : "text-muted-foreground hover:text-foreground hover:bg-muted"
                                 }`}
