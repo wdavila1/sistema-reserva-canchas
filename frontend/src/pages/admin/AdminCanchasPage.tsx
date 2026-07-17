@@ -54,7 +54,7 @@ function AdminCanchas() {
                     </div>
                   </td>
                   <td className="px-5 py-4">
-                    <Badge className={sportColor[c.deporte]}>{sportEmoji[c.deporte]} {c.deporte}</Badge>
+                    <Badge className={sportColor[c.deporte]}> {c.deporte}</Badge>
                   </td>
                   <td className="px-5 py-4 font-mono text-sm">{formatCurrency(c.precio)}</td>
                   <td className="px-5 py-4 font-mono text-sm">{formatCurrency(c.precioFinde)}</td>

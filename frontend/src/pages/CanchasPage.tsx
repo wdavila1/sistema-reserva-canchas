@@ -1,97 +1,105 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import type { SportFilter } from "../types/sports/SportFilter";
-import { CANCHAS } from "../mocks/courts";
 import { CourtCard } from "../components/ui/CourtCard";
 import { Search, Trophy, Filter } from "lucide-react";
-import { sportEmoji } from "../utils/sportEmoji";
 import { HORARIOS } from "../mocks/horarios";
+import { useCanchas, SPORTS_LIST } from "../hooks/useCanchas"; 
 
 function CanchasPage() {
   const navigate = useNavigate();
-  const [sport, setSport] = useState<SportFilter>("Todos");
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-  const [search, setSearch] = useState("");
-
-  const sports: SportFilter[] = ["Todos", "Fútbol 5", "Baloncesto", "Voleibol", "Tenis", "Pádel"];
-
-  const filtered = CANCHAS.filter((c) => {
-    if (sport !== "Todos" && c.deporte !== sport) return false;
-    if (search && !c.nombre.toLowerCase().includes(search.toLowerCase())) return false;
-    return true;
-  });
+  
+  // Extraemos toda la lógica desde nuestro hook useCanchas.ts
+  const { 
+    search, setSearch, 
+    date, setDate, 
+    time, setTime, 
+    currentSports, 
+    handleSportChange, 
+    filteredCanchas,
+    availableSearchHours, 
+  } = useCanchas();
 
   return (
-    <div className="min-h-screen bg-muted/30">
-      {/* Header */}
-      <div className="bg-white border-b border-border pt-24 pb-8">
+    <div className="min-h-screen bg-background">
+      
+      {/* Header*/}
+      <div className="bg-card border-b-4 border-border pt-24 pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <h1 className="text-4xl font-black text-foreground mb-1" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+          <h1 className="font-headline-xl text-5xl md:text-7xl uppercase italic text-primary mb-2">
             Nuestras Canchas
           </h1>
-          <p className="text-muted-foreground">{filtered.length} canchas disponibles en Tegucigalpa</p>
+          <p className="font-body-lg text-muted-foreground uppercase tracking-widest text-sm">
+            {filteredCanchas.length} canchas disponibles en Tegucigalpa
+          </p>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        {/* Filters */}
-        <div className="bg-white rounded-2xl border border-border p-4 mb-8 flex flex-col sm:flex-row gap-4 flex-wrap">
-          <div className="relative flex-1 min-w-[180px]">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+        
+        {/* Contenedor de Filtros */}
+        <div className="bg-card border-4 border-border p-6 mb-8 flex flex-col xl:flex-row gap-6 shadow-[8px_8px_0px_0px_#c3c6cf]">
+          
+            {/* Input de Búsqueda */}
+          <div className="relative flex-1 min-w-[200px]">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <Search size={18} className="text-muted-foreground" />
+            </div>
             <input
-              placeholder="Buscar cancha..."
-              className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-border bg-muted/50 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition"
+              placeholder="BUSCAR CANCHA..."
+              className="w-full h-full pl-12 pr-4 py-3 border-2 border-border bg-input font-body-md uppercase text-sm focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-all"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <Filter size={15} className="text-muted-foreground" />
-            {sports.map((s) => (
+
+          {/* Botones de Deportes */}
+          <div className="flex items-center gap-3 flex-wrap flex-[2]">
+            <Filter size={18} className="text-primary hidden sm:block" />
+            {SPORTS_LIST.map((s) => (
               <button
                 key={s}
-                onClick={() => setSport(s)}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
-                  sport === s
-                    ? "bg-primary text-white"
-                    : "bg-muted text-muted-foreground hover:text-foreground hover:bg-secondary"
+                onClick={() => handleSportChange(s)}
+                className={`px-4 py-2 border-2 text-sm font-headline-md uppercase transition-all whitespace-nowrap cursor-pointer ${
+                  currentSports.includes(s)
+                    ? "bg-secondary border-secondary text-secondary-foreground shadow-[4px_4px_0px_0px_#1a1c1e] transform -translate-y-1"
+                    : "bg-card border-border text-foreground hover:border-primary hover:text-primary"
                 }`}
               >
-                {s !== "Todos" && sportEmoji[s]} {s}
+                {s}
               </button>
             ))}
           </div>
-          <div className="flex gap-3 flex-wrap">
+
+          {/* Fecha y Hora */}
+          <div className="flex gap-4 flex-wrap">
             <input
               type="date"
-              className="px-3 py-2.5 rounded-xl border border-border bg-muted/50 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition"
+              className="px-4 py-3 border-2 border-border bg-input font-body-md uppercase text-sm focus:outline-none focus:border-secondary transition-all cursor-pointer"
               value={date}
               onChange={(e) => setDate(e.target.value)}
             />
             <select
-              className="px-3 py-2.5 rounded-xl border border-border bg-muted/50 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition"
+              className="px-4 py-3 border-2 border-border bg-input font-body-md uppercase text-sm focus:outline-none focus:border-secondary transition-all cursor-pointer appearance-none"
               value={time}
               onChange={(e) => setTime(e.target.value)}
             >
-              <option value="">Cualquier hora</option>
-              {HORARIOS.map((h) => (
+              <option value="">CUALQUIER HORA</option>
+              {availableSearchHours.map((h) => (
                 <option key={h} value={h}>{h}</option>
               ))}
             </select>
           </div>
         </div>
 
-        {/* Grid */}
-        {filtered.length === 0 ? (
-          <div className="text-center py-20 text-muted-foreground">
-            <Trophy size={48} className="mx-auto mb-4 opacity-30" />
-            <p className="text-lg font-medium">No se encontraron canchas</p>
-            <p className="text-sm mt-1">Intenta con otro filtro o categoría</p>
+        {/* Grid de Canchas */}
+        {filteredCanchas.length === 0 ? (
+          <div className="text-center py-20 border-4 border-dashed border-border bg-card">
+            <Trophy size={64} className="mx-auto mb-6 text-muted-foreground opacity-50" />
+            <p className="font-headline-md text-2xl uppercase text-foreground">No se encontraron canchas</p>
+            <p className="font-body-md text-muted-foreground mt-2">Intenta con otro filtro o categoría</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map((c) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredCanchas.map((c) => (
               <CourtCard
                 key={c.id}
                 court={c}

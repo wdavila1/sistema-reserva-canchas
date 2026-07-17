@@ -36,7 +36,7 @@ function AdminPagos() {
     return (
       <div className="space-y-4">
         <button onClick={() => setShowFactura(null)} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-          <ChevronLeft size={16} /> Volver a Pagos
+          <ChevronLeft size={14} /> Volver a Pagos
         </button>
         <div className="bg-white rounded-2xl border border-border p-8 max-w-lg mx-auto font-mono text-sm">
           <div className="text-center border-b border-dashed border-border pb-5 mb-5">
@@ -154,7 +154,7 @@ function AdminPagos() {
               <div className="text-right sm:text-left">
                 <p className="text-xl font-black text-primary" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>{formatCurrency(r.total)}</p>
               </div>
-              <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-4 flex-wrap">
                 <select
                   className="text-sm px-3 py-2 rounded-lg border border-border bg-muted focus:outline-none"
                   value={metodoPago}
