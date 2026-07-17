@@ -14,7 +14,8 @@ function CanchasPage() {
     time, setTime, 
     currentSports, 
     handleSportChange, 
-    filteredCanchas 
+    filteredCanchas,
+    availableSearchHours, 
   } = useCanchas();
 
   return (
@@ -82,7 +83,7 @@ function CanchasPage() {
               onChange={(e) => setTime(e.target.value)}
             >
               <option value="">CUALQUIER HORA</option>
-              {HORARIOS.map((h) => (
+              {availableSearchHours.map((h) => (
                 <option key={h} value={h}>{h}</option>
               ))}
             </select>

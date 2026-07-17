@@ -1,7 +1,7 @@
 export const sportColor: Record<string, string> = {
-  "Fútbol 5": "bg-emerald-100 text-emerald-700 border-emerald-200",
-  "Baloncesto": "bg-orange-100 text-orange-700 border-orange-200",
-  "Voleibol": "bg-sky-100 text-sky-700 border-sky-200",
-  "Tenis": "bg-yellow-100 text-yellow-700 border-yellow-200",
-  "Pádel": "bg-violet-100 text-violet-700 border-violet-200",
+  "Fútbol 5": "bg-primary text-white border-2 border-primary shadow-[2px_2px_0px_0px_#ff6b2b] font-bold px-3 py-1",
+  "Baloncesto": "bg-secondary text-white border-2 border-primary shadow-[2px_2px_0px_0px_#0b1f3a] font-bold px-3 py-1",
+  "Voleibol": "bg-white text-primary border-2 border-primary shadow-[2px_2px_0px_0px_#0b1f3a] font-bold px-3 py-1",
+  "Tenis": "bg-yellow-400 text-white border-2 border-primary shadow-[2px_2px_0px_0px_#0b1f3a] font-bold px-3 py-1",
+  "Pádel": "bg-violet-600 text-white border-2 border-primary shadow-[2px_2px_0px_0px_#0b1f3a] font-bold px-3 py-1",
 };

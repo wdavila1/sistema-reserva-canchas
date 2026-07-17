@@ -8,7 +8,7 @@ export function Button({ children, variant = "primary", size = "md", className =
   const vars: Record<string, string> = {
     primary: "bg-primary text-primary-foreground border-4 border-primary shadow-[8px_8px_0px_0px_#ff6b2b] hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_#ff6b2b] active:translate-x-2 active:translate-y-2 active:shadow-none",
     secondary: "bg-secondary-container text-on-secondary-container border-2 border-primary shadow-[4px_4px_0px_0px_#0b1f3a] hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_#0b1f3a] active:translate-x-1 active:translate-y-1 active:shadow-none",
-    outline: "bg-transparent text-primary border-2 border-primary shadow-[4px_4px_0px_0px_#0b1f3a] hover:bg-surface-variant",
+    outline: "bg-transparent text-primary border-2 border-primary shadow-[4px_4px_0px_0px_#0b1f3a] hover:bg-primary hover:text-white hover:translate-x-1 hover:translate-y-1 hover:shadow-none active:scale-95",
     ghost: "text-primary hover:bg-surface-variant hover:border-b-4 hover:border-secondary pb-1",
   };
   const sizes: Record<string, string> = {

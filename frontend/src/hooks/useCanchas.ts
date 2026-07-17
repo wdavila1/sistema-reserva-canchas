@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import type { SportFilter } from "../types/sports/SportFilter";
 import { CANCHAS } from "../mocks/courts";
+import { HORARIOS } from "@/mocks/horarios";
 
 export const SPORTS_LIST: SportFilter[] = ["Todos", "Fútbol 5", "Baloncesto", "Voleibol", "Tenis", "Pádel"];
 
@@ -16,7 +17,17 @@ const paramToSport: Record<string, SportFilter> = {
 // ESTE HOOK SE ENCARGA DE TODA LA LÓGICA
 export function useCanchas() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState(() =>
+  {
+    const td = new Date();
+    const yyyy = td.getFullYear();
+    const mm = String(td.getMonth() + 1).padStart(2, "0");
+    const dd = String(td.getDate()).padStart(2, "0");
+
+    return `${yyyy}-${mm}-${dd}`;
+  }
+  );
+  const availableSearchHours = HORARIOS.filter(h => h !== "22:00");
   const [time, setTime] = useState("");
   const [search, setSearch] = useState("");
 
@@ -28,7 +39,6 @@ export function useCanchas() {
       searchParams.delete("deporte");
       setSearchParams(searchParams);
     } else {
-      // Si quieres que el botón funcione como "selección única", lo dejas así:
       const urlVal = Object.keys(paramToSport).find(key => paramToSport[key] === s) || s.toLowerCase();
       setSearchParams({ deporte: urlVal });
     }
@@ -47,6 +57,7 @@ export function useCanchas() {
         time, setTime,
         currentSports,
         handleSportChange,
-        filteredCanchas
+        filteredCanchas,
+        availableSearchHours,
     };
 }
