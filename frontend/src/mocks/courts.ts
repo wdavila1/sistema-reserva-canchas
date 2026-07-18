@@ -1,4 +1,4 @@
-import type { Court } from "../types/sports/Court";
+import type { Court } from "@/types/sports/Court";
 
 export const CANCHAS: Court[] = [
   {

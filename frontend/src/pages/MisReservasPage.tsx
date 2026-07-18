@@ -2,12 +2,10 @@ import { useNavigate } from "react-router-dom";
 import { CalendarDays, Clock, ArrowRight } from "lucide-react";
 
 //MOCKS
-import { CANCHAS } from "../mocks/courts";
 import { RESERVACIONES } from "../mocks/reservaciones";
 
 //UTILS
 import { formatCurrency } from "../utils/formatCurrency";
-import { sportEmoji } from "../utils/sportEmoji";
 import { estadoStyle } from "../utils/estadoStyle";
 import { estadoLabel } from "../utils/estadoLabel";
 
@@ -49,9 +47,6 @@ function MisReservasPage() {
         <div className="space-y-4">
           {RESERVACIONES.map((r) => (
             <div key={r.id} className="bg-white rounded-2xl border border-border p-5 flex flex-col sm:flex-row sm:items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center text-xl flex-shrink-0">
-                {sportEmoji[CANCHAS.find((c) => c.id === r.canchaId)?.deporte ?? "Fútbol 5"]}
-              </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap mb-1">
                   <span className="font-semibold text-foreground">{r.cancha}</span>
@@ -74,7 +69,7 @@ function MisReservasPage() {
         </div>
 
         <div className="mt-8 text-center">
-          <Button variant="accent" size="lg" onClick={() => navigate("/canchas")}>
+          <Button variant="primary" size="lg" onClick={() => navigate("/canchas")}>
             Hacer una nueva reserva <ArrowRight size={16} />
           </Button>
         </div>

@@ -6,7 +6,7 @@ function Home() {
 
     return (
         <main className="mt-20">
-            {/* HERO SECTION (Editorial Split) */}
+            {/* HERO SECTION */}
             <section className="min-h-[80vh] flex flex-col md:flex-row border-b-4 border-border bg-background overflow-hidden">
                 
                 {/* Izquierda */}
@@ -36,15 +36,17 @@ function Home() {
                 </div>
 
                 {/*Imagen*/}
-                <div className="w-full md:w-[40%] min-h-[400px] md:min-h-full border-t-4 md:border-t-0 md:border-l-4 border-border overflow-hidden">
+                <div className="relative w-full md:w-[40%] min-h-[400px] md:min-h-full border-t-4 md:border-t-0 md:border-l-4 border-primary overflow-hidden group">
                     <img 
-                        alt="Cancha de fútbol profesional de noche con iluminación" 
-                        className="w-full h-full object-cover grayscale-[40%] contrast-125 hover:grayscale-0 transition-all duration-700" 
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6kdE-7Od6AKFCOCHkR9EeQasMpyGG30T0-uDoKEZ5grN8gJHFG8tU2g1hDUFn0qr-GabYgFNgMhtGSQqxmIvfy4MOEJhlsD1pbphn9MvqK2Ai_iIkM0nKUsjb2zPMaslgZNJrqhHcMBJoPxY-SiQBpml0dH0rB34Lrswk26uPnKHA_EncoSBXAeAK6UI_eXollCoLgQgGTctln0jGJ6Y9IhkqBkwpkAAYc1u8LCE4y15fooqA_TCiUrTUgSzOt4ncsmmqgSrqcGHu" 
+                        alt="Cancha de fútbol profesional" 
+                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 ease-in-out" 
+                        src="https://images.pexels.com/photos/33212390/pexels-photo-33212390.jpeg" 
                     />
+                    <div className="absolute inset-0 bg-gradient-to-tr from-primary via-primary to-secondary mix-blend-color group-hover:opacity-0 transition-opacity duration-700 pointer-events-none"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent group-hover:opacity-0 transition-opacity duration-700 pointer-events-none"></div>
                 </div>
             </section>
-            {/* ¿POR QUÉ ELEGIRNOS? (Scoreboard Asymmetric) */}
+            {/* ¿POR QUÉ ELEGIRNOS?*/}
 
             <section className="bg-primary text-primary-foreground py-stack-lg px-margin-mobile md:px-margin-desktop relative overflow-hidden">
                 <div className="turf-overlay absolute inset-0 pointer-events-none"></div>
@@ -81,7 +83,7 @@ function Home() {
                         {/* Features 2 y 3 */}
                         <div className="lg:col-span-4 flex flex-col gap-8 lg:gap-12">
                             
-                            {/* Feature 2: Cuadrado Blanco */}
+                            {/* Feature 2*/}
                             <div className="flex-1 bg-card text-card-foreground p-8 md:p-10 border-4 border-border shadow-[8px_8px_0px_0px_#ff6b2b] flex flex-col justify-center mr-2 mb-2">
                                 <span className="font-data-display text-3xl text-secondary mb-3 block">02</span>
                                 <h3 className="font-headline-md text-2xl uppercase mb-3">Reserva en Línea</h3>
@@ -90,8 +92,7 @@ function Home() {
                                 </p>
                             </div>
                             
-                            {/* Feature 3: Cuadrado Anaranjado */}
-                            {/* Eliminado el 'transform md:translate-x-4' que te rompía la vista responsiva */}
+                            {/* Feature 3=*/}
                             <div className="flex-1 bg-secondary text-secondary-foreground p-8 md:p-10 border-4 border-card shadow-[8px_8px_0px_0px_#1a1c1e] flex flex-col justify-center mr-2 mb-2">
                                 <span className="font-data-display text-3xl text-primary-foreground mb-3 block">03</span>
                                 <h3 className="font-headline-md text-2xl uppercase mb-3">Confirmación SMS</h3>

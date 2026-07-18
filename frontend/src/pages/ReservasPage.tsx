@@ -3,8 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { ChevronRight, ChevronLeft, Check, AlertCircle } from "lucide-react";
 
 //MOCKS
-import { CANCHAS } from "../mocks/courts";
-import { HORARIOS } from "../mocks/horarios";
+import { CANCHAS } from "@/mocks/courts";
+import { HORARIOS } from "../constants/horarios";
 
 //UTILS
 import { formatCurrency } from "../utils/formatCurrency";
