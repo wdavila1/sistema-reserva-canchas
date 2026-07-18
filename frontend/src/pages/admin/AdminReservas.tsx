@@ -86,7 +86,7 @@ function AdminReservas() {
                   <td className="px-5 py-3.5 text-muted-foreground whitespace-nowrap">{r.horaInicio} – {r.horaFin}</td>
                   <td className="px-5 py-3.5 font-bold text-primary whitespace-nowrap">{formatCurrency(r.total)}</td>
                   <td className="px-5 py-3.5">
-                    <Badge className={`${estadoStyle[r.estado]} border-transparent`}>{estadoLabel[r.estado]}</Badge>
+                    <Badge variant="success" className={`${estadoStyle[r.estado]} border-transparent`}>{estadoLabel[r.estado]}</Badge>
                   </td>
                   <td className="px-5 py-3.5">
                     <span className={`text-xs font-medium ${r.pagado ? "text-emerald-600" : "text-amber-600"}`}>

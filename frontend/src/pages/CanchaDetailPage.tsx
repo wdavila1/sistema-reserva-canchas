@@ -1,10 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { ChevronLeft, Check, Users, XCircle, MapPin, Clock, ArrowRight } from "lucide-react";
 
-//MOCKS
-import { CANCHAS } from "../mocks/courts";
-import { HORARIOS } from "../mocks/horarios";
-import { BLOQUEADOS } from "../mocks/bloqueados";
+import { HORARIOS } from "../constants/horarios";
 
 //UTILS
 import { formatCurrency } from "../utils/formatCurrency";
@@ -13,6 +10,7 @@ import { sportColor } from "../utils/sportColor";
 
 //HOOKS
 import { useAuth } from "../hooks/useAuth";
+import { useCanchaDetail } from "../hooks/useCanchasDetails";
 
 //COMPONENTS
 import { Badge } from "../components/ui/Badge";
@@ -23,18 +21,16 @@ function CanchaDetailPage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
-  // TODO: cuando conectemos el backend, reemplazar por services/canchas.api.ts -> getCanchaById(id)
-  const court = CANCHAS.find((c) => c.id === Number(id));
-
-  if (!court) {
-    return (
-      <div className="min-h-screen flex items-center justify-center pt-20 text-muted-foreground">
-        Cancha no encontrada.
-      </div>
-    );
-  }
-
-  const days = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+  const { court, isLoading, error, daysHeaders, fechasArr, weeklyAvailability } = useCanchaDetail(id);
+  if (isLoading) 
+    return <div className="min-h-screen flex items-center justify-center pt-20 text-muted-foreground">Cargando detalles de la cancha...</div>;
+  
+  if (error || !court) 
+    return <div className="min-h-screen flex items-center justify-center pt-20 text-red-500">{error || "Cancha no encontrada."}</div>;
+  const estaDisponible = court.Estado === 'Disponible';
+  const precio = Number(court.PrecioPorHora);
+  const deporte = court.NombreTipo || "Fútbol 5";
+  
 
   return (
     <div className="min-h-screen bg-muted/30 pt-20">
@@ -54,32 +50,29 @@ function CanchaDetailPage() {
           <div className="lg:col-span-2 space-y-6">
             {/* Image */}
             <div className="rounded-2xl overflow-hidden h-72 sm:h-96 bg-muted">
-              <img src={court.imagen} alt={court.nombre} className="w-full h-full object-cover" />
+              <img src={court.ImagenURL ?? undefined} alt={court.NombreCancha} className="w-full h-full object-cover" />
             </div>
 
             {/* Title */}
             <div>
               <div className="flex items-center gap-3 flex-wrap mb-2">
-                <Badge className={sportColor[court.deporte]}>
-                   {court.deporte}
+                <Badge className={sportColor[deporte]}>
+                   {deporte}
                 </Badge>
-                {court.techada && <Badge className="bg-slate-100 text-slate-600 border-slate-200">🏠 Techada</Badge>}
-                <Badge className={court.disponible ? "bg-emerald-100 text-emerald-700 border-emerald-200" : "bg-slate-100 text-slate-500 border-slate-200"}>
-                  {court.disponible ? "● Disponible" : "● No disponible"}
+                <Badge className={estaDisponible ? "bg-emerald-100 text-emerald-700 border-emerald-200" : "bg-slate-100 text-slate-500 border-slate-200"}>
+                  {estaDisponible ? "● Disponible" : "● No disponible"}
                 </Badge>
               </div>
               <h1 className="text-3xl sm:text-4xl font-black text-foreground" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
-                {court.nombre}
+                {court.NombreCancha}
               </h1>
-              <p className="text-muted-foreground mt-3 leading-relaxed">{court.descripcion}</p>
+              <p className="text-muted-foreground mt-3 leading-relaxed">{court.Descripcion}</p>
             </div>
 
             {/* Specs */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {[
-                ["Superficie", court.superficie],
-                ["Capacidad", court.capacidad],
-                ["Techada", court.techada ? "Sí" : "No"],
+                ["Capacidad", court.Capacidad],
                 ["Horario", "7:00 – 22:00"],
               ].map(([k, v]) => (
                 <div key={k} className="bg-white border border-border rounded-xl p-4 text-center">
@@ -87,18 +80,6 @@ function CanchaDetailPage() {
                   <p className="font-semibold text-sm text-foreground">{v}</p>
                 </div>
               ))}
-            </div>
-
-            {/* Amenidades */}
-            <div>
-              <h3 className="font-bold text-lg mb-3">Amenidades incluidas</h3>
-              <div className="flex flex-wrap gap-2">
-                {court.amenidades.map((a) => (
-                  <span key={a} className="flex items-center gap-1.5 bg-secondary text-primary text-sm px-3 py-1.5 rounded-lg font-medium">
-                    <Check size={13} /> {a}
-                  </span>
-                ))}
-              </div>
             </div>
 
             {/* Weekly schedule */}
@@ -109,8 +90,8 @@ function CanchaDetailPage() {
                   <thead>
                     <tr className="border-b border-border">
                       <th className="py-3 px-3 text-left text-muted-foreground font-medium w-16">Hora</th>
-                      {days.map((d) => (
-                        <th key={d} className="py-3 px-2 text-center text-muted-foreground font-medium">{d}</th>
+                      {daysHeaders.map((d, index) => (
+                        <th key={index} className="py-3 px-2 text-center text-muted-foreground font-medium">{d}</th>
                       ))}
                     </tr>
                   </thead>
@@ -118,8 +99,10 @@ function CanchaDetailPage() {
                     {HORARIOS.map((h) => (
                       <tr key={h} className="border-b border-border/50 last:border-0">
                         <td className="py-2 px-3 font-mono text-muted-foreground text-xs">{h}</td>
-                        {days.map((_, di) => {
-                          const blocked = BLOQUEADOS[court.id]?.[di]?.includes(h) ?? false;
+                        {daysHeaders.map((_, di) => {
+                          const fechaExacta = fechasArr[di];
+                          const disponibleHoy = weeklyAvailability[fechaExacta] || [];
+                          const blocked = !disponibleHoy.includes(h);
                           return (
                             <td key={di} className="py-1.5 px-2 text-center">
                               <span className={`inline-block w-full py-1 rounded text-xs font-medium ${
@@ -149,13 +132,10 @@ function CanchaDetailPage() {
                 <p className="text-sm text-muted-foreground mb-1">Precio entre semana</p>
                 <div className="flex items-end gap-2">
                   <span className="text-4xl font-black text-primary" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
-                    {formatCurrency(court.precio)}
+                    {formatCurrency(court.PrecioPorHora)}
                   </span>
                   <span className="text-muted-foreground mb-1">/ hora</span>
                 </div>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Fines de semana: <strong>{formatCurrency(court.precioFinde)}</strong> / hora
-                </p>
                 <p className="text-xs text-muted-foreground mt-1">Precios incluyen ISV (15%)</p>
               </div>
 
@@ -163,7 +143,7 @@ function CanchaDetailPage() {
                 {[
                   [<MapPin size={14} />, "Col. Lomas del Guijarro, Tegucigalpa"],
                   [<Clock size={14} />, "Disponible 7:00 AM – 10:00 PM"],
-                  [<Users size={14} />, `Capacidad: ${court.capacidad}`],
+                  [<Users size={14} />, `Capacidad: ${court.Capacidad}`],
                 ].map(([icon, text], i) => (
                   <div key={i} className="flex items-start gap-2.5 text-muted-foreground">
                     <span className="text-primary mt-0.5">{icon as React.ReactNode}</span>
@@ -172,14 +152,14 @@ function CanchaDetailPage() {
                 ))}
               </div>
 
-              {court.disponible ? (
+              {estaDisponible ? (
                 <Button
                   variant="primary"
                   size="lg"
                   className="w-full"
                   onClick={() => {
                     if (!isAuthenticated) { navigate("/login"); return; }
-                    navigate(`/reservar/${court.id}`);
+                    navigate(`/reservar/${court.CanchaID}`);
                   }}
                 >
                   Reservar esta cancha <ArrowRight size={16} />

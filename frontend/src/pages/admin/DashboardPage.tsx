@@ -92,7 +92,7 @@ function AdminDashboardPage() {
                   <td className="px-5 py-3.5 text-muted-foreground">{r.cancha.split("—")[0].trim()}</td>
                   <td className="px-5 py-3.5 text-muted-foreground">{r.fecha} · {r.horaInicio}</td>
                   <td className="px-5 py-3.5">
-                    <Badge className={`${estadoStyle[r.estado]} border-transparent`}>{estadoLabel[r.estado]}</Badge>
+                    <Badge variant = "success" className={`${estadoStyle[r.estado]} border-transparent`}>{estadoLabel[r.estado]}</Badge>
                   </td>
                   <td className="px-5 py-3.5 font-bold text-primary">{formatCurrency(r.total)}</td>
                 </tr>

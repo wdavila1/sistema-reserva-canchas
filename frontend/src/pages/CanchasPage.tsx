@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { CourtCard } from "../components/ui/CourtCard";
 import { Search, Trophy, Filter } from "lucide-react";
-import { HORARIOS } from "../mocks/horarios";
 import { useCanchas, SPORTS_LIST } from "../hooks/useCanchas"; 
 
 function CanchasPage() {
@@ -15,7 +14,8 @@ function CanchasPage() {
     currentSports, 
     handleSportChange, 
     filteredCanchas,
-    availableSearchHours, 
+    availableSearchHours,
+    isLoading, 
   } = useCanchas();
 
   return (
@@ -90,24 +90,30 @@ function CanchasPage() {
           </div>
         </div>
 
+
         {/* Grid de Canchas */}
-        {filteredCanchas.length === 0 ? (
+        {isLoading ? (
+            <div className="text-center py-20 font-headline-md text-2xl uppercase text-primary">
+              Cargando canchas...
+            </div>
+          ) 
+          : filteredCanchas.length === 0 ? (
           <div className="text-center py-20 border-4 border-dashed border-border bg-card">
             <Trophy size={64} className="mx-auto mb-6 text-muted-foreground opacity-50" />
             <p className="font-headline-md text-2xl uppercase text-foreground">No se encontraron canchas</p>
             <p className="font-body-md text-muted-foreground mt-2">Intenta con otro filtro o categoría</p>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredCanchas.map((c) => (
-              <CourtCard
-                key={c.id}
-                court={c}
-                onClick={() => navigate(`/canchas/${c.id}`)}
-              />
-            ))}
-          </div>
-        )}
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredCanchas.map((c) => (
+                <CourtCard
+                  key={c.CanchaID}
+                  court={c}
+                  onClick={() => navigate(`/canchas/${c.CanchaID}`)}
+                />
+              ))}
+            </div>
+          )}
       </div>
     </div>
   );

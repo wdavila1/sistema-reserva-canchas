@@ -28,6 +28,7 @@ import AdminReservas from "../pages/admin/AdminReservas";
 import AdminPagosPage from "../pages/admin/AdminPagosPage";
 import AdminReportesPage from "../pages/admin/AdminReportesPage";
 import AdminUsuariosPage from "../pages/admin/AdminUsuariosPage";
+import CanchaFormPage from "../pages/admin/canchas/nueva/CanchaFormPage";
 
 function AppRouter() {
   return (
@@ -54,6 +55,8 @@ function AppRouter() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboardPage />} />
           <Route path="canchas" element={<AdminCanchasPage />} />
+          <Route path="canchas/nueva" element={<CanchaFormPage />} />
+          <Route path="canchas/editar/:id" element={<CanchaFormPage />} />
           <Route path="reservas" element={<AdminReservas />} />
           <Route path="pagos" element={<AdminPagosPage />} />
           <Route path="reportes" element={<AdminReportesPage />} />
@@ -71,6 +74,7 @@ function AppRouter() {
         }
       />
     </Routes>
+
   );
 }
 
