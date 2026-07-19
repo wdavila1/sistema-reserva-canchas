@@ -52,7 +52,7 @@ function NosotrosPage() {
         </div>
 
         <div className="text-center">
-          <Button variant="accent" size="lg" onClick={() => navigate("/canchas")}>
+          <Button variant="primary" size="lg" onClick={() => navigate("/canchas")}>
             Ver nuestras canchas <ArrowRight size={16} />
           </Button>
         </div>
