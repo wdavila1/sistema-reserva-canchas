@@ -204,7 +204,9 @@ Este archivo permite instalar las mismas versiones de las dependencias utilizada
 npm install
 ```
 
-Una vez generado el package-lock.json, puede continuar con el proceso de construcción de las imágenes de Docker.
+Una vez generado el `package-lock.json`, puede continuar con el proceso de construcción de las imágenes de Docker.
+
+Por defecto, esta subido el archivo `package-lock.json`.
 
 ### Construcción y ejecución del proyecto
 1. Iniciar Docker Desktop.

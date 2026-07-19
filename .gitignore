@@ -2,7 +2,6 @@ node_modules/
 .env
 *.log
 .github/workflows/deployment.yml
-./sql/db.sql
-./sql/init.sql
-.vscode
-package-lock.json
+sql/db.sql
+sql/init.sql
+.vscode/
