@@ -196,13 +196,15 @@ Esto permite la comunicación correcta entre el frontend y el backend dentro del
 
 ### Instalación de dependencias
 
-Antes de construir las imágenes de Docker, es necesario instalar las dependencias del proyecto ejecutando el siguiente comando desde la carpeta raíz:
+Antes de construir las imágenes de Docker, verifique que el proyecto contenga el archivo `package-lock.json` en la carpeta raíz.
+
+Este archivo permite instalar las mismas versiones de las dependencias utilizadas durante el desarrollo. Si el archivo no existe, genere el archivo ejecutando el siguiente comando desde la carpeta raíz del proyecto:
 
 ```bash
 npm install
 ```
 
-Este comando generará e instalará las dependencias necesarias para la construcción de las imágenes de Docker.
+Una vez generado el package-lock.json, puede continuar con el proceso de construcción de las imágenes de Docker.
 
 ### Construcción y ejecución del proyecto
 1. Iniciar Docker Desktop.
