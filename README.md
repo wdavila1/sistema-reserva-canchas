@@ -160,3 +160,92 @@ BCRYPT_SALT_ROUNDS=10
 ```env
 VITE_API_URL=http://localhost:4000/api
 ```
+
+## Ejecución con Docker
+
+### Requisitos previos
+
+Antes de ejecutar el proyecto utilizando Docker, asegúrese de cumplir con los siguientes requisitos:
+
+1. Tener instalado y ejecutándose **Docker Desktop**.
+2. Tener el repositorio del proyecto clonado en el equipo.
+3. Configurar las variables de entorno del backend.
+
+### Configuración de variables de entorno
+
+Dentro de la carpeta del backend, se debe crear el archivo de variables de entorno a partir del archivo de ejemplo:
+
+1. Ubicarse en la carpeta:
+
+```bash
+backend/
+```
+
+2. Copiar el archivo `.env.example` y renombrarlo como `.env`.
+
+3. Completar los valores correspondientes dentro del archivo `.env`.
+
+En caso de contar previamente con un archivo `.env`, verificar que la variable del frontend tenga el siguiente valor:
+```env
+FRONTEND_URL=http://localhost
+```
+
+Esto permite la comunicación correcta entre el frontend y el backend dentro del entorno local.
+
+**Nota:** El cambio de `FRONTEND_URL=http://localhost` aplica únicamente para la ejecución del proyecto mediante Docker. En otros entornos, la variable debe configurarse con la URL correspondiente del frontend.
+
+### Construcción y ejecución del proyecto
+1. Iniciar Docker Desktop.
+2. Abrir una terminal (Visual Studio Code, PowerShell o CMD).
+3. Ubicarse en la carpeta raíz del proyecto, donde se encuentra el archivo:
+```
+docker-compose.yml
+```
+4. Construir las imágenes de Docker ejecutando:
+```bash
+docker compose build --no-cache
+```
+El parámetro --no-cache permite realizar una construcción limpia de las imágenes, ignorando capas almacenadas previamente por Docker.
+
+5. Iniciar los servicios del proyecto:
+```bash
+docker compose up
+```
+
+### Comandos útiles
+
+#### Ver el estado de los contenedores activos:
+```bash
+docker ps
+```
+
+#### Levantar los servicios (en segundo plano):
+```bash
+docker-compose up -d
+```
+
+#### Detener los servicios:
+```bash
+docker-compose down
+```
+
+#### Reconstruir las imágenes tras cambios en el código:
+```bash
+docker-compose up --build
+```
+
+
+#### Ver los logs de los servicios:
+```bash
+docker compose logs
+```
+
+#### Para ver los logs de un servicio específico:
+```bash
+docker compose logs frontend
+```
+
+```bash
+docker compose logs backend
+```
+
