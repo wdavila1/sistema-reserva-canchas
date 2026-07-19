@@ -6,14 +6,13 @@ COPY package*.json ./
 
 COPY frontend/package*.json ./frontend/
 
-RUN npm install
+RUN npm ci --workspace=frontend
 
 COPY frontend ./frontend
 
 WORKDIR /app/frontend
 
 RUN npm run build
-
 
 FROM nginx:alpine
 

@@ -194,6 +194,16 @@ Esto permite la comunicación correcta entre el frontend y el backend dentro del
 
 **Nota:** El cambio de `FRONTEND_URL=http://localhost` aplica únicamente para la ejecución del proyecto mediante Docker. En otros entornos, la variable debe configurarse con la URL correspondiente del frontend.
 
+### Instalación de dependencias
+
+Antes de construir las imágenes de Docker, es necesario instalar las dependencias del proyecto ejecutando el siguiente comando desde la carpeta raíz:
+
+```bash
+npm install
+```
+
+Este comando generará e instalará las dependencias necesarias para la construcción de las imágenes de Docker.
+
 ### Construcción y ejecución del proyecto
 1. Iniciar Docker Desktop.
 2. Abrir una terminal (Visual Studio Code, PowerShell o CMD).

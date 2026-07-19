@@ -5,3 +5,4 @@ node_modules/
 ./sql/db.sql
 ./sql/init.sql
 .vscode
+package-lock.json
