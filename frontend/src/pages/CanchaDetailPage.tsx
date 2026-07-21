@@ -136,7 +136,7 @@ function CanchaDetailPage() {
                   </span>
                   <span className="text-muted-foreground mb-1">/ hora</span>
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">Precios incluyen ISV (15%)</p>
+                <p className="text-xs text-muted-foreground mt-1">Precios NO incluyen ISV (15%)</p>
               </div>
 
               <div className="space-y-3 mb-6 text-sm">
