@@ -111,7 +111,6 @@ function ReservasPage() {
     );
   }
 
-  // NOTA: el backend (tabla Canchas) solo tiene PrecioPorHora, no maneja
   // tarifa diferenciada de fin de semana -- por eso ya no hay lógica de "finde" aquí.
   const pph = Number(court.PrecioPorHora);
   const startHour = startTime ? parseInt(startTime.split(":")[0]) : 0;
@@ -161,8 +160,7 @@ function ReservasPage() {
 
   const today = hoyISO();
 
-  // Horas de inicio: la intersección entre el horario de operación fijo y
-  // lo que el backend dice que está libre para esa cancha/fecha.
+  // Horas de inicio: la intersección entre el horario de operación fijo y lo que el backend dice que está libre para esa cancha/fecha.
   const availableHours = HORARIOS.filter((h) => horasDisponibles.includes(h));
 
   // Horas de fin válidas: TODAS las marcas de hora entre inicio y fin
