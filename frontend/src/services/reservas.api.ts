@@ -28,6 +28,11 @@ export interface BloqueReserva {
 export interface Reserva {
   reservaId: number;
   usuarioId: number;
+  cliente?: {
+    primerNombre: string;
+    primerApellido: string;
+    correo: string;
+  };
   fechaReserva: string;
   estadoReserva: EstadoReserva;
   total: number;

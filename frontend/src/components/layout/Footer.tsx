@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Instagram, Facebook, Twitter, MapPin, Phone, Mail } from "lucide-react";
+import { MapPin, Phone, Mail } from "lucide-react";
 
 function Footer() {
   return (
@@ -15,18 +15,6 @@ function Footer() {
           <p className="font-body-md text-white/80 max-w-sm mt-4">
             El complejo deportivo más moderno de Tegucigalpa. Instalaciones de primer nivel para atletas de alto rendimiento.
           </p>
-          
-          <div className="flex gap-4 mt-6">
-            {[Instagram, Facebook, Twitter].map((Icon, i) => (
-              <a 
-                key={i} 
-                href="#" 
-                className="w-12 h-12 flex items-center justify-center border-2 border-white/20 text-white hover:bg-secondary hover:border-secondary transition-all active:scale-95"
-              >
-                <Icon size={20} />
-              </a>
-            ))}
-          </div>
         </div>
 
         <div>
