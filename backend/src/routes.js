@@ -1,15 +1,15 @@
 import { Router } from "express";
 import authRoutes from "./modules/auth/auth.routes.js";
 import canchasRoutes from "./modules/canchas/canchas.routes.js";
+import reservasRoutes from "./modules/reservas/reservas.routes.js";
 
 const router = Router();
 
 router.get("/health", (req, res) => res.json({ ok: true }));
 router.use("/auth", authRoutes);
 router.use("/canchas", canchasRoutes);
+router.use("/reservas", reservasRoutes);
 
-// Los demás módulos (usuarios, reservas, facturas, pagos, reportes)
+// Los demás módulos (usuarios, facturas, pagos, reportes)
 // se montan aquí cuando se implementen:
-// router.use("/reservas", reservasRoutes);
-
 export default router;
