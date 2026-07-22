@@ -4,9 +4,13 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+COPY backend/package*.json ./backend/
 
-COPY . .
+RUN npm ci --workspace=backend
+
+COPY backend ./backend
+
+WORKDIR /app/backend
 
 EXPOSE 4000
 
