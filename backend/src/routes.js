@@ -2,7 +2,7 @@ import { Router } from "express";
 import authRoutes from "./modules/auth/auth.routes.js";
 import canchasRoutes from "./modules/canchas/canchas.routes.js";
 import reservasRoutes from "./modules/reservas/reservas.routes.js";
-import pagosRoutes from "./modules/pagos/pagos.routes.js"
+import pagosRoutes from "./modules/pagos/routes/pagos.routes.js"
 
 const router = Router();
 

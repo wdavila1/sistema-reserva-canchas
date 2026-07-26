@@ -1,6 +1,6 @@
 // Queries SQL contra Pagos, MetodosPago.
 // TODO: implementar.
-import { pool } from "../../config/db.js";
+import { pool } from "../../../config/db.js"
 
 export async function obtenerPagosPendientes() {
    const query = `
@@ -27,4 +27,8 @@ export async function obtenerPagosPendientes() {
 
   const { rows } = await pool.query(query);
   return rows;
+}
+
+export async function obtenerPagosConfirmados(){
+  const query = ``
 }

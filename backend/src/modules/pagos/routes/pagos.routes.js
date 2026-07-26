@@ -2,7 +2,7 @@
 // TODO: implementar.
 
 import { Router } from "express";
-import * as pagosController from "./pagos.controller.js"
+import * as pagosController from "../controller/pagos.controller.js"
 
 const router = Router();
 
