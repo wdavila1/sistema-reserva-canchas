@@ -1,10 +1,9 @@
 export interface PagosPendientes {
-    idReserva : number;
-    nombreUsuario : string;
-    canchaReservada : string;
-    fechaReserva : Date;
-    horaInicio: string;
-    horaFin : string;
-    total : number;
+    idreserva: number;
+    nombreusuario: string;
+    canchareservada: string;
+    fechareserva: string;
+    horainicio: string;
+    horafin: string;
+    total: string;
 }
-

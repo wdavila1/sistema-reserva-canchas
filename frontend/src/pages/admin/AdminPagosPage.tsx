@@ -19,21 +19,21 @@ import { usePagosPendientes } from "@/hooks/usePagos";
 import type { PagosPendientes } from "@/types/pagos/PagosPendientes";
 
 function AdminPagos() {
-  const [showFactura, setShowFactura] = useState<Reservacion | null>(null);
+  const [showFactura, setShowFactura] = useState<PagosPendientes | null>(null);
   const [metodoPago, setMetodoPago] = useState("Tarjeta");
   const [rtnCliente, setRtnCliente] = useState("");
   const [nombreCliente, setNombreCliente] = useState("");
-  const [successId, setSuccessId] = useState<string | null>(null);
+  const [successId, setSuccessId] = useState<number | null>(null);
   const {pagosPendientes,loading,refetch,} = usePagosPendientes();
   const pagadas = RESERVACIONES.filter((r) => r.pagado);
 
   const registrar = (p : PagosPendientes) => {
-    setSuccessId(p.idReserva);
+    setSuccessId(p.idreserva);
     setTimeout(() => setSuccessId(null), 3000);
   };
 
   if (showFactura) {
-    const r = showFactura;
+    const f = showFactura;
     const facturaNum = "00001-0001-00000042";
     const cai = "A2B3C4-D5E6F7-G8H9I0-J1K2L3-M4N5O6-PQ";
     return (
@@ -66,7 +66,7 @@ function AdminPagos() {
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Cliente:</span>
-              <span>{nombreCliente || r.usuario}</span>
+              <span>{f.nombreusuario}</span>
             </div>
             {rtnCliente && (
               <div className="flex justify-between">
@@ -76,7 +76,7 @@ function AdminPagos() {
             )}
             <div className="flex justify-between">
               <span className="text-muted-foreground">Reserva:</span>
-              <span>{r.id}</span>
+              <span>{f.idreserva}</span>
             </div>
           </div>
           <table className="w-full text-xs mb-4">
@@ -89,25 +89,25 @@ function AdminPagos() {
             <tbody>
               <tr>
                 <td className="py-1.5 pr-4">
-                  Alquiler de {r.cancha}<br />
-                  <span className="text-muted-foreground">{r.fecha} · {r.horaInicio}–{r.horaFin} ({r.horas}h)</span>
+                  Alquiler de {f.canchareservada}<br />
+                  <span className="text-muted-foreground">{f.fechareserva} · {f.horainicio}–{f.horafin} (1h)</span>
                 </td>
-                <td className="py-1.5 text-right">{formatCurrency(r.subtotal)}</td>
+                <td className="py-1.5 text-right">{formatCurrency(0)}</td>
               </tr>
             </tbody>
           </table>
           <div className="border-t border-dashed border-border pt-3 space-y-1 text-xs">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Subtotal (exento ISV):</span>
-              <span>{formatCurrency(r.subtotal)}</span>
+              <span>{formatCurrency(0)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">ISV (15%):</span>
-              <span>{formatCurrency(r.isv)}</span>
+              <span>{formatCurrency(15)}</span>
             </div>
             <div className="flex justify-between font-bold text-sm not-italic border-t border-dashed border-border pt-2 mt-1">
               <span>TOTAL A PAGAR:</span>
-              <span className="text-primary">{formatCurrency(r.total)}</span>
+              <span className="text-primary">{formatCurrency(Number(f.total))}</span>
             </div>
           </div>
           <p className="text-center text-xs text-muted-foreground mt-6 border-t border-dashed border-border pt-4">
@@ -146,16 +146,16 @@ function AdminPagos() {
         <h2 className="font-bold text-lg text-foreground mb-4">Pagos pendientes ({pagosPendientes.length})</h2>
         <div className="space-y-3">
           {pagosPendientes.map((p) => (
-            <div key={p.idReserva} className="bg-white rounded-2xl border border-border p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+            <div key={p.idreserva} className="bg-white rounded-2xl border border-border p-5 flex flex-col sm:flex-row sm:items-center gap-4">
               <div className="flex-1">
                 <div className="flex items-center gap-2 flex-wrap mb-1">
-                  <span className="font-semibold text-foreground">{p.nombreUsuario}</span>
-                  <span className="font-mono text-xs text-muted-foreground">{p.idReserva}</span>
+                  <span className="font-semibold text-foreground">{p.nombreusuario}</span>
+                  <span className="font-mono text-xs text-muted-foreground">{p.idreserva}</span>
                 </div>
-                <p className="text-sm text-muted-foreground">{p.canchaReservada} · {p.fechaReserva.toLocaleDateString()} · {p.horaInicio}–{p.horaFin}</p>
+                <p className="text-sm text-muted-foreground">{p.canchareservada} · {p.fechareserva} · {p.horainicio}–{p.horafin}</p>
               </div>
               <div className="text-right sm:text-left">
-                <p className="text-xl font-black text-primary" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>{formatCurrency(p.total)}</p>
+                <p className="text-xl font-black text-primary" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>{formatCurrency(Number(p.total))}</p>
               </div>
               <div className="flex items-center gap-4 flex-wrap">
                 <select
@@ -171,7 +171,7 @@ function AdminPagos() {
                   <Check size={14} /> Registrar pago
                 </Button>
                 <Button size="sm" variant="outline" onClick={() => {
-                  setNombreCliente(p.nombreUsuario);
+                  setNombreCliente(p.nombreusuario);
                   setShowFactura(p);
                 }}>
                   <Printer size={14} /> Factura
@@ -207,6 +207,7 @@ function AdminPagos() {
       </div>
 
       {/* Recent paid */}
+      {/** 
       <div>
         <h2 className="font-bold text-lg text-foreground mb-4">Pagos registrados recientes</h2>
         <div className="bg-white rounded-2xl border border-border overflow-hidden">
@@ -220,7 +221,7 @@ function AdminPagos() {
                 </tr>
               </thead>
               <tbody>
-                {pagadas.map((r) => (
+                {pagosPendientes.map((p) => (
                   <tr key={r.id} className="border-t border-border hover:bg-muted/20 transition-colors">
                     <td className="px-5 py-3.5 font-mono text-xs text-muted-foreground">{r.id}</td>
                     <td className="px-5 py-3.5 font-medium">{r.usuario}</td>
@@ -246,7 +247,7 @@ function AdminPagos() {
             </table>
           </div>
         </div>
-      </div>
+      </div>*/}
     </div>
   );
 }
