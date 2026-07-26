@@ -92,18 +92,18 @@ function AdminPagos() {
                   Alquiler de {f.canchareservada}<br />
                   <span className="text-muted-foreground">{f.fechareserva} · {f.horainicio}–{f.horafin} (1h)</span>
                 </td>
-                <td className="py-1.5 text-right">{formatCurrency(0)}</td>
+                <td className="py-1.5 text-right">{formatCurrency(Number(f.preciohora))}</td>
               </tr>
             </tbody>
           </table>
           <div className="border-t border-dashed border-border pt-3 space-y-1 text-xs">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Subtotal (exento ISV):</span>
-              <span>{formatCurrency(0)}</span>
+              <span>{formatCurrency(Number(f.subtotal))}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">ISV (15%):</span>
-              <span>{formatCurrency(15)}</span>
+              <span>{formatCurrency(Number(f.isv))}</span>
             </div>
             <div className="flex justify-between font-bold text-sm not-italic border-t border-dashed border-border pt-2 mt-1">
               <span>TOTAL A PAGAR:</span>
