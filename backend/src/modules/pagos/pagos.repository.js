@@ -12,7 +12,7 @@ export async function obtenerPagosPendientes() {
             TO_CHAR(dr.fecha, 'YYYY-MM-DD') AS fechaReserva,
             TO_CHAR(dr.horainicio, 'HH24:MI') AS horaInicio,
             TO_CHAR(dr.horafin, 'HH24:MI') AS horaFin,
-            ROUND(EXTRACT(EPOCH FROM (dr.horafin - dr.horainicio)) / 3600, 1) AS numeroHoras,
+            FLOOR(EXTRACT(EPOCH FROM (dr.horafin - dr.horainicio)) / 3600) AS numeroHoras,
             dr.subtotal AS subtotal,
             ROUND(dr.subtotal * 0.15, 2) AS isv,
             r.total AS total

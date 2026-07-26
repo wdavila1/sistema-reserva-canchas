@@ -1,12 +1,6 @@
 import { useState } from "react";
 import { ChevronLeft, Check, FileText, CheckCircle, Printer } from "lucide-react";
 
-//TYPES
-import type { Reservacion } from "../../types/reservation/Reservacion";
-
-//MOCKS
-import { RESERVACIONES } from "../../mocks/reservaciones";
-
 //UTILS
 import { formatCurrency } from "../../utils/formatCurrency";
 
@@ -25,7 +19,6 @@ function AdminPagos() {
   const [nombreCliente, setNombreCliente] = useState("");
   const [successId, setSuccessId] = useState<number | null>(null);
   const {pagosPendientes,loading,refetch,} = usePagosPendientes();
-  const pagadas = RESERVACIONES.filter((r) => r.pagado);
 
   const registrar = (p : PagosPendientes) => {
     setSuccessId(p.idreserva);
@@ -90,7 +83,7 @@ function AdminPagos() {
               <tr>
                 <td className="py-1.5 pr-4">
                   Alquiler de {f.canchareservada}<br />
-                  <span className="text-muted-foreground">{f.fechareserva} · {f.horainicio}–{f.horafin} (1h)</span>
+                  <span className="text-muted-foreground">{f.fechareserva} · {f.horainicio}–{f.horafin} ({f.numerohoras})</span>
                 </td>
                 <td className="py-1.5 text-right">{formatCurrency(Number(f.preciohora))}</td>
               </tr>
