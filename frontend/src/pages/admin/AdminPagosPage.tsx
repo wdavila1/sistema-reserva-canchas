@@ -14,18 +14,21 @@ import { formatCurrency } from "../../utils/formatCurrency";
 import { Button } from "../../components/ui/Button"
 import { Input } from "../../components/ui/Input";
 
+//HOOKS
+import { usePagosPendientes } from "@/hooks/usePagos";
+import type { PagosPendientes } from "@/types/pagos/PagosPendientes";
+
 function AdminPagos() {
   const [showFactura, setShowFactura] = useState<Reservacion | null>(null);
   const [metodoPago, setMetodoPago] = useState("Tarjeta");
   const [rtnCliente, setRtnCliente] = useState("");
   const [nombreCliente, setNombreCliente] = useState("");
   const [successId, setSuccessId] = useState<string | null>(null);
-
-  const pendientes = RESERVACIONES.filter((r) => !r.pagado);
+  const {pagosPendientes,loading,refetch,} = usePagosPendientes();
   const pagadas = RESERVACIONES.filter((r) => r.pagado);
 
-  const registrar = (r: Reservacion) => {
-    setSuccessId(r.id);
+  const registrar = (p : PagosPendientes) => {
+    setSuccessId(p.idReserva);
     setTimeout(() => setSuccessId(null), 3000);
   };
 
@@ -140,19 +143,19 @@ function AdminPagos() {
 
       {/* Pending payments */}
       <div>
-        <h2 className="font-bold text-lg text-foreground mb-4">Pagos pendientes ({pendientes.length})</h2>
+        <h2 className="font-bold text-lg text-foreground mb-4">Pagos pendientes ({pagosPendientes.length})</h2>
         <div className="space-y-3">
-          {pendientes.map((r) => (
-            <div key={r.id} className="bg-white rounded-2xl border border-border p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+          {pagosPendientes.map((p) => (
+            <div key={p.idReserva} className="bg-white rounded-2xl border border-border p-5 flex flex-col sm:flex-row sm:items-center gap-4">
               <div className="flex-1">
                 <div className="flex items-center gap-2 flex-wrap mb-1">
-                  <span className="font-semibold text-foreground">{r.usuario}</span>
-                  <span className="font-mono text-xs text-muted-foreground">{r.id}</span>
+                  <span className="font-semibold text-foreground">{p.nombreUsuario}</span>
+                  <span className="font-mono text-xs text-muted-foreground">{p.idReserva}</span>
                 </div>
-                <p className="text-sm text-muted-foreground">{r.cancha} · {r.fecha} · {r.horaInicio}–{r.horaFin}</p>
+                <p className="text-sm text-muted-foreground">{p.canchaReservada} · {p.fechaReserva.toLocaleDateString()} · {p.horaInicio}–{p.horaFin}</p>
               </div>
               <div className="text-right sm:text-left">
-                <p className="text-xl font-black text-primary" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>{formatCurrency(r.total)}</p>
+                <p className="text-xl font-black text-primary" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>{formatCurrency(p.total)}</p>
               </div>
               <div className="flex items-center gap-4 flex-wrap">
                 <select
@@ -164,19 +167,19 @@ function AdminPagos() {
                     <option key={m} value={m}>{m}</option>
                   ))}
                 </select>
-                <Button size="sm" variant="primary" onClick={() => registrar(r)}>
+                <Button size="sm" variant="primary" onClick={() => registrar(p)}>
                   <Check size={14} /> Registrar pago
                 </Button>
                 <Button size="sm" variant="outline" onClick={() => {
-                  setNombreCliente(r.usuario);
-                  setShowFactura(r);
+                  setNombreCliente(p.nombreUsuario);
+                  setShowFactura(p);
                 }}>
                   <Printer size={14} /> Factura
                 </Button>
               </div>
             </div>
           ))}
-          {pendientes.length === 0 && (
+          {pagosPendientes.length === 0 && (
             <div className="text-center py-8 text-muted-foreground text-sm bg-white rounded-2xl border border-border">
               No hay pagos pendientes. ✓
             </div>
