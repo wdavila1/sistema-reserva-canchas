@@ -25,10 +25,11 @@ export async function obtenerPagosPendientes() {
         ORDER BY dr.fecha, dr.horainicio;
         `;
 
-  const { rows } = await pool.query(query);
-  return rows;
+  
 }
 
 export async function obtenerPagosConfirmados(){
-  const query = ``
+  const query = `
+  
+  `
 }
