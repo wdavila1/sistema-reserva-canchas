@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronLeft, Check, FileText, CheckCircle, Printer } from "lucide-react";
+import { ChevronLeft, Check, CheckCircle, Printer } from "lucide-react";
 
 //UTILS
 import { formatCurrency } from "@/shared/utils/formatCurrency";
@@ -7,6 +7,7 @@ import { formatCurrency } from "@/shared/utils/formatCurrency";
 //COMPONENTS
 import { Button } from "@/shared/components/ui/Button";
 import { Input } from "@/shared/components/ui/Input";
+import { ModalConfirmarPago } from "@/features/pagos/components/ModalConfirmarPago";
 
 //TYPES
 import type { PagoPendiente } from "@/features/pagos/types/PagoPendiente";
@@ -15,22 +16,20 @@ import type { PagoPendiente } from "@/features/pagos/types/PagoPendiente";
 import { usePagosPendientes } from "@/features/pagos/hooks/usePagosPendiente";
 import { useMetodosPago } from "@/features/pagos/hooks/useMetodosPago";
 import { usePagosConfirmados } from "@/features/pagos/hooks/usePagosConfirmado";
+import { useRegistrarPago } from "@/features/pagos/hooks/useRegistrarPago";
 
 function AdminPagos() {
   const [showFactura, setShowFactura] = useState<PagoPendiente | null>(null);
   const [rtnCliente, setRtnCliente] = useState("");
   const [nombreCliente, setNombreCliente] = useState("");
   const [successId, setSuccessId] = useState<number | null>(null);
-  const { pagosPendientes } = usePagosPendientes();
-  const { pagosConfirmados } = usePagosConfirmados();
-
+  const { pagosPendientes, refetch: refetchPendientes } = usePagosPendientes();
+  const { pagosConfirmados, refetch: refetchConfirmados } = usePagosConfirmados();
+  const { registrar } = useRegistrarPago(refetchPendientes, refetchConfirmados);
   const { metodosPago } = useMetodosPago();
   const [metodosPagoSeleccionados, setMetodosPagoSeleccionados] = useState<Record<number, number>>({});
 
-  const registrar = (p: PagoPendiente) => {
-    setSuccessId(p.idreserva);
-    setTimeout(() => setSuccessId(null), 3000);
-  };
+  const [pagoSeleccionado, setPagoSeleccionado] = useState<PagoPendiente | null>(null);
 
   if (showFactura) {
     const f = showFactura;
@@ -126,6 +125,28 @@ function AdminPagos() {
     );
   }
 
+  const confirmarRegistroPago = async () => {
+    if (!pagoSeleccionado) return;
+
+    const metodoPagoId = metodosPagoSeleccionados[pagoSeleccionado.idreserva] ?? metodosPago[0]?.metodopagoid;
+    
+    if (!metodoPagoId) return;
+
+    try {
+      await registrar(pagoSeleccionado.idreserva, metodoPagoId);
+
+      //cerrar la modal
+      setPagoSeleccionado(null);
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const metodoPagoId = pagoSeleccionado ? metodosPagoSeleccionados[pagoSeleccionado.idreserva] ?? metodosPago[0]?.metodopagoid : 0;
+
+  const metodoPagoNombre = metodosPago.find((m) => m.metodopagoid === metodoPagoId)?.metodopago ?? "";
+
   return (
     <div className="space-y-6">
       <div>
@@ -177,7 +198,7 @@ function AdminPagos() {
                     </option>
                   ))}
                 </select>
-                <Button size="sm" variant="primary" onClick={() => registrar(p)}>
+                <Button size="sm" variant="primary" onClick={() => setPagoSeleccionado(p)}>
                   <Check size={14} /> Registrar pago
                 </Button>
                 <Button size="sm" variant="outline" onClick={() => {
@@ -195,6 +216,12 @@ function AdminPagos() {
             </div>
           )}
         </div>
+        <ModalConfirmarPago
+          pago={pagoSeleccionado}
+          metodoPagoNombre={metodoPagoNombre}
+          onCancelar={() => setPagoSeleccionado(null)}
+          onConfirmar={confirmarRegistroPago}
+        />
       </div>
 
       {/* RTN input for business invoices */}

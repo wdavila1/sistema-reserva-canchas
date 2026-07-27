@@ -5,11 +5,11 @@ import * as metodoPagoRepository from "../repository/metodos-pago.repository.js"
 import { ApiError } from "../../../utils/ApiError.js"
 
 export async function obtenerPagosPendientes() {
-    return await pagosRepository.obtenerPagosPendientes();
+  return await pagosRepository.obtenerPagosPendientes();
 }
 
 export async function obtenerPagosConfirmados() {
-    return await pagosRepository.obtenerPagosConfirmados();
+  return await pagosRepository.obtenerPagosConfirmados();
 }
 
 export async function registrarPago(detallesPago) {
@@ -35,13 +35,13 @@ export async function registrarPago(detallesPago) {
     throw new ApiError(409, "Esta reserva ya fue pagada o cancelada");
   }
 
-  const monto = Number(reserva.total); 
+  const monto = Number(reserva.total);
 
   if (!monto || monto <= 0) {
     throw new ApiError(400, "La reserva no tiene un total válido");
   }
 
-  const pagoId = await pagosRepository.registrarPago(reservaId, metodoPagoId, monto );
+  const pagoId = await pagosRepository.registrarPago(reservaId, metodoPagoId, monto);
 
   await reservasRepository.actualizarEstadoReserva(reservaId, 'Confirmada');
 

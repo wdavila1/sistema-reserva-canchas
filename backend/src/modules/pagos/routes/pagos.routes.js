@@ -8,6 +8,6 @@ const router = Router();
 
 router.get("/pendientes", pagosController.obtenerPagosPendientes)
 router.get("/confirmados",pagosController.obtenerPagosConfirmados)
-router.get("/registrar", pagosController.registrarPago)
+router.post("/registrar", pagosController.registrarPago)
 
 export default router;
