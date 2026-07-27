@@ -16,6 +16,7 @@ import LoginPage from "@/features/auth/pages/LoginPage";
 import RegistroPage from "@/features/auth/pages/RegistroPage";
 import NosotrosPage from "@/pages/NosotrosPage";
 import ContactoPage from "@/pages/ContactoPage";
+import Terminos from "@/pages/Terminos";
 
 // Páginas protegidas (requieren login)
 import ReservasPage from "@/features/reservas/pages/ReservasPage";
@@ -42,6 +43,7 @@ function AppRouter() {
         <Route path="/registro" element={<RegistroPage />} />
         <Route path="/nosotros" element={<NosotrosPage />} />
         <Route path="/contacto" element={<ContactoPage />} />
+        <Route path="/terminos" element={<Terminos/>}/>
 
         {/* ---------- Requiere estar logueado ---------- */}
         <Route element={<ProtectedRoute />}>
