@@ -3,6 +3,6 @@ export interface PagoConfirmado {
     nombreusuario: string;
     canchareservada: string;
     total: string;
-    metodo: string;
+    metodopago: string;
     fechapago: string;
 }
