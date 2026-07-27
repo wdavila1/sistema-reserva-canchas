@@ -143,3 +143,16 @@ export async function obtenerEncabezadoReserva(reservaId) { //esta funcion la pu
   );
   return rows[0] || null;
 }
+
+export async function obtenerEstadoReserva(reservaId){
+  const query = `
+      SELECT 
+      r.reservaid AS reservaid,
+      r.estadoreserva AS estadoreserva
+      FROM reservas
+      WHERE r.reservaid = ${reservaId};
+  `
+  const { rows } = await pool.query(query);
+
+  return rows;
+}

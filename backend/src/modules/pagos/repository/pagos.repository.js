@@ -45,7 +45,7 @@ export async function obtenerPagosConfirmados() {
       JOIN detallereservas dr ON dr.reservaid = r.reservaid
       JOIN canchas c ON c.canchaid = dr.canchaid
       JOIN metodospago mp ON pa.metodopagoid = mp.metodopagoid
-      WHERE r.estadoreserva = 'Confirmada'
+      WHERE (r.estadoreserva = 'Confirmada' OR r.estadoreserva = 'Completada')
         AND pa.estadopago = 'Aprobado'
       GROUP BY r.reservaid, p.primernombre, p.primerapellido, pa.monto, mp.metodo, pa.fechapago;
   `
@@ -54,3 +54,17 @@ export async function obtenerPagosConfirmados() {
 
 }
 
+export async function registrarPago(detallesPago) {
+  const query = `
+      INSERT INTO pagos (reservaid, metodopagoid, monto, estadopago)
+      VALUES ($1, $2, $3, 'Aprobado')
+      RETURNING pagoid;
+    `;
+  const { rows } = await pool.query(query, [
+    detallesPago.reservaId,
+    detallesPago.metodoPagoId,
+    detallesPago.monto
+  ]);
+
+  return rows[0].pagoid;
+}
