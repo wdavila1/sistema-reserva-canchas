@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { MapPin, Phone, Mail } from "lucide-react";
+import { footerLinks } from "@/shared/config/navigation";
 
 function Footer() {
   return (
@@ -20,17 +21,10 @@ function Footer() {
         <div>
           <h4 className="font-label-sm text-label-sm text-secondary uppercase mb-6">Navegación</h4>
           <ul className="grid grid-cols-2 gap-4">
-            {[
-              ["Inicio", "/"],
-              ["Canchas", "/canchas"],
-              ["Nosotros", "/nosotros"],
-              ["Contacto", "/contacto"],
-              ["Términos", "/terminos"],
-              ["Privacidad", "/privacidad"],
-            ].map(([label, path]) => (
-              <li key={path}>
-                <Link to={path} className="font-body-md text-white/80 hover:text-secondary transition-colors">
-                  {label}
+            {footerLinks.map((l) => (
+              <li key={l.path}>
+                <Link to={l.path} className="font-body-md text-white/80 hover:text-secondary transition-colors">
+                  {l.label}
                 </Link>
               </li>
             ))}
