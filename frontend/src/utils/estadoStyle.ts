@@ -1,4 +1,4 @@
-import type { ReservationStatus } from "../types/reservation/ReservationStatus";
+import type { ReservationStatus } from "../features/reservas/types/ReservationStatus";
 
 export const estadoStyle: Record<ReservationStatus, string> = {
   confirmada: "!bg-[#ccff00] !text-primary border-2 border-primary shadow-[2px_2px_0px_0px_#0b1f3a] font-bold px-3 py-1",

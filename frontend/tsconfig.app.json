@@ -20,6 +20,7 @@
     "paths": {
       "@/*": ["./src/*"]
     },
+    "ignoreDeprecations": "6.0",
 
     /* Linting — activado pero sin ser estricto al extremo, para no frenar al equipo */
     "strict": true,

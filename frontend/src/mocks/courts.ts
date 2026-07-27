@@ -1,5 +1,4 @@
-import type { Court } from "@/types/sports/Court";
-
+import type { Court } from "@/features/canchas/types/Court";
 export const CANCHAS: Court[] = [
   {
     id: 1,
