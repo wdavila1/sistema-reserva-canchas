@@ -10,17 +10,17 @@ import { Input } from "../../components/ui/Input";
 
 //HOOKS
 import { usePagosPendientes } from "@/hooks/usePagos";
-import type { PagosPendientes } from "@/types/pagos/PagosPendientes";
+import type { PagoPendiente } from "@/types/pagos/PagoPendiente";
 
 function AdminPagos() {
-  const [showFactura, setShowFactura] = useState<PagosPendientes | null>(null);
+  const [showFactura, setShowFactura] = useState<PagoPendiente | null>(null);
   const [metodoPago, setMetodoPago] = useState("Tarjeta");
   const [rtnCliente, setRtnCliente] = useState("");
   const [nombreCliente, setNombreCliente] = useState("");
   const [successId, setSuccessId] = useState<number | null>(null);
   const {pagosPendientes,loading,refetch,} = usePagosPendientes();
 
-  const registrar = (p : PagosPendientes) => {
+  const registrar = (p : PagoPendiente) => {
     setSuccessId(p.idreserva);
     setTimeout(() => setSuccessId(null), 3000);
   };

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { obtenerPagosPendientes } from "@/services/pagos.api";
-import type { PagosPendientes } from "@/types/pagos/PagosPendientes";
+import type { PagoPendiente } from "@/types/pagos/PagoPendiente";
 
 export function usePagosPendientes() {
-    const [pagosPendientes, setPagosPendientes] = useState<PagosPendientes[]>([]);
+    const [pagosPendientes, setPagosPendientes] = useState<PagoPendiente[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
 

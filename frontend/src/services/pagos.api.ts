@@ -1,7 +1,7 @@
 import { axiosClient } from "./axiosClient";
-import type { PagosPendientes } from "@/types/pagos/PagosPendientes";
+import type { PagoPendiente } from "@/types/pagos/PagoPendiente";
 
-export const obtenerPagosPendientes = async (): Promise<PagosPendientes[]> => {
-    const response = await axiosClient.get<PagosPendientes[]>("pagos/pendientes");
+export const obtenerPagosPendientes = async (): Promise<PagoPendiente[]> => {
+    const response = await axiosClient.get<PagoPendiente[]>("pagos/pendientes");
     return response.data;
 };
