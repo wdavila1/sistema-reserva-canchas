@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 
 // Layouts
 import PublicLayout from "../layouts/PublicLayout";
-import AdminLayout from "../layouts/AdminLayout";
+import AdminLayout from "@/features/admin/layouts/AdminLayout";
 
 // Route guards
 import ProtectedRoute from "./ProtectedRoute";
@@ -10,25 +10,25 @@ import AdminRoute from "./AdminRoute";
 
 // Páginas públicas
 import HomePage from "../pages/Home";
-import CanchasPage from "../pages/CanchasPage";
-import CanchaDetailPage from "../pages/CanchaDetailPage";
-import LoginPage from "../pages/LoginPage";
-import RegistroPage from "../pages/RegistroPage";
+import CanchasPage from "@/features/canchas/pages/CanchasPage";
+import CanchaDetailPage from "@/features/canchas/pages/CanchaDetailPage";
+import LoginPage from "@/features/auth/pages/LoginPage";
+import RegistroPage from "@/features/auth/pages/RegistroPage";
 import NosotrosPage from "../pages/NosotrosPage";
 import ContactoPage from "../pages/ContactoPage";
 
 // Páginas protegidas (requieren login)
-import ReservasPage from "../pages/ReservasPage";
-import MisReservasPage from "../pages/MisReservasPage";
+import ReservasPage from "../features/reservas/pages/ReservasPage";
+import MisReservasPage from "@/features/reservas/pages/MisReservasPage";
 
 // Páginas de administración
-import AdminDashboardPage from "../pages/admin/DashboardPage";
-import AdminCanchasPage from "../pages/admin/AdminCanchasPage";
-import AdminReservas from "../pages/admin/AdminReservas";
-import AdminPagosPage from "../pages/admin/AdminPagosPage";
-import AdminReportesPage from "../pages/admin/AdminReportesPage";
-import AdminUsuariosPage from "../pages/admin/AdminUsuariosPage";
-import CanchaFormPage from "../pages/admin/canchas/nueva/CanchaFormPage";
+import AdminDashboardPage from "@/features/admin/pages/DashboardPage";
+import AdminCanchasPage from "@/features/admin/pages/AdminCanchasPage";
+import AdminReservas from "@/features/admin/pages/AdminReservas";
+import AdminPagosPage from "@/features/admin/pages/AdminPagosPage";
+import AdminReportesPage from "@/features/admin/pages/AdminReportesPage";
+import AdminUsuariosPage from "@/features/admin/pages/AdminUsuariosPage";
+import CanchaFormPage from "../features/canchas/pages/CanchaFormPage";
 
 function AppRouter() {
   return (
