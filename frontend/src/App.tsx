@@ -1,5 +1,5 @@
 import { AuthProvider } from "./features/auth/context/AuthContext";
-import AppRouter from "./routes/AppRouter";
+import AppRouter from "./shared/routes/AppRouter";
 
 // ────────────────────────────────────────────────────────────
 // APP ROOT

@@ -1,4 +1,4 @@
-import { axiosClient } from "@/services/axiosClient";
+import { axiosClient } from "@/shared/services/axiosClient";
 
 export interface Cancha {
     CanchaID: number;

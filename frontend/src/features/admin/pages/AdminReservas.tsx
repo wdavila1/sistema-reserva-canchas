@@ -6,14 +6,14 @@ import { getTodasLasReservas, actualizarEstadoReserva, cancelarReserva } from "@
 import type { Reserva, EstadoReserva } from "@/features/reservas/services/reservas.api";
 
 //UTILS
-import { formatCurrency } from "@/utils/formatCurrency";
-import { estadoStyle } from "@/utils/estadoStyle";
-import { estadoLabel } from "@/utils/estadoLabel";
+import { formatCurrency } from "@/shared/utils/formatCurrency";
+import { estadoStyle } from "@/shared/utils/estadoStyle";
+import { estadoLabel } from "@/shared/utils/estadoLabel";
 import type { ReservationStatus } from "@/features/reservas/types/ReservationStatus";
 
 //COMPONENTS
-import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button"
+import { Badge } from "@/shared/components/ui/Badge";
+import { Button } from "@/shared/components/ui/Button";
 
 /** El backend devuelve EstadoReserva con mayúscula inicial ("Pendiente",
  * "Confirmada", ...), pero estadoStyle/estadoLabel están indexados en

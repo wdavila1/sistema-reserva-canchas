@@ -1,4 +1,4 @@
-import { axiosClient } from "@/services/axiosClient";
+import { axiosClient } from "@/shared/services/axiosClient";
 import type { UserAccount } from "../types/UserAccount";
 
 /** El backend acepta usuario O correo en el mismo campo "identificador". */

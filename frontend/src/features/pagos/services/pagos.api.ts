@@ -1,5 +1,5 @@
 import type { PagoConfirmado } from "@/features/pagos/types/PagoConfirmado";
-import { axiosClient } from "@/services/axiosClient";
+import { axiosClient } from "@/shared/services/axiosClient";
 import type { PagoPendiente } from "@/features/pagos/types/PagoPendiente";
 
 

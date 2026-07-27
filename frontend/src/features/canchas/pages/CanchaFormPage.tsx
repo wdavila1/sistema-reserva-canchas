@@ -1,6 +1,6 @@
 import { ChevronLeft} from "lucide-react";
 import { useCanchaForm } from "@/features/canchas/hooks/useCanchaForm";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/shared/components/ui/Button";
 
 function CanchaFormPage() {
   // Conectamos la vista a nuestro hook

@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { CourtCard } from "@/components/ui/CourtCard";
+import { CourtCard } from "@/shared/components/ui/CourtCard";
 import { Search, Trophy, Filter } from "lucide-react";
 import { useCanchas, SPORTS_LIST } from "../hooks/useCanchas"; 
 

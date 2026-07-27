@@ -4,8 +4,8 @@ import { ChevronLeft, Check, Users, XCircle, MapPin, Clock, ArrowRight } from "l
 import { HORARIOS } from "@/features/canchas/constants/horarios";
 
 //UTILS
-import { formatCurrency } from "@/utils/formatCurrency";
-import { sportColor } from "@/utils/sportColor";
+import { formatCurrency } from "@/shared/utils/formatCurrency";
+import { sportColor } from "@/shared/utils/sportColor";
 
 
 //HOOKS
@@ -13,8 +13,8 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useCanchaDetail } from "../hooks/useCanchasDetails";
 
 //COMPONENTS
-import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button"
+import { Badge } from "@/shared/components/ui/Badge";
+import { Button } from "@/shared/components/ui/Button";
 
 function CanchaDetailPage() {
   const { id } = useParams<{ id: string }>();

@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 
 //COMPONENTS
-import { Button } from "../components/ui/Button"
+import { Button } from "@/shared/components/ui/Button";
 
 function NosotrosPage() {
   const navigate = useNavigate();

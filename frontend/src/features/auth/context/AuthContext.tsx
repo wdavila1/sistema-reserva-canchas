@@ -1,7 +1,7 @@
 import { createContext, useState, useMemo, useEffect, type ReactNode } from "react";
 import type { UserAccount } from "../types/UserAccount";
 import * as authApi from "../services/auth.api";
-import { setAccessToken, setOnAuthFailure } from "@/services/axiosClient";
+import { setAccessToken, setOnAuthFailure } from "@/shared/services/axiosClient";
 
 export interface AuthContextValue {
   usuario: UserAccount | null;
