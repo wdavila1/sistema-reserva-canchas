@@ -1,4 +1,4 @@
-export interface MetodosPago {
+export interface MetodoPago {
     metodopagoid: number;
     metodopago: string;
 }

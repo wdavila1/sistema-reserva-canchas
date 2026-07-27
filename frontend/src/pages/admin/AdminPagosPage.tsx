@@ -11,6 +11,7 @@ import { Input } from "../../components/ui/Input";
 //HOOKS
 import { usePagosPendientes } from "@/hooks/usePagos";
 import type { PagoPendiente } from "@/types/pagos/PagoPendiente";
+import { useMetodosPago } from "@/hooks/useMetodosPago";
 
 function AdminPagos() {
   const [showFactura, setShowFactura] = useState<PagoPendiente | null>(null);
@@ -18,9 +19,13 @@ function AdminPagos() {
   const [rtnCliente, setRtnCliente] = useState("");
   const [nombreCliente, setNombreCliente] = useState("");
   const [successId, setSuccessId] = useState<number | null>(null);
-  const {pagosPendientes,loading,refetch,} = usePagosPendientes();
+  const { pagosPendientes, loading, refetch, } = usePagosPendientes();
 
-  const registrar = (p : PagoPendiente) => {
+  const { metodosPago } = useMetodosPago();
+  const [metodoPagoSeleccionado, setMetodoPagoSeleccionado] = useState<number>(0);
+  const [metodosPagoSeleccionados, setMetodosPagoSeleccionados] = useState<Record<number, number>>({});
+
+  const registrar = (p: PagoPendiente) => {
     setSuccessId(p.idreserva);
     setTimeout(() => setSuccessId(null), 3000);
   };
@@ -153,11 +158,21 @@ function AdminPagos() {
               <div className="flex items-center gap-4 flex-wrap">
                 <select
                   className="text-sm px-3 py-2 rounded-lg border border-border bg-muted focus:outline-none"
-                  value={metodoPago}
-                  onChange={(e) => setMetodoPago(e.target.value)}
+                  value={metodosPagoSeleccionados[p.idreserva] ?? 0}
+                  onChange={(e) =>
+                    setMetodosPagoSeleccionados({
+                      ...metodosPagoSeleccionados,
+                      [p.idreserva]: Number(e.target.value)
+                    })
+                  }
                 >
-                  {["Tarjeta", "Efectivo", "Transferencia", "BAC Móvil"].map((m) => (
-                    <option key={m} value={m}>{m}</option>
+                  {metodosPago.map((metodo) => (
+                    <option
+                      key={metodo.metodopagoid}
+                      value={metodo.metodopagoid}
+                    >
+                      {metodo.metodopago}
+                    </option>
                   ))}
                 </select>
                 <Button size="sm" variant="primary" onClick={() => registrar(p)}>

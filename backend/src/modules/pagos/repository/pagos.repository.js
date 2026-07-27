@@ -3,7 +3,7 @@
 import { pool } from "../../../config/db.js"
 
 export async function obtenerPagosPendientes() {
-   const query = `
+  const query = `
             SELECT
             r.reservaid AS idReserva,
             CONCAT(p.primernombre, ' ', p.primerapellido) AS nombreUsuario,
@@ -24,12 +24,8 @@ export async function obtenerPagosPendientes() {
         WHERE r.estadoreserva = 'Pendiente'
         ORDER BY dr.fecha, dr.horainicio;
         `;
+  const { rows } = await pool.query(query);
+  return rows;
 
-  
 }
 
-export async function obtenerPagosConfirmados(){
-  const query = `
-  
-  `
-}

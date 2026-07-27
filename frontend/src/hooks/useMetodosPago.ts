@@ -1,19 +1,34 @@
+import { useEffect, useState } from "react";
 import { obtenerMetodosPago } from "@/services/metodos-pago.api";
-import type { MetodosPago } from "@/types/pagos/MetodoPago";
-import { useState, useEffect } from "react";
+
+export interface MetodoPago {
+    metodopagoid: number;
+    metodopago: string;
+}
 
 export function useMetodosPago() {
-    const [metodosPago, setMetodosPago] = useState<MetodosPago[]>([]);
+    const [metodosPago, setMetodosPago] = useState<MetodoPago[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        obtenerMetodosPago()
-            .then(setMetodosPago)
-            .finally(() => setLoading(false));
+        const cargarMetodosPago = async () => {
+            try {
+                const data = await obtenerMetodosPago();
+                setMetodosPago(data);
+            } catch (error) {
+                setError("Error al cargar métodos de pago");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        cargarMetodosPago();
     }, []);
 
     return {
         metodosPago,
-        loading
+        loading,
+        error
     };
 }
