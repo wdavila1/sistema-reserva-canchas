@@ -7,6 +7,6 @@ import * as pagosController from "../controller/pagos.controller.js"
 const router = Router();
 
 router.get("/pendientes", pagosController.obtenerPagosPendientes)
-
+router.get("/confirmados",pagosController.obtenerPagosConfirmados)
 
 export default router;

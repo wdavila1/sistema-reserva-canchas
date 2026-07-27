@@ -29,3 +29,27 @@ export async function obtenerPagosPendientes() {
 
 }
 
+export async function obtenerPagosConfirmados() {
+  const query = `
+      SELECT 
+      pa.pagoid,
+      CONCAT(p.primernombre, ' ', p.primerapellido) AS nombre_usuario,
+      STRING_AGG(c.nombrecancha, ', ') AS canchas_reservadas,
+      pa.monto AS total,
+      mp.metodo AS metodo_pago
+      FROM pagos pa
+      JOIN reservas r ON r.reservaid = pa.reservaid
+      JOIN usuarios u ON r.usuarioid = u.usuarioid
+      JOIN personas p ON p.personaid = u.personaid
+      JOIN detallereservas dr ON dr.reservaid = r.reservaid
+      JOIN canchas c ON c.canchaid = dr.canchaid
+      JOIN metodospago mp ON pa.metodopagoid = mp.metodopagoid
+      WHERE r.estadoreserva = 'Confirmada'
+        AND pa.estadopago = 'Aprobado'
+      GROUP BY pa.pagoid, p.primernombre, p.primerapellido, pa.monto, mp.metodo;
+  `
+  const { rows } = await pool.query(query);
+  return rows;
+
+}
+
