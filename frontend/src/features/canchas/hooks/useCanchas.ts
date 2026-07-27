@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import type { SportFilter } from "../types/SportFilter";
-import { HORARIOS } from "@/constants/horarios";
+import { HORARIOS } from "@/features/canchas/constants/horarios";
 
 import { getCanchas } from "../services/canchas.api";
 import type { Cancha } from "../services/canchas.api";

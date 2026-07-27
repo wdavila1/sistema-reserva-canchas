@@ -12,7 +12,7 @@ import type { Reserva } from "@/features/reservas/services/reservas.api";
 import { useAuth } from "../../auth/hooks/useAuth";
 
 //CONSTANTS
-import { HORARIOS } from "../../../constants/horarios";
+import { HORARIOS } from "../../canchas/constants/horarios";
 
 //UTILS
 import { formatCurrency } from "../../../utils/formatCurrency";

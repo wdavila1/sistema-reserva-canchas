@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { ChevronLeft, Check, Users, XCircle, MapPin, Clock, ArrowRight } from "lucide-react";
 
-import { HORARIOS } from "@/constants/horarios";
+import { HORARIOS } from "@/features/canchas/constants/horarios";
 
 //UTILS
 import { formatCurrency } from "@/utils/formatCurrency";
