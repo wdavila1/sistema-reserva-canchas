@@ -239,7 +239,7 @@ function AdminPagos() {
                     <td className="px-5 py-3.5 font-bold text-primary">{formatCurrency(Number(p.total))}</td>
                     <td className="px-5 py-3.5">
                       <span className="bg-emerald-100 text-emerald-700 text-xs px-2.5 py-1 rounded-full font-medium">
-                        {p.metodo}
+                        {p.metodopago}
                       </span>
                     </td>
                   </tr>
