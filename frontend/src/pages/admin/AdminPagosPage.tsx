@@ -8,21 +8,23 @@ import { formatCurrency } from "../../utils/formatCurrency";
 import { Button } from "../../components/ui/Button"
 import { Input } from "../../components/ui/Input";
 
-//HOOKS
-import { usePagosPendientes } from "@/hooks/usePagos";
+//TYPES
 import type { PagoPendiente } from "@/types/pagos/PagoPendiente";
+
+//HOOKS
+import { usePagosPendientes } from "@/hooks/usePagosPendiente";
 import { useMetodosPago } from "@/hooks/useMetodosPago";
+import { usePagosConfirmados } from "@/hooks/usePagosConfirmado";
 
 function AdminPagos() {
   const [showFactura, setShowFactura] = useState<PagoPendiente | null>(null);
-  const [metodoPago, setMetodoPago] = useState("Tarjeta");
   const [rtnCliente, setRtnCliente] = useState("");
   const [nombreCliente, setNombreCliente] = useState("");
   const [successId, setSuccessId] = useState<number | null>(null);
-  const { pagosPendientes, loading, refetch, } = usePagosPendientes();
+  const { pagosPendientes } = usePagosPendientes();
+  const { pagosConfirmados } = usePagosConfirmados();
 
   const { metodosPago } = useMetodosPago();
-  const [metodoPagoSeleccionado, setMetodoPagoSeleccionado] = useState<number>(0);
   const [metodosPagoSeleccionados, setMetodosPagoSeleccionados] = useState<Record<number, number>>({});
 
   const registrar = (p: PagoPendiente) => {
@@ -215,39 +217,30 @@ function AdminPagos() {
       </div>
 
       {/* Recent paid */}
-      {/** 
       <div>
-        <h2 className="font-bold text-lg text-foreground mb-4">Pagos registrados recientes</h2>
+        <h2 className="font-bold text-lg text-foreground mb-4">Pagos registrados</h2>
         <div className="bg-white rounded-2xl border border-border overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
-                  {["Reserva", "Cliente", "Cancha", "Fecha", "Total", "Método", ""].map((h) => (
+                  {["Reserva", "Cliente", "Cancha", "Fecha", "Total", "Método"].map((h) => (
                     <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {pagosPendientes.map((p) => (
-                  <tr key={r.id} className="border-t border-border hover:bg-muted/20 transition-colors">
-                    <td className="px-5 py-3.5 font-mono text-xs text-muted-foreground">{r.id}</td>
-                    <td className="px-5 py-3.5 font-medium">{r.usuario}</td>
-                    <td className="px-5 py-3.5 text-muted-foreground text-xs">{r.cancha.split("—")[0].trim()}</td>
-                    <td className="px-5 py-3.5 text-muted-foreground">{r.fecha}</td>
-                    <td className="px-5 py-3.5 font-bold text-primary">{formatCurrency(r.total)}</td>
+                {pagosConfirmados.map((p) => (
+                  <tr key={p.reservaid} className="border-t border-border hover:bg-muted/20 transition-colors">
+                    <td className="px-5 py-3.5 font-mono text-xs text-muted-foreground">{p.reservaid}</td>
+                    <td className="px-5 py-3.5 font-medium">{p.nombreusuario}</td>
+                    <td className="px-5 py-3.5 text-muted-foreground text-xs">{p.canchareservada.split("—")[0].trim()}</td>
+                    <td className="px-5 py-3.5 text-muted-foreground">{p.fechapago}</td>
+                    <td className="px-5 py-3.5 font-bold text-primary">{formatCurrency(Number(p.total))}</td>
                     <td className="px-5 py-3.5">
                       <span className="bg-emerald-100 text-emerald-700 text-xs px-2.5 py-1 rounded-full font-medium">
-                        {r.metodoPago}
+                        {p.metodo}
                       </span>
-                    </td>
-                    <td className="px-5 py-3.5">
-                      <button
-                        onClick={() => { setNombreCliente(r.usuario); setShowFactura(r); }}
-                        className="flex items-center gap-1 text-xs text-primary hover:underline"
-                      >
-                        <FileText size={13} /> Ver factura
-                      </button>
                     </td>
                   </tr>
                 ))}
@@ -255,7 +248,7 @@ function AdminPagos() {
             </table>
           </div>
         </div>
-      </div>*/}
+      </div>
     </div>
   );
 }

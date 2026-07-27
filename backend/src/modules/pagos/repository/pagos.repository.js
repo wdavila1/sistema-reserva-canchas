@@ -32,11 +32,12 @@ export async function obtenerPagosPendientes() {
 export async function obtenerPagosConfirmados() {
   const query = `
       SELECT 
-      pa.pagoid,
-      CONCAT(p.primernombre, ' ', p.primerapellido) AS nombre_usuario,
-      STRING_AGG(c.nombrecancha, ', ') AS canchas_reservadas,
+      r.reservaid AS reservaId,
+      CONCAT(p.primernombre, ' ', p.primerapellido) AS nombreUsuario,
+      STRING_AGG(c.nombrecancha, ', ') AS canchaReservada,
       pa.monto AS total,
-      mp.metodo AS metodo_pago
+      mp.metodo AS metodoPago,
+      TO_CHAR(pa.fechapago, 'YYYY-MM-DD') as fechaPago
       FROM pagos pa
       JOIN reservas r ON r.reservaid = pa.reservaid
       JOIN usuarios u ON r.usuarioid = u.usuarioid
@@ -46,7 +47,7 @@ export async function obtenerPagosConfirmados() {
       JOIN metodospago mp ON pa.metodopagoid = mp.metodopagoid
       WHERE r.estadoreserva = 'Confirmada'
         AND pa.estadopago = 'Aprobado'
-      GROUP BY pa.pagoid, p.primernombre, p.primerapellido, pa.monto, mp.metodo;
+      GROUP BY r.reservaid, p.primernombre, p.primerapellido, pa.monto, mp.metodo, pa.fechapago;
   `
   const { rows } = await pool.query(query);
   return rows;
