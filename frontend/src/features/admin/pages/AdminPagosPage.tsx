@@ -2,11 +2,11 @@ import { useState } from "react";
 import { ChevronLeft, Check, FileText, CheckCircle, Printer } from "lucide-react";
 
 //UTILS
-import { formatCurrency } from "@/utils/formatCurrency";
+import { formatCurrency } from "@/shared/utils/formatCurrency";
 
 //COMPONENTS
-import { Button } from "@/components/ui/Button"
-import { Input } from "@/components/ui/Input";
+import { Button } from "@/shared/components/ui/Button";
+import { Input } from "@/shared/components/ui/Input";
 
 //TYPES
 import type { PagoPendiente } from "@/features/pagos/types/PagoPendiente";

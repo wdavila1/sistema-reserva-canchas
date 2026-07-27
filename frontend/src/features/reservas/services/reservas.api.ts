@@ -1,4 +1,4 @@
-import { axiosClient } from "@/services/axiosClient";
+import { axiosClient } from "@/shared/services/axiosClient";
 
 /* Debe calzar exactamente con el CHECK de EstadoReserva en db.sql. */
 export type EstadoReserva = "Pendiente" | "Confirmada" | "Cancelada" | "Completada";

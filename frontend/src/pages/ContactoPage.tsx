@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Clock, MapPin, Phone, Mail, CheckCircle } from "lucide-react";
 
 //COMPONENTS
-import { Button } from "../components/ui/Button"
-import { Input } from "../components/ui/Input";
+import { Button } from "@/shared/components/ui/Button";
+import { Input } from "@/shared/components/ui/Input";
 
 
 function ContactoPage() {

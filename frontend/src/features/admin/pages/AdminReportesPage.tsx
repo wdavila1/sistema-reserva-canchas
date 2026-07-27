@@ -6,14 +6,14 @@ import {
 } from "recharts";
 
 //MOCKS
-import { DATA_MENSUAL } from "@/mocks/dataMensual";
-import { DATA_CANCHAS } from "@/mocks/dataCanchas";
+import { DATA_MENSUAL } from "@/shared/mocks/dataMensual";
+import { DATA_CANCHAS } from "@/shared/mocks/dataCanchas";
 
 //UTILS
-import { formatCurrency } from "@/utils/formatCurrency";
+import { formatCurrency } from "@/shared/utils/formatCurrency";
 
 //COMPONENTS
-import { Button } from "@/components/ui/Button"
+import { Button } from "@/shared/components/ui/Button";
 
 function AdminReportes() {
   return (

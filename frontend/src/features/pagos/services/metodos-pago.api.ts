@@ -1,4 +1,4 @@
-import { axiosClient } from "@/services/axiosClient";
+import { axiosClient } from "@/shared/services/axiosClient";
 import type { MetodoPago } from "@/features/pagos/types/MetodoPago";
 
 export const obtenerMetodosPago = async (): Promise<MetodoPago[]> => {

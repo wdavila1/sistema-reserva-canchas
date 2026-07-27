@@ -1,19 +1,19 @@
 import { useNavigate } from "react-router-dom";
-import { StatCard } from "@/components/ui/StatCard";
+import { StatCard } from "@/shared/components/ui/StatCard";
 import { CalendarDays, CreditCard, Users, Layers } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, } from "recharts";
 
 //MOCKS
-import { RESERVACIONES } from "@/mocks/reservaciones";
-import { DATA_MENSUAL } from "@/mocks/dataMensual";
+import { RESERVACIONES } from "@/shared/mocks/reservaciones";
+import { DATA_MENSUAL } from "@/shared/mocks/dataMensual";
 
 //COMPONENTS
-import { Badge } from "@/components/ui/Badge";
+import { Badge } from "@/shared/components/ui/Badge";
 
 //UTILS
-import { estadoStyle } from "@/utils/estadoStyle";
-import { estadoLabel } from "@/utils/estadoLabel";
-import { formatCurrency } from "@/utils/formatCurrency";
+import { estadoStyle } from "@/shared/utils/estadoStyle";
+import { estadoLabel } from "@/shared/utils/estadoLabel";
+import { formatCurrency } from "@/shared/utils/formatCurrency";
 
 function AdminDashboardPage() {
   const navigate = useNavigate();

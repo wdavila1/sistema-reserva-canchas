@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { AlertCircle, Eye, EyeOff } from "lucide-react";
 
 //COMPONENTS
-import { Button } from "@/components/ui/Button"
-import { Input } from "@/components/ui/Input";
+import { Button } from "@/shared/components/ui/Button";
+import { Input } from "@/shared/components/ui/Input";
 
 //HOOKS
 import { useAuth } from "@/features/auth/hooks/useAuth";

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "../ui/Button";
 import { X, Menu, User, LogOut } from "lucide-react";
-import { useAuth } from "../../features/auth/hooks/useAuth";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 
 function Navbar() {
     const navigate = useNavigate();

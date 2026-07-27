@@ -15,11 +15,11 @@ import { useAuth } from "../../auth/hooks/useAuth";
 import { HORARIOS } from "../../canchas/constants/horarios";
 
 //UTILS
-import { formatCurrency } from "../../../utils/formatCurrency";
+import { formatCurrency } from "@/shared/utils/formatCurrency";
 
 //COMPONENTS
-import { Input } from "../../../components/ui/Input";
-import { Select } from "../../../components/ui/Select";
+import { Input } from "@/shared/components/ui/Input";
+import { Select } from "@/shared/components/ui/Select";
 
 // Candidatos válidos para "hora fin": de 08:00 a 22:00 (cierre).
 const HORAS_FIN_POSIBLES = [...HORARIOS.slice(1), "22:00"];

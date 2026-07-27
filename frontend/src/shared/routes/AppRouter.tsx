@@ -9,16 +9,16 @@ import ProtectedRoute from "./ProtectedRoute";
 import AdminRoute from "./AdminRoute";
 
 // Páginas públicas
-import HomePage from "../pages/Home";
+import Home from "@/pages/Home";
 import CanchasPage from "@/features/canchas/pages/CanchasPage";
 import CanchaDetailPage from "@/features/canchas/pages/CanchaDetailPage";
 import LoginPage from "@/features/auth/pages/LoginPage";
 import RegistroPage from "@/features/auth/pages/RegistroPage";
-import NosotrosPage from "../pages/NosotrosPage";
-import ContactoPage from "../pages/ContactoPage";
+import NosotrosPage from "@/pages/NosotrosPage";
+import ContactoPage from "@/pages/ContactoPage";
 
 // Páginas protegidas (requieren login)
-import ReservasPage from "../features/reservas/pages/ReservasPage";
+import ReservasPage from "@/features/reservas/pages/ReservasPage";
 import MisReservasPage from "@/features/reservas/pages/MisReservasPage";
 
 // Páginas de administración
@@ -28,14 +28,14 @@ import AdminReservas from "@/features/admin/pages/AdminReservas";
 import AdminPagosPage from "@/features/admin/pages/AdminPagosPage";
 import AdminReportesPage from "@/features/admin/pages/AdminReportesPage";
 import AdminUsuariosPage from "@/features/admin/pages/AdminUsuariosPage";
-import CanchaFormPage from "../features/canchas/pages/CanchaFormPage";
+import CanchaFormPage from "@/features/canchas/pages/CanchaFormPage";
 
 function AppRouter() {
   return (
     <Routes>
       {/* ---------- Sitio público ---------- */}
       <Route element={<PublicLayout />}>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<Home />} />
         <Route path="/canchas" element={<CanchasPage />} />
         <Route path="/canchas/:id" element={<CanchaDetailPage />} />
         <Route path="/login" element={<LoginPage />} />

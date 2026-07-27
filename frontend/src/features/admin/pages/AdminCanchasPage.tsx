@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import { Plus, Edit2, Trash2 } from "lucide-react";
 
 // UTILS
-import { formatCurrency } from "@/utils/formatCurrency";
-import { sportColor } from "@/utils/sportColor";
+import { formatCurrency } from "@/shared/utils/formatCurrency";
+import { sportColor } from "@/shared/utils/sportColor";
 
 // COMPONENTS
-import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
+import { Badge } from "@/shared/components/ui/Badge";
+import { Button } from "@/shared/components/ui/Button";
 
 
 

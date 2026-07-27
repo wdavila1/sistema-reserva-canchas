@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "../features/auth/hooks/useAuth";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 
 /** Exige usuario logueado Y con rol admin. Si no está logueado -> /login.
  * Si está logueado pero no es admin -> /  (no tiene permiso). */
