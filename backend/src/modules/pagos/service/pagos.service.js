@@ -13,35 +13,37 @@ export async function obtenerPagosConfirmados() {
 }
 
 export async function registrarPago(detallesPago) {
-    const { reservaId, metodoPagoId, monto } = detallesPago;
+  const { reservaId, metodoPagoId } = detallesPago;
 
-    if (!reservaId || !metodoPagoId || !monto) {
-        throw new ApiError(400, "Todos los campos son obligatorios");
-    }
+  if (!reservaId || !metodoPagoId) {
+    throw new ApiError(400, "Todos los campos son obligatorios");
+  }
 
-    if (monto <= 0) {
-        throw new ApiError(400, "El monto debe ser mayor a 0");
-    }
+  const reserva = await reservasRepository.obtenerEncabezadoReserva(reservaId)
 
-    const reserva = await reservasRepository.obtenerEncabezadoReserva(reservaId)
+  if (!reserva) {
+    throw new ApiError(404, "La reserva no existe");
+  }
 
-    if (!reserva) {
-        throw new ApiError(404, "La reserva no existe");
-    }
+  const metodoPago = await metodoPagoRepository.obtenerMetodoPagoPorId(metodoPagoId);
 
-    const metodoPago = await metodoPagoRepository.obtenerMetodoPagoPorId(metodoPagoId);
+  if (!metodoPago) {
+    throw new ApiError(404, "El método de pago no existe");
+  }
 
-    if (!metodoPago) {
-        throw new ApiError(404, "El método de pago no existe");
-    }
+  if (reserva.estadoreserva !== "Pendiente") {
+    throw new ApiError(409, "Esta reserva ya fue pagada o cancelada");
+  }
 
-    if (reserva.estadoreserva !== 'Pendiente') {
-        throw new ApiError(409, "Esta reserva ya fue pagada o cancelada");
-    }
+  const monto = Number(reserva.total); 
 
-    const pagoId = await pagosRepository.registrarPago(detallesPago);
+  if (!monto || monto <= 0) {
+    throw new ApiError(400, "La reserva no tiene un total válido");
+  }
 
-    await reservasRepository.actualizarEstadoReserva(reservaId, 'Confirmada');
+  const pagoId = await pagosRepository.registrarPago(reservaId, metodoPagoId, monto );
 
-    return pagoId;
+  await reservasRepository.actualizarEstadoReserva(reservaId, 'Confirmada');
+
+  return pagoId;
 }

@@ -54,16 +54,16 @@ export async function obtenerPagosConfirmados() {
 
 }
 
-export async function registrarPago(detallesPago) {
+export async function registrarPago(reservaId, metodoPagoId, monto) {
   const query = `
       INSERT INTO pagos (reservaid, metodopagoid, monto, estadopago)
       VALUES ($1, $2, $3, 'Aprobado')
       RETURNING pagoid;
     `;
   const { rows } = await pool.query(query, [
-    detallesPago.reservaId,
-    detallesPago.metodoPagoId,
-    detallesPago.monto
+    reservaId,
+    metodoPagoId,
+    monto
   ]);
 
   return rows[0].pagoid;
