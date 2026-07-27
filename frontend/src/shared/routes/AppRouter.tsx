@@ -31,6 +31,9 @@ import AdminReportesPage from "@/features/admin/pages/AdminReportesPage";
 import AdminUsuariosPage from "@/features/admin/pages/AdminUsuariosPage";
 import CanchaFormPage from "@/features/canchas/pages/CanchaFormPage";
 
+//Pagina para Error 404
+import PageNotFound from "@/pages/PageNotFound";
+
 function AppRouter() {
   return (
     <Routes>
@@ -67,14 +70,7 @@ function AppRouter() {
       </Route>
 
       {/* ---------- 404 ---------- */}
-      <Route
-        path="*"
-        element={
-          <div className="min-h-screen flex items-center justify-center text-muted-foreground">
-            Página no encontrada.
-          </div>
-        }
-      />
+      <Route path="*" element={<PageNotFound/>}/>
     </Routes>
 
   );
