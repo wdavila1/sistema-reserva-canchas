@@ -2,7 +2,7 @@
 // TODO: implementar.
 import { pool } from "../../../config/db.js"
 
-export async function obtenerPagosPendientes() {
+export async function obtenerPagosPendientes(limit, offset) {
   const query = `
             SELECT
             r.reservaid AS idReserva,
@@ -15,21 +15,24 @@ export async function obtenerPagosPendientes() {
             FLOOR(EXTRACT(EPOCH FROM (dr.horafin - dr.horainicio)) / 3600) AS numeroHoras,
             dr.subtotal AS subtotal,
             ROUND(dr.subtotal * 0.15, 2) AS isv,
-            r.total AS total
+            r.total AS total,
+            COUNT(*) OVER() AS totalRegistros
         FROM reservas r
         JOIN usuarios u ON u.usuarioid = r.usuarioid
         JOIN personas p ON p.personaid = u.personaid
         JOIN detallereservas dr ON dr.reservaid = r.reservaid
         JOIN canchas c ON c.canchaid = dr.canchaid
         WHERE r.estadoreserva = 'Pendiente'
-        ORDER BY dr.fecha, dr.horainicio;
+        ORDER BY dr.fecha, dr.horainicio
+        LIMIT $1
+        OFFSET $2;
         `;
-  const { rows } = await pool.query(query);
+  const { rows } = await pool.query(query,[limit,offset]);
   return rows;
 
 }
 
-export async function obtenerPagosConfirmados() {
+export async function obtenerPagosConfirmados(limit,offset) {
   const query = `
       SELECT 
       r.reservaid AS reservaId,
@@ -37,7 +40,8 @@ export async function obtenerPagosConfirmados() {
       STRING_AGG(c.nombrecancha, ', ') AS canchaReservada,
       pa.monto AS total,
       mp.metodo AS metodoPago,
-      TO_CHAR(pa.fechapago, 'YYYY-MM-DD') as fechaPago
+      TO_CHAR(pa.fechapago, 'YYYY-MM-DD') as fechaPago,
+      COUNT(*) OVER() AS totalRegistros
       FROM pagos pa
       JOIN reservas r ON r.reservaid = pa.reservaid
       JOIN usuarios u ON r.usuarioid = u.usuarioid
@@ -46,10 +50,12 @@ export async function obtenerPagosConfirmados() {
       JOIN canchas c ON c.canchaid = dr.canchaid
       JOIN metodospago mp ON pa.metodopagoid = mp.metodopagoid
       WHERE (r.estadoreserva = 'Confirmada' OR r.estadoreserva = 'Completada')
-        AND pa.estadopago = 'Aprobado'
-      GROUP BY r.reservaid, p.primernombre, p.primerapellido, pa.monto, mp.metodo, pa.fechapago;
+      AND pa.estadopago = 'Aprobado'
+      GROUP BY r.reservaid, p.primernombre, p.primerapellido, pa.monto, mp.metodo, pa.fechapago
+      LIMIT $1
+      OFFSET $2;
   `
-  const { rows } = await pool.query(query);
+  const { rows } = await pool.query(query,[limit,offset]);
   return rows;
 
 }
