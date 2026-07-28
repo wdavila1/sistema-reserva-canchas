@@ -1,40 +1,60 @@
 import { useState } from "react";
-import { 
-  Check, 
-  CheckCircle, 
-  FilePlus, 
-  ReceiptText, 
-  Calendar, 
-  Clock, 
-  MapPin, 
-  X 
+import {
+  Check,
+  CheckCircle,
+  FilePlus,
+  ReceiptText,
+  Calendar,
+  Clock,
+  MapPin,
+  X,
 } from "lucide-react";
 
-//UTILS
+// UTILS
 import { formatCurrency } from "@/shared/utils/formatCurrency";
 
-//COMPONENTS
+// COMPONENTS
 import { Button } from "@/shared/components/ui/Button";
 import { ModalConfirmarPago } from "@/features/pagos/components/ModalConfirmarPago";
 
-//TYPES
+// TYPES
 import type { PagoPendiente } from "@/features/pagos/types/PagoPendiente";
 
-//HOOKS
+// HOOKS
 import { usePagosPendientes } from "@/features/pagos/hooks/usePagosPendiente";
-import { useMetodosPago } from "@/features/pagos/hooks/useMetodosPago";
 import { usePagosConfirmados } from "@/features/pagos/hooks/usePagosConfirmado";
+import { useMetodosPago } from "@/features/pagos/hooks/useMetodosPago";
 import { useRegistrarPago } from "@/features/pagos/hooks/useRegistrarPago";
 
 function AdminPagos() {
   // Estados locales
   const [toast, setToast] = useState<{ id: number; message: string; visible: boolean } | null>(null);
-  const { pagosPendientes, refetch: refetchPendientes } = usePagosPendientes();
-  const { pagosConfirmados, refetch: refetchConfirmados } = usePagosConfirmados();
-  const { registrar } = useRegistrarPago(refetchPendientes, refetchConfirmados);
-  const { metodosPago } = useMetodosPago();
   const [metodosPagoSeleccionados, setMetodosPagoSeleccionados] = useState<Record<number, number>>({});
   const [pagoSeleccionado, setPagoSeleccionado] = useState<PagoPendiente | null>(null);
+
+  // Hooks con paginación 
+  const {
+    pagosPendientes,
+    loading: loadingPendientes,
+    pagination: paginationPendientes,
+    nextPage: nextPagePendientes,
+    prevPage: prevPagePendientes,
+    goToPage: goToPagePendientes,
+    refetch: refetchPendientes,
+  } = usePagosPendientes(1, 5);
+
+  const {
+    pagosConfirmados,
+    loading: loadingConfirmados,
+    pagination: paginationConfirmados,
+    nextPage: nextPageConfirmados,
+    prevPage: prevPageConfirmados,
+    goToPage: goToPageConfirmados,
+    refetch: refetchConfirmados,
+  } = usePagosConfirmados(1, 5);
+
+  const { registrar } = useRegistrarPago(refetchPendientes, refetchConfirmados);
+  const { metodosPago } = useMetodosPago();
 
   const confirmarRegistroPago = async () => {
     if (!pagoSeleccionado) return;
@@ -45,12 +65,12 @@ function AdminPagos() {
 
     try {
       await registrar(pagoSeleccionado.idreserva, metodoPagoId);
-      
+
       // Mostrar toast de éxito
       setToast({
         id: pagoSeleccionado.idreserva,
         message: `Pago registrado para la reserva #${pagoSeleccionado.idreserva}`,
-        visible: true
+        visible: true,
       });
       setTimeout(() => setToast(null), 4000);
 
@@ -61,18 +81,19 @@ function AdminPagos() {
     }
   };
 
-  const metodoPagoId = pagoSeleccionado ? metodosPagoSeleccionados[pagoSeleccionado.idreserva] ?? metodosPago[0]?.metodopagoid : 0;
+  const metodoPagoId = pagoSeleccionado
+    ? metodosPagoSeleccionados[pagoSeleccionado.idreserva] ?? metodosPago[0]?.metodopagoid
+    : 0;
   const metodoPagoNombre = metodosPago.find((m) => m.metodopagoid === metodoPagoId)?.metodopago ?? "";
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 px-4 sm:px-6">
-      
       {toast?.visible && (
         <div className="fixed top-4 right-4 z-50 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl px-5 py-3 text-sm font-medium shadow-lg flex items-center gap-3 animate-in fade-in slide-in-from-top-2 max-w-md">
           <CheckCircle size={18} />
           <span className="flex-1">{toast.message}</span>
-          <button 
-            onClick={() => setToast(null)} 
+          <button
+            onClick={() => setToast(null)}
             className="ml-2 text-emerald-500 hover:text-emerald-700 transition-colors"
           >
             <X size={16} />
@@ -90,14 +111,19 @@ function AdminPagos() {
       {/* Pagos pendientes */}
       <div>
         <h2 className="font-bold text-lg text-foreground mb-4 flex items-center gap-2">
-          Pagos pendientes <span className="text-sm font-normal text-muted-foreground">({pagosPendientes.length})</span>
+          Pagos pendientes{" "}
+          <span className="text-sm font-normal text-muted-foreground">
+            ({paginationPendientes.totalItems})
+          </span>
         </h2>
-        
+
         <div className="space-y-4">
-          {pagosPendientes.length > 0 ? (
+          {loadingPendientes ? (
+            <div className="text-center py-8 text-gray-500">Cargando pagos pendientes...</div>
+          ) : pagosPendientes.length > 0 ? (
             pagosPendientes.map((p) => (
-              <div 
-                key={p.idreserva} 
+              <div
+                key={p.idreserva}
                 className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center hover:shadow-md transition-shadow"
               >
                 <div className="flex-1 min-w-0">
@@ -129,7 +155,7 @@ function AdminPagos() {
                       onChange={(e) =>
                         setMetodosPagoSeleccionados({
                           ...metodosPagoSeleccionados,
-                          [p.idreserva]: Number(e.target.value)
+                          [p.idreserva]: Number(e.target.value),
                         })
                       }
                     >
@@ -154,6 +180,33 @@ function AdminPagos() {
           )}
         </div>
 
+        {/* Controles de paginación - Pendientes */}
+        {paginationPendientes.totalPages > 1 && (
+          <div className="flex items-center justify-between mt-4">
+            <div className="text-sm text-gray-500">
+              Página {paginationPendientes.page} de {paginationPendientes.totalPages}
+            </div>
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={!paginationPendientes.hasPreviousPage}
+                onClick={prevPagePendientes}
+              >
+                Anterior
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={!paginationPendientes.hasNextPage}
+                onClick={nextPagePendientes}
+              >
+                Siguiente
+              </Button>
+            </div>
+          </div>
+        )}
+
         <ModalConfirmarPago
           pago={pagoSeleccionado}
           metodoPagoNombre={metodoPagoNombre}
@@ -162,52 +215,90 @@ function AdminPagos() {
         />
       </div>
 
-      {/* Pagos Confirmados sin facturacion*/}
+      {/* Pagos Confirmados sin facturación */}
       <div>
         <h2 className="font-bold text-lg text-foreground mb-4 flex items-center gap-2">
-          Pagos pendientes de facturación <span className="text-sm font-normal text-muted-foreground">({pagosConfirmados.length})</span>
+          Pagos pendientes de facturación{" "}
+          <span className="text-sm font-normal text-muted-foreground">
+            ({paginationConfirmados.totalItems})
+          </span>
         </h2>
 
-        {pagosConfirmados.length > 0 ? (
-          <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b border-gray-200">
-                  <tr>
-                    {["Reserva", "Cliente", "Cancha", "Fecha", "Total", "Método", ""].map((h) => (
-                      <th 
-                        key={h} 
-                        className={`px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider ${h === "Total" || h === "" ? "text-right" : "text-left"}`}
-                      >
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {pagosConfirmados.map((p) => (
-                    <tr key={p.reservaid} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-5 py-3.5 font-mono text-xs text-gray-500">#{p.reservaid}</td>
-                      <td className="px-5 py-3.5 font-medium text-gray-800">{p.nombreusuario}</td>
-                      <td className="px-5 py-3.5 text-gray-600">{p.canchareservada.split("—")[0].trim()}</td>
-                      <td className="px-5 py-3.5 text-gray-600">{p.fechapago}</td>
-                      <td className="px-5 py-3.5 text-right font-bold text-blue-600">{formatCurrency(Number(p.total))}</td>
-                      <td className="px-5 py-3.5">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                          {p.metodopago}
-                        </span>
-                      </td>
-                      <td className="px-5 py-3.5 text-right">
-                        <Button size="sm" variant="outline" className="hover:bg-blue-50 hover:text-blue-600 transition-colors">
-                          <FilePlus size={14} className="mr-1" /> Generar Factura
-                        </Button>
-                      </td>
+        {loadingConfirmados ? (
+          <div className="text-center py-8 text-gray-500">Cargando pagos confirmados...</div>
+        ) : pagosConfirmados.length > 0 ? (
+          <>
+            <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      {["Reserva", "Cliente", "Cancha", "Fecha", "Total", "Método", ""].map((h) => (
+                        <th
+                          key={h}
+                          className={`px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider ${
+                            h === "Total" || h === "" ? "text-right" : "text-left"
+                          }`}
+                        >
+                          {h}
+                        </th>
+                      ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {pagosConfirmados.map((p) => (
+                      <tr key={p.reservaid} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-5 py-3.5 font-mono text-xs text-gray-500">#{p.reservaid}</td>
+                        <td className="px-5 py-3.5 font-medium text-gray-800">{p.nombreusuario}</td>
+                        <td className="px-5 py-3.5 text-gray-600">{p.canchareservada.split("—")[0].trim()}</td>
+                        <td className="px-5 py-3.5 text-gray-600">{p.fechapago}</td>
+                        <td className="px-5 py-3.5 text-right font-bold text-blue-600">
+                          {formatCurrency(Number(p.total))}
+                        </td>
+                        <td className="px-5 py-3.5">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                            {p.metodopago}
+                          </span>
+                        </td>
+                        <td className="px-5 py-3.5 text-right">
+                          <Button size="sm" variant="outline" className="hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                            <FilePlus size={14} className="mr-1" /> Generar Factura
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
+
+            {/* Controles de paginación - Confirmados */}
+            {paginationConfirmados.totalPages > 1 && (
+              <div className="flex items-center justify-between mt-4">
+                <div className="text-sm text-gray-500">
+                  Página {paginationConfirmados.page} de {paginationConfirmados.totalPages}
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={!paginationConfirmados.hasPreviousPage}
+                    onClick={prevPageConfirmados}
+                  >
+                    Anterior
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={!paginationConfirmados.hasNextPage}
+                    onClick={nextPageConfirmados}
+                  >
+                    Siguiente
+                  </Button>
+                </div>
+              </div>
+            )}
+          </>
         ) : (
           <div className="text-center py-12 bg-white rounded-2xl border border-gray-100">
             <ReceiptText className="mx-auto text-gray-300" size={48} />
@@ -216,7 +307,7 @@ function AdminPagos() {
         )}
       </div>
 
-      {/* Facturas Emitidas */}
+      {/* Facturas Emitidas (mantenido igual) */}
       <div>
         <h2 className="font-bold text-lg text-foreground mb-4">Facturas emitidas</h2>
         <div className="text-center py-12 bg-white rounded-2xl border border-gray-100">

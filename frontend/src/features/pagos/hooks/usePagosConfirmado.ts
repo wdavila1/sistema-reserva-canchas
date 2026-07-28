@@ -1,17 +1,27 @@
-import { obtenerPagosConfirmados } from "@/features/pagos/services/pagos.api";
-import type { PagoConfirmado } from "@/features/pagos/types/PagoConfirmado";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { obtenerPagosConfirmados } from "../services/pagos.api";
+import type { Paginacion } from "@/shared/types/Paginacion";
+import type { PagoConfirmado } from "../types/PagoConfirmado";
 
-export function usePagosConfirmados() {
+export function usePagosConfirmados(initialPage = 1, initialLimit = 5) {
     const [pagosConfirmados, setPagosConfirmados] = useState<PagoConfirmado[]>([]);
+    const [pagination, setPagination] = useState<Paginacion>({
+        page: initialPage,
+        limit: initialLimit,
+        totalItems: 0,
+        totalPages: 0,
+        hasNextPage: false,
+        hasPreviousPage: false,
+    });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
 
-    const cargarPagos = async () => {
+    const cargarPagos = async (page: number = pagination.page, limit: number = pagination.limit) => {
         try {
             setLoading(true);
-            const data = await obtenerPagosConfirmados();
-            setPagosConfirmados(data);
+            const response = await obtenerPagosConfirmados(page, limit)
+            setPagosConfirmados(response.data);
+            setPagination(response.pagination);
             setError(null);
         } catch (err) {
             setError(err as Error);
@@ -20,14 +30,31 @@ export function usePagosConfirmados() {
         }
     };
 
+    const goToPage = (page: number) => {
+        if (page < 1 || page > pagination.totalPages) return;
+        cargarPagos(page);
+    };
+
+    const nextPage = () => {
+        if (pagination.hasNextPage) goToPage(pagination.page + 1);
+    };
+
+    const prevPage = () => {
+        if (pagination.hasPreviousPage) goToPage(pagination.page - 1);
+    };
+
     useEffect(() => {
-        cargarPagos();
+        cargarPagos(initialPage, initialLimit);
     }, []);
 
     return {
         pagosConfirmados,
         loading,
         error,
-        refetch: cargarPagos,
+        pagination,
+        goToPage,
+        nextPage,
+        prevPage,
+        refetch: () => cargarPagos(pagination.page),
     };
 }
