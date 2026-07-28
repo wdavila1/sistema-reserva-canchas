@@ -20,10 +20,12 @@ export const obtenerPagosPendientes = asyncHandler(async (req, res) => {
 export const obtenerPagosConfirmados = asyncHandler(async (req, res) => {
     let { limit = 5, page = 1 } = req.query;
 
+    const facturado = req.query.facturado === undefined ? null : req.query.facturado === "true";
+
     limit = Math.max(Number(limit), 1);
     page = Math.max(Number(page), 1);
 
-    const response = await pagosService.obtenerPagosConfirmados(limit, page);
+    const response = await pagosService.obtenerPagosConfirmados(limit, page, facturado);
 
     res.status(200).json(response);
 })

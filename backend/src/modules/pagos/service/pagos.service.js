@@ -27,15 +27,13 @@ export async function obtenerPagosPendientes(limit, page) {
   return { data, pagination };
 }
 
-export async function obtenerPagosConfirmados(limit, page) {
+export async function obtenerPagosConfirmados(limit, page, facturado) {
   const offset = (page - 1) * limit;
 
-  const result = await pagosRepository.obtenerPagosConfirmados(limit, offset);
+  const result = await pagosRepository.obtenerPagosConfirmados(limit, offset, facturado);
 
   const totalItems = result.length > 0 ? Number(result[0].totalregistros) : 0;
-
   const data = result.map(({ totalregistros, ...pago }) => pago);
-
   const totalPages = Math.ceil(totalItems / limit);
 
   const pagination = {

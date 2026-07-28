@@ -43,17 +43,29 @@ function AdminPagos() {
     refetch: refetchPendientes,
   } = usePagosPendientes(1, 5);
 
+  // Para la sección "Pagos pendientes de facturación" (facturado = false)
   const {
-    pagosConfirmados,
-    loading: loadingConfirmados,
-    pagination: paginationConfirmados,
-    nextPage: nextPageConfirmados,
-    prevPage: prevPageConfirmados,
-    setLimit: setLimitConfirmados,
-    refetch: refetchConfirmados,
-  } = usePagosConfirmados(1, 5);
+    pagosConfirmados: pagosSinFactura,
+    loading: loadingSinFactura,
+    pagination: paginationSinFactura,
+    nextPage: nextPageSinFactura,
+    prevPage: prevPageSinFactura,
+    setLimit: setLimitSinFactura,
+    refetch: refetchSinFactura,
+  } = usePagosConfirmados(1, 5, false);
 
-  const { registrar } = useRegistrarPago(refetchPendientes, refetchConfirmados);
+  // Para la sección "Facturas emitidas" (facturado = true)
+  const {
+    pagosConfirmados: pagosConFactura,
+    loading: loadingConFactura,
+    pagination: paginationConFactura,
+    nextPage: nextPageConFactura,
+    prevPage: prevPageConFactura,
+    setLimit: setLimitConFactura,
+    refetch: refetchConFactura,
+  } = usePagosConfirmados(1, 5, true);
+
+  const { registrar } = useRegistrarPago(refetchPendientes, refetchSinFactura);
   const { metodosPago } = useMetodosPago();
 
   const confirmarRegistroPago = async () => {
@@ -236,18 +248,18 @@ function AdminPagos() {
         />
       </div>
 
-      {/* pagos confirmados*/}
+      {/* pagos confirmados sin facturacion*/}
       <div>
         <h2 className="font-bold text-lg text-foreground mb-4 flex items-center gap-2">
           Pagos pendientes de facturación{" "}
           <span className="text-sm font-normal text-muted-foreground">
-            ({paginationConfirmados.totalItems})
+            ({paginationSinFactura.totalItems})
           </span>
         </h2>
 
-        {loadingConfirmados ? (
+        {loadingSinFactura ? (
           <div className="text-center py-8 text-gray-500">Cargando pagos confirmados...</div>
-        ) : pagosConfirmados.length > 0 ? (
+        ) : pagosSinFactura.length > 0 ? (
           <div>
             <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
               <div className="overflow-x-auto">
@@ -266,7 +278,7 @@ function AdminPagos() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
-                    {pagosConfirmados.map((p) => (
+                    {pagosSinFactura.map((p) => (
                       <tr key={p.reservaid} className="hover:bg-gray-50 transition-colors">
                         <td className="px-5 py-3.5 font-mono text-xs text-gray-500">#{p.reservaid}</td>
                         <td className="px-5 py-3.5 font-medium text-gray-800">{p.nombreusuario}</td>
@@ -292,18 +304,18 @@ function AdminPagos() {
               </div>
             </div>
 
-            {/* Controles de paginación + selector de límite - Confirmados */}
-            {paginationConfirmados.totalItems > 0 && (
+            {/*controles de paginacion*/}
+            {paginationSinFactura.totalItems > 0 && (
               <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-3">
                 {/* Selector de límite */}
                 <div className="flex items-center gap-2 text-sm text-gray-500">
                   <span>Mostrar</span>
                   <select
                     className="px-2 py-1 border border-gray-300 rounded-md text-sm bg-white"
-                    value={paginationConfirmados.limit}
+                    value={paginationSinFactura.limit}
                     onChange={(e) => {
                       const newLimit = Number(e.target.value);
-                      setLimitConfirmados(newLimit);
+                      setLimitSinFactura(newLimit);
                     }}
                   >
                     <option value={5}>5</option>
@@ -315,24 +327,24 @@ function AdminPagos() {
                 </div>
 
                 {/* botones de navegacion */}
-                {paginationConfirmados.totalPages > 1 && (
+                {paginationSinFactura.totalPages > 1 && (
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-gray-500">
-                      Página {paginationConfirmados.page} de {paginationConfirmados.totalPages}
+                      Página {paginationSinFactura.page} de {paginationSinFactura.totalPages}
                     </span>
                     <Button
                       size="sm"
                       variant="outline"
-                      disabled={!paginationConfirmados.hasPreviousPage}
-                      onClick={prevPageConfirmados}
+                      disabled={!paginationSinFactura.hasPreviousPage}
+                      onClick={prevPageSinFactura}
                     >
                       Anterior
                     </Button>
                     <Button
                       size="sm"
                       variant="outline"
-                      disabled={!paginationConfirmados.hasNextPage}
-                      onClick={nextPageConfirmados}
+                      disabled={!paginationSinFactura.hasNextPage}
+                      onClick={nextPageSinFactura}
                     >
                       Siguiente
                     </Button>
@@ -352,10 +364,108 @@ function AdminPagos() {
       {/* facturas emitidas */}
       <div>
         <h2 className="font-bold text-lg text-foreground mb-4">Facturas emitidas</h2>
-        <div className="text-center py-12 bg-white rounded-2xl border border-gray-100">
-          <ReceiptText className="mx-auto text-gray-300" size={48} />
-          <p className="mt-2 text-gray-500 text-sm">Aún no se han emitido facturas.</p>
-        </div>
+        {loadingConFactura ? (
+          <div className="text-center py-8 text-gray-500">Cargando pagos confirmados...</div>
+        ) : pagosConFactura.length > 0 ? (
+          <div>
+            <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      {["Reserva", "Cliente", "Cancha", "Fecha", "Total", "Método", ""].map((h) => (
+                        <th
+                          key={h}
+                          className={`px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider ${h === "Total" || h === "" ? "text-right" : "text-left"
+                            }`}
+                        >
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {pagosConFactura.map((p) => (
+                      <tr key={p.reservaid} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-5 py-3.5 font-mono text-xs text-gray-500">#{p.reservaid}</td>
+                        <td className="px-5 py-3.5 font-medium text-gray-800">{p.nombreusuario}</td>
+                        <td className="px-5 py-3.5 text-gray-600">{p.canchareservada.split("—")[0].trim()}</td>
+                        <td className="px-5 py-3.5 text-gray-600">{p.fechapago}</td>
+                        <td className="px-5 py-3.5 text-right font-bold text-blue-600">
+                          {formatCurrency(Number(p.total))}
+                        </td>
+                        <td className="px-5 py-3.5">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                            {p.metodopago}
+                          </span>
+                        </td>
+                        <td className="px-5 py-3.5 text-right">
+                          <Button size="sm" variant="outline" className="hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                            <FilePlus size={14} className="mr-1" /> Generar Factura
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* C */}
+            {paginationConFactura.totalItems > 0 && (
+              <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-3">
+                {/* Selector de límite */}
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <span>Mostrar</span>
+                  <select
+                    className="px-2 py-1 border border-gray-300 rounded-md text-sm bg-white"
+                    value={paginationConFactura.limit}
+                    onChange={(e) => {
+                      const newLimit = Number(e.target.value);
+                      setLimitConFactura(newLimit);
+                    }}
+                  >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                    <option value={50}>50</option>
+                  </select>
+                  <span>registros por página</span>
+                </div>
+
+                {/* botones de navegacion */}
+                {paginationConFactura.totalPages > 1 && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-500">
+                      Página {paginationConFactura.page} de {paginationConFactura.totalPages}
+                    </span>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={!paginationConFactura.hasPreviousPage}
+                      onClick={prevPageConFactura}
+                    >
+                      Anterior
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={!paginationConFactura.hasNextPage}
+                      onClick={nextPageConFactura}
+                    >
+                      Siguiente
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="text-center py-12 bg-white rounded-2xl border border-gray-100">
+            <ReceiptText className="mx-auto text-gray-300" size={48} />
+            <p className="mt-2 text-gray-500 text-sm">Aún no se han emitido facturas.</p>
+          </div>
+        )}
       </div>
     </div>
   );

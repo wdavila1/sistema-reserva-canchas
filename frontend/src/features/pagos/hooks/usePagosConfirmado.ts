@@ -3,7 +3,7 @@ import { obtenerPagosConfirmados } from "../services/pagos.api";
 import type { Paginacion } from "@/shared/types/Paginacion";
 import type { PagoConfirmado } from "../types/PagoConfirmado";
 
-export function usePagosConfirmados(initialPage = 1, initialLimit = 5) {
+export function usePagosConfirmados(initialPage = 1, initialLimit = 5, initialFacturado: boolean | null = null) {
     const [pagosConfirmados, setPagosConfirmados] = useState<PagoConfirmado[]>([]);
     const [pagination, setPagination] = useState<Paginacion>({
         page: initialPage,
@@ -13,13 +13,14 @@ export function usePagosConfirmados(initialPage = 1, initialLimit = 5) {
         hasNextPage: false,
         hasPreviousPage: false,
     });
+    const [facturado, setFacturado] = useState<boolean | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
 
     const cargarPagos = async (page: number = pagination.page, limit: number = pagination.limit) => {
         try {
             setLoading(true);
-            const response = await obtenerPagosConfirmados(page, limit)
+            const response = await obtenerPagosConfirmados(page, limit, facturado)
             setPagosConfirmados(response.data);
             setPagination(response.pagination);
             setError(null);
@@ -48,9 +49,7 @@ export function usePagosConfirmados(initialPage = 1, initialLimit = 5) {
         cargarPagos(1, newLimit);
     };
 
-    useEffect(() => {
-        cargarPagos(initialPage, initialLimit);
-    }, []);
+    useEffect(() => { cargarPagos(1, initialLimit); }, [facturado]);
 
     return {
         pagosConfirmados,
@@ -61,6 +60,8 @@ export function usePagosConfirmados(initialPage = 1, initialLimit = 5) {
         nextPage,
         prevPage,
         setLimit,
+        facturado,
+        setFacturado,
         refetch: () => cargarPagos(pagination.page),
     };
 }
