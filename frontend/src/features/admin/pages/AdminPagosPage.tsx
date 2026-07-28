@@ -32,14 +32,14 @@ function AdminPagos() {
   const [metodosPagoSeleccionados, setMetodosPagoSeleccionados] = useState<Record<number, number>>({});
   const [pagoSeleccionado, setPagoSeleccionado] = useState<PagoPendiente | null>(null);
 
-  // Hooks con paginación 
+  // Hooks con paginación
   const {
     pagosPendientes,
     loading: loadingPendientes,
     pagination: paginationPendientes,
     nextPage: nextPagePendientes,
     prevPage: prevPagePendientes,
-    goToPage: goToPagePendientes,
+    setLimit: setLimitPendientes,
     refetch: refetchPendientes,
   } = usePagosPendientes(1, 5);
 
@@ -49,7 +49,7 @@ function AdminPagos() {
     pagination: paginationConfirmados,
     nextPage: nextPageConfirmados,
     prevPage: prevPageConfirmados,
-    goToPage: goToPageConfirmados,
+    setLimit: setLimitConfirmados,
     refetch: refetchConfirmados,
   } = usePagosConfirmados(1, 5);
 
@@ -66,7 +66,6 @@ function AdminPagos() {
     try {
       await registrar(pagoSeleccionado.idreserva, metodoPagoId);
 
-      // Mostrar toast de éxito
       setToast({
         id: pagoSeleccionado.idreserva,
         message: `Pago registrado para la reserva #${pagoSeleccionado.idreserva}`,
@@ -74,7 +73,6 @@ function AdminPagos() {
       });
       setTimeout(() => setToast(null), 4000);
 
-      // Cerrar modal
       setPagoSeleccionado(null);
     } catch (error) {
       console.error(error);
@@ -108,7 +106,7 @@ function AdminPagos() {
         <p className="text-muted-foreground text-sm mt-0.5">Registra cobros y emite facturas con ISV Honduras</p>
       </div>
 
-      {/* Pagos pendientes */}
+      {/* pagos pendientes */}
       <div>
         <h2 className="font-bold text-lg text-foreground mb-4 flex items-center gap-2">
           Pagos pendientes{" "}
@@ -126,6 +124,7 @@ function AdminPagos() {
                 key={p.idreserva}
                 className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center hover:shadow-md transition-shadow"
               >
+                {/* Contenido de cada item (sin cambios) */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
                     <span className="font-semibold text-gray-800 truncate">{p.nombreusuario}</span>
@@ -180,30 +179,52 @@ function AdminPagos() {
           )}
         </div>
 
-        {/* Controles de paginación - Pendientes */}
-        {paginationPendientes.totalPages > 1 && (
-          <div className="flex items-center justify-between mt-4">
-            <div className="text-sm text-gray-500">
-              Página {paginationPendientes.page} de {paginationPendientes.totalPages}
-            </div>
-            <div className="flex gap-2">
-              <Button
-                size="sm"
-                variant="outline"
-                disabled={!paginationPendientes.hasPreviousPage}
-                onClick={prevPagePendientes}
+        {/* controles de paginacion*/}
+        {paginationPendientes.totalItems > 0 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-3">
+            {/* Selector de límite (siempre visible) */}
+            <div className="flex items-center gap-2 text-sm text-gray-500">
+              <span>Mostrar</span>
+              <select
+                className="px-2 py-1 border border-gray-300 rounded-md text-sm bg-white"
+                value={paginationPendientes.limit}
+                onChange={(e) => {
+                  const newLimit = Number(e.target.value);
+                  setLimitPendientes(newLimit);
+                }}
               >
-                Anterior
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                disabled={!paginationPendientes.hasNextPage}
-                onClick={nextPagePendientes}
-              >
-                Siguiente
-              </Button>
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+              </select>
+              <span>registros por página</span>
             </div>
+
+            {/* Botones de navegación (solo si hay más de una página) */}
+            {paginationPendientes.totalPages > 1 && (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-500">
+                  Página {paginationPendientes.page} de {paginationPendientes.totalPages}
+                </span>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={!paginationPendientes.hasPreviousPage}
+                  onClick={prevPagePendientes}
+                >
+                  Anterior
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={!paginationPendientes.hasNextPage}
+                  onClick={nextPagePendientes}
+                >
+                  Siguiente
+                </Button>
+              </div>
+            )}
           </div>
         )}
 
@@ -215,7 +236,7 @@ function AdminPagos() {
         />
       </div>
 
-      {/* Pagos Confirmados sin facturación */}
+      {/* pagos confirmados*/}
       <div>
         <h2 className="font-bold text-lg text-foreground mb-4 flex items-center gap-2">
           Pagos pendientes de facturación{" "}
@@ -227,7 +248,7 @@ function AdminPagos() {
         {loadingConfirmados ? (
           <div className="text-center py-8 text-gray-500">Cargando pagos confirmados...</div>
         ) : pagosConfirmados.length > 0 ? (
-          <>
+          <div>
             <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
@@ -236,9 +257,8 @@ function AdminPagos() {
                       {["Reserva", "Cliente", "Cancha", "Fecha", "Total", "Método", ""].map((h) => (
                         <th
                           key={h}
-                          className={`px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider ${
-                            h === "Total" || h === "" ? "text-right" : "text-left"
-                          }`}
+                          className={`px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider ${h === "Total" || h === "" ? "text-right" : "text-left"
+                            }`}
                         >
                           {h}
                         </th>
@@ -272,33 +292,55 @@ function AdminPagos() {
               </div>
             </div>
 
-            {/* Controles de paginación - Confirmados */}
-            {paginationConfirmados.totalPages > 1 && (
-              <div className="flex items-center justify-between mt-4">
-                <div className="text-sm text-gray-500">
-                  Página {paginationConfirmados.page} de {paginationConfirmados.totalPages}
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    disabled={!paginationConfirmados.hasPreviousPage}
-                    onClick={prevPageConfirmados}
+            {/* Controles de paginación + selector de límite - Confirmados */}
+            {paginationConfirmados.totalItems > 0 && (
+              <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-3">
+                {/* Selector de límite */}
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <span>Mostrar</span>
+                  <select
+                    className="px-2 py-1 border border-gray-300 rounded-md text-sm bg-white"
+                    value={paginationConfirmados.limit}
+                    onChange={(e) => {
+                      const newLimit = Number(e.target.value);
+                      setLimitConfirmados(newLimit);
+                    }}
                   >
-                    Anterior
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    disabled={!paginationConfirmados.hasNextPage}
-                    onClick={nextPageConfirmados}
-                  >
-                    Siguiente
-                  </Button>
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                    <option value={50}>50</option>
+                  </select>
+                  <span>registros por página</span>
                 </div>
+
+                {/* botones de navegacion */}
+                {paginationConfirmados.totalPages > 1 && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-500">
+                      Página {paginationConfirmados.page} de {paginationConfirmados.totalPages}
+                    </span>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={!paginationConfirmados.hasPreviousPage}
+                      onClick={prevPageConfirmados}
+                    >
+                      Anterior
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={!paginationConfirmados.hasNextPage}
+                      onClick={nextPageConfirmados}
+                    >
+                      Siguiente
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
-          </>
+          </div>
         ) : (
           <div className="text-center py-12 bg-white rounded-2xl border border-gray-100">
             <ReceiptText className="mx-auto text-gray-300" size={48} />
@@ -307,7 +349,7 @@ function AdminPagos() {
         )}
       </div>
 
-      {/* Facturas Emitidas (mantenido igual) */}
+      {/* facturas emitidas */}
       <div>
         <h2 className="font-bold text-lg text-foreground mb-4">Facturas emitidas</h2>
         <div className="text-center py-12 bg-white rounded-2xl border border-gray-100">

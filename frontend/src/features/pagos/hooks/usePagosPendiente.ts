@@ -16,7 +16,7 @@ export function usePagosPendientes(initialPage = 1, initialLimit = 5) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
 
-    const cargarPagos = async (page: number = pagination.page, limit: number = pagination.limit) => {
+    const cargarPagos = async (page: number, limit: number) => {
         try {
             setLoading(true);
             const response = await obtenerPagosPendientes(page, limit);
@@ -30,10 +30,9 @@ export function usePagosPendientes(initialPage = 1, initialLimit = 5) {
         }
     };
 
-    // Para cambiar de página
     const goToPage = (page: number) => {
         if (page < 1 || page > pagination.totalPages) return;
-        cargarPagos(page);
+        cargarPagos(page, pagination.limit);
     };
 
     const nextPage = () => {
@@ -42,6 +41,11 @@ export function usePagosPendientes(initialPage = 1, initialLimit = 5) {
 
     const prevPage = () => {
         if (pagination.hasPreviousPage) goToPage(pagination.page - 1);
+    };
+
+    const setLimit = (newLimit: number) => {
+        if (newLimit === pagination.limit) return;
+        cargarPagos(1, newLimit);
     };
 
     useEffect(() => {
@@ -56,6 +60,7 @@ export function usePagosPendientes(initialPage = 1, initialLimit = 5) {
         goToPage,
         nextPage,
         prevPage,
-        refetch: () => cargarPagos(pagination.page),
+        setLimit,
+        refetch: () => cargarPagos(pagination.page, pagination.limit),
     };
 }

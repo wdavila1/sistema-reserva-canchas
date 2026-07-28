@@ -43,6 +43,11 @@ export function usePagosConfirmados(initialPage = 1, initialLimit = 5) {
         if (pagination.hasPreviousPage) goToPage(pagination.page - 1);
     };
 
+    const setLimit = (newLimit: number) => {
+        if (newLimit === pagination.limit) return;
+        cargarPagos(1, newLimit);
+    };
+
     useEffect(() => {
         cargarPagos(initialPage, initialLimit);
     }, []);
@@ -55,6 +60,7 @@ export function usePagosConfirmados(initialPage = 1, initialLimit = 5) {
         goToPage,
         nextPage,
         prevPage,
+        setLimit,
         refetch: () => cargarPagos(pagination.page),
     };
 }
