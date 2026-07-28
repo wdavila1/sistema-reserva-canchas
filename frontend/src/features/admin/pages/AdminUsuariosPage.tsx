@@ -40,7 +40,7 @@ function AdminUsuarios() {
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center text-primary font-bold text-sm flex-shrink-0">
-                        {u.nombre.split(" ").map((n: any[]) => n[0]).slice(0, 2).join("")}
+                        {u.nombre.split(" ").map((n: string) => n[0]).slice(0, 2).join("")}
                       </div>
                       <span className="font-medium text-foreground">{u.nombre}</span>
                     </div>
