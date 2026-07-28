@@ -16,6 +16,8 @@ import LoginPage from "@/features/auth/pages/LoginPage";
 import RegistroPage from "@/features/auth/pages/RegistroPage";
 import NosotrosPage from "@/pages/NosotrosPage";
 import ContactoPage from "@/pages/ContactoPage";
+import Terminos from "@/pages/Terminos";
+import Privacidad from "@/pages/Privacidad";
 
 // Páginas protegidas (requieren login)
 import ReservasPage from "@/features/reservas/pages/ReservasPage";
@@ -30,6 +32,9 @@ import AdminReportesPage from "@/features/admin/pages/AdminReportesPage";
 import AdminUsuariosPage from "@/features/admin/pages/AdminUsuariosPage";
 import CanchaFormPage from "@/features/canchas/pages/CanchaFormPage";
 
+//Pagina para Error 404
+import PageNotFound from "@/pages/PageNotFound";
+
 function AppRouter() {
   return (
     <Routes>
@@ -42,6 +47,8 @@ function AppRouter() {
         <Route path="/registro" element={<RegistroPage />} />
         <Route path="/nosotros" element={<NosotrosPage />} />
         <Route path="/contacto" element={<ContactoPage />} />
+        <Route path="/terminos" element={<Terminos/>}/>
+        <Route path="/privacidad" element={<Privacidad/>}/>
 
         {/* ---------- Requiere estar logueado ---------- */}
         <Route element={<ProtectedRoute />}>
@@ -65,14 +72,7 @@ function AppRouter() {
       </Route>
 
       {/* ---------- 404 ---------- */}
-      <Route
-        path="*"
-        element={
-          <div className="min-h-screen flex items-center justify-center text-muted-foreground">
-            Página no encontrada.
-          </div>
-        }
-      />
+      <Route path="*" element={<PageNotFound/>}/>
     </Routes>
 
   );

@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "../ui/Button";
 import { X, Menu, User, LogOut } from "lucide-react";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { navLinks } from "@/shared/config/navigation";
 
 function Navbar() {
     const navigate = useNavigate();
@@ -17,13 +18,6 @@ function Navbar() {
         window.addEventListener("scroll", fn);
         return () => window.removeEventListener("scroll", fn);
     }, []);
-
-    const links: { label: string; path: string }[] = [
-        { label: "Inicio", path: "/" },
-        { label: "Canchas", path: "/canchas" },
-        { label: "Nosotros", path: "/nosotros" },
-        { label: "Contacto", path: "/contacto" },
-    ];
 
     const goTo = (path: string) => {
         navigate(path);
@@ -61,7 +55,7 @@ function Navbar() {
 
                 {/* Desktop nav */}
                 <nav className="hidden md:flex items-center gap-1">
-                    {links.map((l) => (
+                    {navLinks.map((l) => (
                         <button
                             key={l.path}
                             onClick={() => goTo(l.path)}
@@ -115,7 +109,7 @@ function Navbar() {
             {/* Mobile menu */}
             {mobileOpen && (
                 <div className="md:hidden bg-white border-t border-border px-4 py-4 flex flex-col gap-2">
-                    {links.map((l) => (
+                    {navLinks.map((l) => (
                         <button
                             key={l.path}
                             onClick={() => goTo(l.path)}
