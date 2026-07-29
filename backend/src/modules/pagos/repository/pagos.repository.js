@@ -32,35 +32,6 @@ export async function obtenerPagosPendientes(limit, offset) {
 
 }
 
-export async function obtenerPagosConfirmadosSinFactura(limit, offset) {
-  const query = `
-      SELECT 
-      r.reservaid AS reservaId,
-      CONCAT(p.primernombre, ' ', p.primerapellido) AS nombreUsuario,
-      STRING_AGG(c.nombrecancha, ', ') AS canchaReservada,
-      pa.monto AS total,
-      mp.metodo AS metodoPago,
-      TO_CHAR(pa.fechapago, 'YYYY-MM-DD') as fechaPago,
-      COUNT(*) OVER() AS totalRegistros
-      FROM pagos pa
-      JOIN reservas r ON r.reservaid = pa.reservaid
-      JOIN usuarios u ON r.usuarioid = u.usuarioid
-      JOIN personas p ON p.personaid = u.personaid
-      JOIN detallereservas dr ON dr.reservaid = r.reservaid
-      JOIN canchas c ON c.canchaid = dr.canchaid
-      JOIN metodospago mp ON pa.metodopagoid = mp.metodopagoid
-      WHERE (r.estadoreserva = 'Confirmada' OR r.estadoreserva = 'Completada')
-      AND pa.estadopago = 'Aprobado'
-      AND pa.facturaid IS null
-      GROUP BY r.reservaid, p.primernombre, p.primerapellido, pa.monto, mp.metodo, pa.fechapago
-      LIMIT $1
-      OFFSET $2;
-  `
-  const { rows } = await pool.query(query, [limit, offset]);
-  return rows;
-
-}
-
 export async function obtenerPagosConfirmados(limit, offset, facturado) {
   const query = `
       SELECT 
@@ -106,4 +77,27 @@ export async function registrarPago(reservaId, metodoPagoId, monto) {
   ]);
 
   return rows[0].pagoid;
+}
+
+export async function obtenerPagoParaFacturar(pagoId, client) {
+  const query = `
+    SELECT * 
+    FROM pagos 
+    WHERE pagoid = $1 
+    FOR UPDATE;
+  `
+  const { rows } = await client.query(query, [pagoId]);
+  return rows[0];
+}
+
+export async function vincularFactura(client, pagoId, facturaId) {
+  const query = `
+    UPDATE 
+    pagos 
+    SET facturaid = $2 
+    WHERE pagoid = $1
+    RETURNING pagoid, facturaid;
+  `
+  const { rows } = await client.query(query, [pagoId, facturaId]);
+  return rows[0];
 }

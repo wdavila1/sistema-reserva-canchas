@@ -1,2 +1,11 @@
-// Controladores de emisión/consulta de facturas.
-// TODO: implementar.
+import { asyncHandler } from "../../utils/asyncHandler.js";
+import * as facturasService from "./facturas.service.js"
+
+export const generarFactura = asyncHandler(async (req, res) => {
+  const { pagoId, rtn = null, razonSocialCliente = null } = req.body;
+  const usuarioEmiteId = req.user?.usuarioId;
+
+  const factura = await facturasService.generarFactura( {pagoId, rtn, razonSocialCliente }, usuarioEmiteId);
+
+  res.status(201).json(factura);
+});
