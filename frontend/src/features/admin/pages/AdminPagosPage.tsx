@@ -1,14 +1,5 @@
 import { useState } from "react";
-import {
-  Check,
-  CheckCircle,
-  FilePlus,
-  ReceiptText,
-  Calendar,
-  Clock,
-  MapPin,
-  X,
-} from "lucide-react";
+import { Check, CheckCircle, FilePlus, ReceiptText, Calendar, Clock, MapPin, X, FileText } from "lucide-react";
 
 // UTILS
 import { formatCurrency } from "@/shared/utils/formatCurrency";
@@ -401,7 +392,7 @@ function AdminPagos() {
                         </td>
                         <td className="px-5 py-3.5 text-right">
                           <Button size="sm" variant="outline" className="hover:bg-blue-50 hover:text-blue-600 transition-colors">
-                            <FilePlus size={14} className="mr-1" /> Generar Factura
+                            <FileText size={14} className="mr-1" /> Ver Factura
                           </Button>
                         </td>
                       </tr>
