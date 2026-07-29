@@ -3,6 +3,7 @@ import authRoutes from "./modules/auth/auth.routes.js";
 import canchasRoutes from "./modules/canchas/canchas.routes.js";
 import reservasRoutes from "./modules/reservas/reservas.routes.js";
 import pagosRoutes from "./modules/pagos/routes/pagos.routes.js"
+import reportesRoutes from "./modules/reportes/reportes.routes.js";
 import metodosPagoRoutes from "./modules/pagos/routes/metodos-pago.routes.js"
 import facturaRoutes from "./modules/facturas/facturas.routes.js"
 
@@ -15,6 +16,7 @@ router.use("/reservas", reservasRoutes);
 router.use("/pagos", pagosRoutes);
 router.use("/metodos-pago",metodosPagoRoutes);
 router.use("/facturas", facturaRoutes);
+router.use("/reportes", reportesRoutes);
 
 // Los demás módulos (usuarios, facturas, pagos, reportes)
 // se montan aquí cuando se implementen:

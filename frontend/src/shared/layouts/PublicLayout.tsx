@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
+import {MenuAccesibilidad} from "../components/layout/MenuAccesibilidad";
 
 /** Layout de las páginas públicas (todo excepto /admin). Navbar y Footer ya
  * no reciben page/setPage por props: leen la ruta actual con useLocation()
@@ -13,6 +14,7 @@ function PublicLayout() {
         <Outlet />
       </main>
       <Footer />
+      <MenuAccesibilidad />
     </div>
   );
 }
