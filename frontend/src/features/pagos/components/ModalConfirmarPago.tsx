@@ -68,7 +68,7 @@ export function ModalConfirmarPago({
           </div>
         </div>
 
-        {/* CHECKBOX DE TÉRMINOS -- FALTA IMPLEMENTAR UN COLUMNA EN LA BD PARA ESTO */}
+        {/* CHECKBOX DE TÉRMINOS -- FALTA IMPLEMENTAR UN COLUMNA EN LA BD PARA ESTO, QUE SEA tipo BOOLEAN AUN EN REVISION */}
         <div className="px-6 pb-4 flex items-start gap-3">
           <div className="flex h-5 items-center">
             <input
@@ -96,7 +96,7 @@ export function ModalConfirmarPago({
           </label>
         </div>
 
-        {/* FOOTER / BOTONES PARA CANCELAR Y CONFIRMAR */}
+        {/* BOTONES PARA CANCELAR Y CONFIRMAR */}
         <div className="flex gap-2 px-6 pb-6">
           <button
             onClick={onCancelar}

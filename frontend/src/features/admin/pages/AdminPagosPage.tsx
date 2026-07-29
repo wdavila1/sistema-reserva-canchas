@@ -7,6 +7,7 @@ import { formatCurrency } from "@/shared/utils/formatCurrency";
 // COMPONENTS
 import { Button } from "@/shared/components/ui/Button";
 import { ModalConfirmarPago } from "@/features/pagos/components/ModalConfirmarPago";
+import { ModalGenerarFactura } from "@/features/facturas/components/ModalGenerarFactura";
 
 // TYPES
 import type { PagoPendiente } from "@/features/pagos/types/PagoPendiente";
@@ -127,7 +128,7 @@ function AdminPagos() {
                 key={p.idreserva}
                 className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center hover:shadow-md transition-shadow"
               >
-                {/* Contenido de cada item (sin cambios) */}
+                {/* Contenido de cada item */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
                     <span className="font-semibold text-gray-800 truncate">{p.nombreusuario}</span>
@@ -185,7 +186,7 @@ function AdminPagos() {
         {/* controles de paginacion*/}
         {paginationPendientes.totalItems > 0 && (
           <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-3">
-            {/* Selector de límite (siempre visible) */}
+            {/* Selector de límite de items por paginacion */}
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <span>Mostrar</span>
               <select

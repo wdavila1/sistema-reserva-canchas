@@ -27,7 +27,7 @@ export async function generarNumeroFactura(client, caiId) {
 
   //verifica que no se pase del rango
   const partesFinal = cai.rangofinal.split('-');
-  const correlativoFinal = partesFinal[partesFinal.length - 1]; // "00100000"
+  const correlativoFinal = partesFinal[partesFinal.length - 1]; // "00100000" formato de la tabla CAIControl
 
   if (nuevoCorrelativo > parseInt(correlativoFinal, 10)) {
     throw new Error('CAI agotado, se necesita uno nuevo');
