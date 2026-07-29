@@ -13,6 +13,7 @@ function PublicLayout() {
         <Outlet />
       </main>
       <Footer />
+      <MenuAccesibilidad />
     </div>
   );
 }
