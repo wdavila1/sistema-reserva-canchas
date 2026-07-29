@@ -17,12 +17,15 @@ import { usePagosPendientes } from "@/features/pagos/hooks/usePagosPendiente";
 import { usePagosConfirmados } from "@/features/pagos/hooks/usePagosConfirmado";
 import { useMetodosPago } from "@/features/pagos/hooks/useMetodosPago";
 import { useRegistrarPago } from "@/features/pagos/hooks/useRegistrarPago";
+import { useGenerarFactura } from "@/features/facturas/hooks/useGenerarFactura";
+import type { PagoConfirmado } from "@/features/pagos/types/PagoConfirmado";
 
 function AdminPagos() {
   // Estados locales
   const [toast, setToast] = useState<{ id: number; message: string; visible: boolean } | null>(null);
   const [metodosPagoSeleccionados, setMetodosPagoSeleccionados] = useState<Record<number, number>>({});
   const [pagoSeleccionado, setPagoSeleccionado] = useState<PagoPendiente | null>(null);
+  const [pagoParaFactura, setPagoParaFactura] = useState<PagoConfirmado | null>(null);
 
   // Hooks con paginación
   const {
@@ -58,26 +61,25 @@ function AdminPagos() {
   } = usePagosConfirmados(1, 5, true);
 
   const { registrar } = useRegistrarPago(refetchPendientes, refetchSinFactura);
+  const { generar } = useGenerarFactura(refetchSinFactura, refetchConFactura);
   const { metodosPago } = useMetodosPago();
 
   const confirmarRegistroPago = async () => {
     if (!pagoSeleccionado) return;
-
     const metodoPagoId = metodosPagoSeleccionados[pagoSeleccionado.idreserva] ?? metodosPago[0]?.metodopagoid;
-
     if (!metodoPagoId) return;
-
     try {
       await registrar(pagoSeleccionado.idreserva, metodoPagoId);
-
-      setToast({
-        id: pagoSeleccionado.idreserva,
-        message: `Pago registrado para la reserva #${pagoSeleccionado.idreserva}`,
-        visible: true,
-      });
-      setTimeout(() => setToast(null), 4000);
-
       setPagoSeleccionado(null);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const confirmarGenerarFactura = async (pagoId: number, rtn: string, razonSocial: string) => {
+    try {
+      await generar(Number(pagoId), rtn, razonSocial);
+      setPagoParaFactura(null);
     } catch (error) {
       console.error(error);
     }
@@ -285,7 +287,7 @@ function AdminPagos() {
                           </span>
                         </td>
                         <td className="px-5 py-3.5 text-right">
-                          <Button size="sm" variant="outline" className="hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                          <Button size="sm" variant="outline" className="hover:bg-blue-50 hover:text-blue-600 transition-colors" onClick={() => setPagoParaFactura(p)}>
                             <FilePlus size={14} className="mr-1" /> Generar Factura
                           </Button>
                         </td>
@@ -350,6 +352,13 @@ function AdminPagos() {
             <ReceiptText className="mx-auto text-gray-300" size={48} />
             <p className="mt-2 text-gray-500 text-sm">No hay pagos pendientes de facturación. ✓</p>
           </div>
+        )}
+        {pagoParaFactura && (
+          <ModalGenerarFactura
+            pago={pagoParaFactura}
+            onCancelar={() => setPagoParaFactura(null)}
+            onConfirmar={confirmarGenerarFactura}
+          />
         )}
       </div>
 

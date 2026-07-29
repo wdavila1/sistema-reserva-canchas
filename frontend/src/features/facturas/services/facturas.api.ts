@@ -4,6 +4,6 @@ import type { FacturaDetalle } from "../types/FacturaDetalle";
 
 
 export const generarFactura = async(data: DatosFacturacion): Promise<FacturaDetalle> => {
-    const response = await axiosClient.post<FacturaDetalle>("/facturas/generar",data)
+    const response = await axiosClient.post<FacturaDetalle>("/facturas/generar",data);
     return response.data;
 }

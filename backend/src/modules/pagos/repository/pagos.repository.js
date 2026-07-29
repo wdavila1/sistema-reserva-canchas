@@ -36,6 +36,7 @@ export async function obtenerPagosConfirmados(limit, offset, facturado) {
   const query = `
       SELECT 
       r.reservaid AS reservaId,
+      pa.pagoid AS pagoid,
       CONCAT(p.primernombre, ' ', p.primerapellido) AS nombreUsuario,
       STRING_AGG(c.nombrecancha, ', ') AS canchaReservada,
       pa.monto AS total,
@@ -54,7 +55,7 @@ export async function obtenerPagosConfirmados(limit, offset, facturado) {
       AND ($1::boolean IS NULL 
           OR ($1::boolean = true AND pa.facturaid IS NOT NULL)
           OR ($1::boolean = false AND pa.facturaid IS NULL))
-      GROUP BY r.reservaid, p.primernombre, p.primerapellido, pa.monto, mp.metodo, pa.fechapago
+      GROUP BY r.reservaid, pa.pagoid, p.primernombre, p.primerapellido, pa.monto, mp.metodo, pa.fechapago
       LIMIT $2
       OFFSET $3;
   `;

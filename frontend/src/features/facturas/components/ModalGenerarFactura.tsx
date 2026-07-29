@@ -4,15 +4,14 @@ import { Button } from "@/shared/components/ui/Button";
 import { formatCurrency } from "@/shared/utils/formatCurrency";
 import type { ModalGenerarFacturaProps } from "../types/ModalGenerarFacturaProps";
 
-export function ModalGenerarFactura({ pago, onCancel, onConfirm }: ModalGenerarFacturaProps) {
+export function ModalGenerarFactura({ pago, onCancelar, onConfirmar }: ModalGenerarFacturaProps) {
     const [rtn, setRtn] = useState("");
     const [razonSocial, setRazonSocial] = useState("");
-    const [pagoId, setPagoId] = useState("")
 
     //para evitar lo de que el forms recargue la pagina
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onConfirm(rtn, razonSocial, pagoId);
+        onConfirmar(pago.pagoid, rtn, razonSocial);
     };
 
     return (
@@ -21,7 +20,7 @@ export function ModalGenerarFactura({ pago, onCancel, onConfirm }: ModalGenerarF
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                     <h2 className="text-xl font-bold text-gray-800">Generar Factura</h2>
                     <button
-                        onClick={onCancel}
+                        onClick={onCancelar}
                         className="text-gray-400 hover:text-gray-600 transition-colors"
                     >
                         <X size={20} />
@@ -90,7 +89,7 @@ export function ModalGenerarFactura({ pago, onCancel, onConfirm }: ModalGenerarF
 
                     {/* aca se har el request */}
                     <div className="flex justify-end gap-3 pt-2 border-t border-gray-100 mt-2">
-                        <Button type="button" variant="outline" onClick={onCancel}>
+                        <Button type="button" variant="outline" onClick={onCancelar}>
                             Cancelar
                         </Button>
                         <Button type="submit" variant="primary">

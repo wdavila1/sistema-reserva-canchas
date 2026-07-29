@@ -8,7 +8,7 @@ const TASA_ISV = 0.15;
 
 export async function generarFactura(datosFacturacion, usuarioEmiteId) {
     const { pagoId, rtn = null, razonSocialCliente = null } = datosFacturacion;
-
+    console.log("Entro al servicio");
     //En este caso hice la conexion aca para evitar errores
     //en caso de que hayan errores de generar e insercion hace no se aprueban los datos
     const client = await pool.connect();
@@ -16,10 +16,12 @@ export async function generarFactura(datosFacturacion, usuarioEmiteId) {
     await client.query("BEGIN");
 
     const pago = await pagoRepository.obtenerPagoParaFacturar(pagoId, client);
+    console.log("pago: "+pago)
 
     if (!pago) {
         throw new ApiError(404, "Pago no encontrado");
     }
+
     if (pago.estadopago !== 'Aprobado') {
         throw new ApiError(400, "El pago no está aprobado");
     }
