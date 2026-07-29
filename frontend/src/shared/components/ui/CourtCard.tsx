@@ -1,5 +1,5 @@
 import { Badge } from "../ui/Badge"
-import type { Cancha } from "../../services/canchas.api";
+import type { Cancha } from "@/features/canchas/services/canchas.api";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { sportColor } from "../../utils/sportColor";
 import {Users} from "lucide-react";

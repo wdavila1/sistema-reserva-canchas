@@ -5,6 +5,7 @@ import reservasRoutes from "./modules/reservas/reservas.routes.js";
 import pagosRoutes from "./modules/pagos/routes/pagos.routes.js"
 import reportesRoutes from "./modules/reportes/reportes.routes.js";
 import metodosPagoRoutes from "./modules/pagos/routes/metodos-pago.routes.js"
+import facturaRoutes from "./modules/facturas/facturas.routes.js"
 
 const router = Router();
 
@@ -14,6 +15,7 @@ router.use("/canchas", canchasRoutes);
 router.use("/reservas", reservasRoutes);
 router.use("/pagos", pagosRoutes);
 router.use("/metodos-pago",metodosPagoRoutes);
+router.use("/facturas", facturaRoutes);
 router.use("/reportes", reportesRoutes);
 
 // Los demás módulos (usuarios, facturas, pagos, reportes)

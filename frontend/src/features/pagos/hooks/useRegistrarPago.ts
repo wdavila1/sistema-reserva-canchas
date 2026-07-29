@@ -7,7 +7,7 @@ export function useRegistrarPago(
 
     const registrar = async ( reservaId: number, metodoPagoId: number ) => {
 
-        await registrarPago({ reservaId, metodoPagoId});
+        let data = await registrarPago({ reservaId, metodoPagoId});
 
         await Promise.all([
             refetchPendientes(),

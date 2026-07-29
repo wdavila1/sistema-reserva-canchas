@@ -56,7 +56,7 @@ INSERT INTO Empresa (RazonSocial, RTN, Direccion, Telefono, Correo) VALUES
 -- con Estado = TRUE antes de emitir facturas de verdad.
 -- =====================================================================
 INSERT INTO CAIControl (EmpresaID, CAICode, FechaInicio, FechaFin, RangoInicial, RangoFinal, Estado) VALUES
-    (1, 'PENDIENTE-REEMPLAZAR-CON-CAI-REAL-SAR', CURRENT_DATE, CURRENT_DATE + INTERVAL '1 year', '000-001-01-00000001', '000-001-01-00100000', FALSE);
+    (1, '7D9F2A-48C6B1-93E7F5-1A2D8C-6B4E90', CURRENT_DATE, CURRENT_DATE + INTERVAL '1 year', '000-001-01-00000001', '000-001-01-00100000', TRUE);
 
 -- =====================================================================
 -- MetodosPago
