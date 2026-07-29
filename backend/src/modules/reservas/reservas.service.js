@@ -57,7 +57,7 @@ function agruparReserva(filas) {
   };
 }
 
-function agruparListado(filas) {
+export function agruparListado(filas) {
   const mapa = new Map();
  
   for (const f of filas) {
