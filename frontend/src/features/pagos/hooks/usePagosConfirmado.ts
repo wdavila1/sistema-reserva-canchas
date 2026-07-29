@@ -13,7 +13,7 @@ export function usePagosConfirmados(initialPage = 1, initialLimit = 5, initialFa
         hasNextPage: false,
         hasPreviousPage: false,
     });
-    const [facturado, setFacturado] = useState<boolean | null>(null);
+    const [facturado, setFacturado] = useState<boolean | null>(initialFacturado);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
 
