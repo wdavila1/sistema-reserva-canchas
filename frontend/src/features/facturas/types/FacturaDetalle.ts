@@ -1,10 +1,17 @@
 export interface FacturaDetalle {
-    facturaId: number;
-    numeroFactura: string;
-    subTotal: number;
-    isv: number;
-    total : number;
+    facturaid: number;
+    razonsocial : string;
+    rtnempresa : string;
+    direccion : string;
+    cai : string;
+    rangoautorizado : string;
+    fechafin : string;
+    numerofactura : string;
+    fechaemision : string;
+    rtncliente: string;
+    servicioadquirido : string;
+    subtotal : string;
+    isv : string;
+    exonercacion : string;
+    total : string;
 }
-
-// por ahora solo esto mientras modelo exactamente que voy a poner 
-//en la genreacion de factura (No se nada de facturas)
