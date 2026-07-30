@@ -482,13 +482,37 @@ function AdminPagos() {
           </div>
         )}
         {pagoIdParaFactura && (
-          <ModalVerFactura
-            factura={factura}
-            onCerrar={() => setPagoIdParaFactura(null)}
-            onImprimir={() => {
-              console.log("Imprimir factura", factura); //falta implementar 
-            }}
-          />
+          <>
+            {loading && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+                <div className="bg-white rounded-2xl p-6 shadow-xl">
+                  <p className="text-gray-600">Cargando factura...</p>
+                </div>
+              </div>
+            )}
+            {error && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+                <div className="bg-white rounded-2xl p-6 shadow-xl max-w-md">
+                  <p className="text-red-600">Error al cargar la factura: {error.message}</p>
+                  <button
+                    onClick={() => setPagoIdParaFactura(null)}
+                    className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  >
+                    Cerrar
+                  </button>
+                </div>
+              </div>
+            )}
+            {factura && !loading && (
+              <ModalVerFactura
+                factura={factura}
+                onCerrar={() => setPagoIdParaFactura(null)}
+                onImprimir={() => {
+                  console.log("Imprimir factura", factura);
+                }}
+              />
+            )}
+          </>
         )}
       </div>
     </div>

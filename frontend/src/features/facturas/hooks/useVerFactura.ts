@@ -1,54 +1,52 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import type { FacturaDetalle } from "../types/FacturaDetalle";
 import { verFactura } from "../services/facturas.api";
 
-export function useVerFactura(pagoId: number) {
-    const [factura, setFactura] = useState<FacturaDetalle>({
-        facturaid: 0,
-        razonsocial: "",
-        rtnempresa: "",
-        direccion: "",
-        cai: "",
-        rangoautorizado: "",
-        fechafin: "",
-        numerofactura: "",
-        fechaemision: "",
-        rtncliente: "",
-        servicioadquirido: "",
-        subtotal: "",
-        isv: "",
-        exonercacion: "",
-        total: ""
-    });
-
-    const [loading, setLoading] = useState(true);
+export function useVerFactura(pagoId: number | null) {
+    const [factura, setFactura] = useState<FacturaDetalle | null>(null);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
-
-    const obtenerFactura = async (pagoId: number) => {
-        try {
-            setLoading(true);
-            const response = await verFactura(pagoId);
-            setFactura(response);
-            setError(null);
-        }
-        catch (err) {
-            setError(err as Error)
-        }
-        finally {
-            setLoading(false)
-        }
-    }
+    const isMounted = useRef(true);
 
     useEffect(() => {
-        if (pagoId) {
-            obtenerFactura(pagoId);
+        isMounted.current = true;
+        return () => {
+            isMounted.current = false;
+        };
+    }, []);
+
+    const obtenerFactura = useCallback(async (id: number) => {
+        if (!id) return;
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await verFactura(id);
+            if (isMounted.current) {
+                setFactura(response);
+                setError(null);
+            }
+        } catch (err) {
+            if (isMounted.current) {
+                const errorObj = err instanceof Error ? err : new Error(String(err));
+                setError(errorObj);
+                setFactura(null);
+            }
+        } finally {
+            if (isMounted.current) {
+                setLoading(false);
+            }
         }
-    }, [pagoId]);
+    }, []);
 
-    return {
-        factura,
-        loading,
-        error
-    }
+    useEffect(() => {
+        if (!pagoId) {
+            setFactura(null);
+            setLoading(false);
+            setError(null);
+            return;
+        }
+        obtenerFactura(pagoId);
+    }, [pagoId, obtenerFactura]);
 
+    return { factura, loading, error };
 }
