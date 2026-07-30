@@ -58,3 +58,35 @@ export async function crearFactura(client, datos) {
   ]);
   return rows[0].facturaid;
 }
+
+export async function obtenerDetalleFactura(pagoId) {
+  const query = `
+    SELECT
+    e.razonsocial AS razonsocial,
+    e.rtn AS rtnempresa,
+    e.direccion AS direccion,
+    cc.caicode AS cai,
+    CONCAT(cc.rangoinicial, cc.rangofinal) AS rangoautorizado,
+    cc.fechafin AS fechafin,
+    f.numerofactura AS numerofactura,
+    f.fechaemision AS fechaemision,
+    f.rtncliente AS rtncliente,
+    c.nombrecancha AS servicioadquirido,
+    f.subtotal AS subtotal,
+    f.isv AS isv,
+    f.exoneracion AS exoneracion,
+    f.total AS total
+    FROM empresa e
+    JOIN caicontrol cc ON e.empresaid = cc.empresaid
+    JOIN facturas f ON cc.caiid = f.caiid
+    JOIN reservas r ON r.reservaid = f.reservaid
+    JOIN detallereservas dr ON dr.reservaid = r.reservaid
+    JOIN canchas c ON c.canchaid = dr.canchaid
+    JOIN pagos p ON p.reservaid = r.reservaid
+    WHERE p.pagoid = $1
+  `
+
+  const { rows } = await pool.query(query,[pagoId])
+
+  return rows[0];
+}

@@ -8,7 +8,7 @@ const TASA_ISV = 0.15;
 
 export async function generarFactura(datosFacturacion, usuarioEmiteId) {
     const { pagoId, rtn = null, razonSocialCliente = null, aplicaExoneracion = false } = datosFacturacion;
-    
+
     //En este caso hice la conexion aca para evitar errores
     //en caso de que hayan errores de generar e insercion hace no se aprueban los datos
     const client = await pool.connect();
@@ -41,7 +41,7 @@ export async function generarFactura(datosFacturacion, usuarioEmiteId) {
     const numeroFactura = await facturaRepository.generarNumeroFactura(client, cai.caiid);
     const subTotal = detalles.reduce((acc, d) => acc + Number(d.subtotal), 0);
     const isv = aplicaExoneracion ? 0.00 : Number((subTotal * TASA_ISV).toFixed(2));
-    const exoneracion = aplicaExoneracion ? Number((subTotal*TASA_ISV).toFixed(2)):  0.00;
+    const exoneracion = aplicaExoneracion ? Number((subTotal * TASA_ISV).toFixed(2)) : 0.00;
     const total = Number((subTotal + isv).toFixed(2))
 
     const facturaId = await facturaRepository.crearFactura(client, {
@@ -62,4 +62,25 @@ export async function generarFactura(datosFacturacion, usuarioEmiteId) {
     await client.query("COMMIT");
 
     return { facturaId, numeroFactura, subTotal, isv, total };
+}
+
+export async function obtenerDetalleFactura(pagoId) {
+
+    const pago = await pagoRepository.obtenerPagoPorId(pagoId);
+
+    if (!pagoId) {
+        throw new ApiError(404, "Pago no encontrado")
+    }
+
+    if (pago.estadopago !== 'Aprobado') {
+        throw new ApiError(400, "El pago no está aprobado");
+    }
+
+    if (pago.facturaid == null) {
+        throw new ApiError(400, "Este pago no tiene factura generada");
+    }
+
+    const detalleFactura = await facturaRepository.obtenerDetalleFactura(pagoId);
+
+    return detalleFactura;
 }

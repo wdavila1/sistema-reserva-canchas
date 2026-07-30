@@ -102,3 +102,14 @@ export async function vincularFactura(client, pagoId, facturaId) {
   const { rows } = await client.query(query, [pagoId, facturaId]);
   return rows[0];
 }
+
+export async function obtenerPagoPorId(pagoId){
+  const query =  `
+    SELECT *
+    FROM pagos
+    where pagoid=$1;
+  `
+  const { rows } = await pool.query(query, [pagoId]);
+
+  return rows[0];
+}
