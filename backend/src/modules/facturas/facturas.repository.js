@@ -62,11 +62,12 @@ export async function crearFactura(client, datos) {
 export async function obtenerDetalleFactura(pagoId) {
   const query = `
     SELECT
+    f.facturaid AS facturaid,
     e.razonsocial AS razonsocial,
     e.rtn AS rtnempresa,
     e.direccion AS direccion,
     cc.caicode AS cai,
-    CONCAT(cc.rangoinicial, cc.rangofinal) AS rangoautorizado,
+    CONCAT(cc.rangoinicial, ' AL '  ,cc.rangofinal) AS rangoautorizado,
     cc.fechafin AS fechafin,
     f.numerofactura AS numerofactura,
     f.fechaemision AS fechaemision,

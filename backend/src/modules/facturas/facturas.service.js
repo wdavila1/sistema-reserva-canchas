@@ -68,7 +68,7 @@ export async function obtenerDetalleFactura(pagoId) {
 
     const pago = await pagoRepository.obtenerPagoPorId(pagoId);
 
-    if (!pagoId) {
+    if (!pago) {
         throw new ApiError(404, "Pago no encontrado")
     }
 
