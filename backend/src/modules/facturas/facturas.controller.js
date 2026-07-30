@@ -2,15 +2,11 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import * as facturasService from "./facturas.service.js"
 
 export const generarFactura = asyncHandler(async (req, res) => {
-  console.log("1. Entró al controlador");
 
-  const { pagoId, rtn = null, razonSocialCliente = null } = req.body;
+  const { pagoId, rtn = null, razonSocialCliente = null, aplicaExoneracion = false } = req.body;
   const usuarioEmiteId = req.user?.usuarioId;
 
-  const factura = await facturasService.generarFactura(
-    { pagoId, rtn, razonSocialCliente },
-    usuarioEmiteId
-  );
+  const factura = await facturasService.generarFactura({ pagoId, rtn, razonSocialCliente, aplicaExoneracion },usuarioEmiteId);
 
   res.status(201).json(factura);
 });

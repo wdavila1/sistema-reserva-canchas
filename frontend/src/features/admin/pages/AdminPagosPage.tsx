@@ -76,9 +76,9 @@ function AdminPagos() {
     }
   };
 
-  const confirmarGenerarFactura = async (pagoId: number, rtn: string, razonSocial: string) => {
+  const confirmarGenerarFactura = async (pagoId: number, rtn: string, razonSocial: string, aplicaExoneracion: boolean) => {
     try {
-      await generar(Number(pagoId), rtn, razonSocial);
+      await generar(Number(pagoId), rtn, razonSocial, aplicaExoneracion);
       setPagoParaFactura(null);
     } catch (error) {
       console.error(error);
