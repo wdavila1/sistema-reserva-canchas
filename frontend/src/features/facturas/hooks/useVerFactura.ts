@@ -40,8 +40,10 @@ export function useVerFactura(pagoId: number) {
     }
 
     useEffect(() => {
-        obtenerFactura(pagoId);
-    }, []);
+        if (pagoId) {
+            obtenerFactura(pagoId);
+        }
+    }, [pagoId]);
 
     return {
         factura,

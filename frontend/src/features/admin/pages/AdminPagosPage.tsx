@@ -19,6 +19,8 @@ import { useMetodosPago } from "@/features/pagos/hooks/useMetodosPago";
 import { useRegistrarPago } from "@/features/pagos/hooks/useRegistrarPago";
 import { useGenerarFactura } from "@/features/facturas/hooks/useGenerarFactura";
 import type { PagoConfirmado } from "@/features/pagos/types/PagoConfirmado";
+import { useVerFactura } from "@/features/facturas/hooks/useVerFactura";
+import { ModalVerFactura } from "@/features/facturas/components/ModalVerFactura";
 
 function AdminPagos() {
   // Estados locales
@@ -26,6 +28,7 @@ function AdminPagos() {
   const [metodosPagoSeleccionados, setMetodosPagoSeleccionados] = useState<Record<number, number>>({});
   const [pagoSeleccionado, setPagoSeleccionado] = useState<PagoPendiente | null>(null);
   const [pagoParaFactura, setPagoParaFactura] = useState<PagoConfirmado | null>(null);
+  const [pagoIdParaFactura, setPagoIdParaFactura] = useState<number | null>(null);
 
   // Hooks con paginación
   const {
@@ -60,6 +63,9 @@ function AdminPagos() {
     refetch: refetchConFactura,
   } = usePagosConfirmados(1, 5, true);
 
+  //Para abrir la modal que muestra la Factura
+  const { factura, loading, error } = useVerFactura(pagoIdParaFactura ?? 0);
+
   const { registrar } = useRegistrarPago(refetchPendientes, refetchSinFactura);
   const { generar } = useGenerarFactura(refetchSinFactura, refetchConFactura);
   const { metodosPago } = useMetodosPago();
@@ -84,6 +90,14 @@ function AdminPagos() {
       console.error(error);
     }
   };
+
+  const verFactura = async (pagoId: number) => {
+    try {
+      await verFactura(pagoId);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const metodoPagoId = pagoSeleccionado
     ? metodosPagoSeleccionados[pagoSeleccionado.idreserva] ?? metodosPago[0]?.metodopagoid
@@ -401,7 +415,7 @@ function AdminPagos() {
                           </span>
                         </td>
                         <td className="px-5 py-3.5 text-right">
-                          <Button size="sm" variant="outline" className="hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                          <Button size="sm" variant="outline" className="hover:bg-blue-50 hover:text-blue-600 transition-colors" onClick={() => setPagoIdParaFactura(p.pagoid)}>
                             <FileText size={14} className="mr-1" /> Ver Factura
                           </Button>
                         </td>
@@ -466,6 +480,15 @@ function AdminPagos() {
             <ReceiptText className="mx-auto text-gray-300" size={48} />
             <p className="mt-2 text-gray-500 text-sm">Aún no se han emitido facturas.</p>
           </div>
+        )}
+        {pagoIdParaFactura && (
+          <ModalVerFactura
+            factura={factura}
+            onCerrar={() => setPagoIdParaFactura(null)}
+            onImprimir={() => {
+              console.log("Imprimir factura", factura); //falta implementar 
+            }}
+          />
         )}
       </div>
     </div>
