@@ -144,7 +144,7 @@ function AdminPagos() {
                 key={p.idreserva}
                 className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center hover:shadow-md transition-shadow"
               >
-                {/* Contenido de cada item */}
+                {/* contenido de cada item */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
                     <span className="font-semibold text-gray-800 truncate">{p.nombreusuario}</span>
@@ -202,7 +202,7 @@ function AdminPagos() {
         {/* controles de paginacion*/}
         {paginationPendientes.totalItems > 0 && (
           <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-3">
-            {/* Selector de límite de items por paginacion */}
+            {/* Selector de limite de items por paginacion */}
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <span>Mostrar</span>
               <select
@@ -221,7 +221,7 @@ function AdminPagos() {
               <span>registros por página</span>
             </div>
 
-            {/* Botones de navegación (solo si hay más de una página) */}
+            {/* botones de navegacion (solo si hay más de una pqgina) */}
             {paginationPendientes.totalPages > 1 && (
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-500">
@@ -429,7 +429,7 @@ function AdminPagos() {
             {/* C */}
             {paginationConFactura.totalItems > 0 && (
               <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-3">
-                {/* Selector de límite */}
+                {/* selector de limite */}
                 <div className="flex items-center gap-2 text-sm text-gray-500">
                   <span>Mostrar</span>
                   <select
