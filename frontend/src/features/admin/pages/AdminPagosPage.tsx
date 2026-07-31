@@ -507,9 +507,6 @@ function AdminPagos() {
               <ModalVerFactura
                 factura={factura}
                 onCerrar={() => setPagoIdParaFactura(null)}
-                onImprimir={() => {
-                  console.log("Imprimir factura", factura);
-                }}
               />
             )}
           </>

@@ -1,9 +1,37 @@
-import { X, Printer } from "lucide-react";
+import { X, Printer, Download } from "lucide-react";
 import { Button } from "@/shared/components/ui/Button";
 import type { ModalVerFacturaProps } from "../types/ModalVerFacturaProps";
 import { formatCurrency } from "@/shared/utils/formatCurrency";
+import { useState } from "react";
+import { FacturaPDF } from "./FacturaPDF";
+import { pdf } from "@react-pdf/renderer";
 
-export function ModalVerFactura({ factura, onCerrar, onImprimir }: ModalVerFacturaProps) {
+export function ModalVerFactura({ factura, onCerrar }: ModalVerFacturaProps) {
+  const [descargando, setDescargando] = useState(false);
+
+  const handleDescargarPDF = async () => {
+    setDescargando(true);
+    try {
+      // para generar el pdf primero los hacemos blob 
+      const blob = await pdf(<FacturaPDF factura={factura} />).toBlob();
+
+      //la url de descarga
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `factura-${factura.numerofactura}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error al generar PDF:', error);
+      alert('Hubo un error al generar el PDF');
+    } finally {
+      setDescargando(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto transform transition-all animate-in fade-in zoom-in-95 duration-200">
@@ -18,10 +46,11 @@ export function ModalVerFactura({ factura, onCerrar, onImprimir }: ModalVerFactu
             <Button
               size="sm"
               variant="outline"
-              onClick={onImprimir}
+              onClick={handleDescargarPDF}
+              disabled={descargando}
               className="hover:bg-blue-50 hover:text-blue-600 transition-colors"
             >
-              <Printer size={16} className="mr-1" /> Imprimir
+              <Download size={16} className="mr-1" /> Descargar
             </Button>
             <button
               onClick={onCerrar}
@@ -86,7 +115,7 @@ export function ModalVerFactura({ factura, onCerrar, onImprimir }: ModalVerFactu
                 <span className="text-gray-500">Subtotal</span>
                 <span className="font-mono">{formatCurrency(Number(factura.subtotal))}</span>
               </div>
-              
+
               {(() => {
                 const subtotal = Number(factura.subtotal);
                 const isv = Number(factura.isv);

@@ -14,7 +14,6 @@ export const generarFactura = asyncHandler(async (req, res) => {
 export const obtenerDetalleFactura = asyncHandler(async (req, res) => {
   let { pagoId }= req.query;
   const pagoid = Math.max(Number(pagoId), 1);
-  console.log(pagoid)
   const detalleFactura = await facturasService.obtenerDetalleFactura(pagoid);
   res.status(201).json(detalleFactura)
 })
