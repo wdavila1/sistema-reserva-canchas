@@ -6,7 +6,7 @@ const cookieOpts = {
   httpOnly: true,
   secure: env.NODE_ENV === "production",
   sameSite: env.NODE_ENV === "production" ? "none" : "lax",
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días, debe calzar con JWT_REFRESH_EXPIRES_IN
+  maxAge: 1 * 24 * 60 * 60 * 1000, // 1 día, debe calzar con JWT_REFRESH_EXPIRES_IN
   path: "/api/auth",
 };
 

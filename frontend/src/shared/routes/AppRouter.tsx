@@ -31,6 +31,7 @@ import AdminPagosPage from "@/features/admin/pages/AdminPagosPage";
 import AdminReportesPage from "@/features/admin/pages/AdminReportesPage";
 import AdminUsuariosPage from "@/features/admin/pages/AdminUsuariosPage";
 import CanchaFormPage from "@/features/canchas/pages/CanchaFormPage";
+import UsuarioFormPage from "@/features/usuarios/pages/UsuarioFormPage";
 
 //Pagina para Error 404
 import PageNotFound from "@/pages/PageNotFound";
@@ -68,6 +69,8 @@ function AppRouter() {
           <Route path="pagos" element={<AdminPagosPage />} />
           <Route path="reportes" element={<AdminReportesPage />} />
           <Route path="usuarios" element={<AdminUsuariosPage />} />
+          <Route path="usuarios/nueva" element={<UsuarioFormPage />} />
+          <Route path="usuarios/editar/:id" element={<UsuarioFormPage />} />
         </Route>
       </Route>
 
