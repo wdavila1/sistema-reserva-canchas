@@ -34,7 +34,7 @@ export function ModalVerFactura({ factura, onCerrar, onImprimir }: ModalVerFactu
         {/* Contenido de la factura con estilo documento */}
         <div className="p-8" id="factura-para-imprimir">
           <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm max-w-3xl mx-auto">
-            {/* Encabezado empresa */}
+            {/* Datos del emisor*/}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b-2 border-gray-300 pb-4 mb-4">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 tracking-tight">{factura.razonsocial}</h1>
@@ -60,7 +60,7 @@ export function ModalVerFactura({ factura, onCerrar, onImprimir }: ModalVerFactu
               </div>
             </div>
 
-            {/* Detalle del servicio - tipo tabla */}
+            {/* Detalle de los servicios */}
             <div className="mb-6">
               <div className="border border-gray-200 rounded-lg overflow-hidden">
                 <table className="w-full text-sm">
@@ -80,7 +80,7 @@ export function ModalVerFactura({ factura, onCerrar, onImprimir }: ModalVerFactu
               </div>
             </div>
 
-            {/* Totales */}
+            {/* Detalle de venta */}
             <div className="flex flex-col items-end space-y-1 pt-4 border-t-2 border-gray-300">
               <div className="flex justify-between w-48 text-sm">
                 <span className="text-gray-500">Subtotal</span>
@@ -90,10 +90,10 @@ export function ModalVerFactura({ factura, onCerrar, onImprimir }: ModalVerFactu
                 <span className="text-gray-500">ISV 15%</span>
                 <span className="font-mono">{factura.isv}</span>
               </div>
-              {Number(factura.exonercacion) > 0 && (
+              {Number(factura.exoneracion) > 0 && (
                 <div className="flex justify-between w-48 text-sm text-green-600">
                   <span>Exoneración</span>
-                  <span className="font-mono">-{factura.exonercacion}</span>
+                  <span className="font-mono">-{factura.exoneracion}</span>
                 </div>
               )}
               <div className="flex justify-between w-48 text-lg font-bold pt-2 border-t border-gray-200">
@@ -102,7 +102,6 @@ export function ModalVerFactura({ factura, onCerrar, onImprimir }: ModalVerFactu
               </div>
             </div>
 
-            {/* Pie de factura */}
             <div className="mt-6 text-xs text-center text-gray-400 border-t border-gray-100 pt-4">
               <p>Gracias por su preferencia</p>
               <p className="font-mono text-gray-300">Factura generada electrónicamente</p>

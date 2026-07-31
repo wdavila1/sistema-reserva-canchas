@@ -12,6 +12,6 @@ export interface FacturaDetalle {
     servicioadquirido : string;
     subtotal : string;
     isv : string;
-    exonercacion : string;
+    exoneracion : string;
     total : string;
 }
