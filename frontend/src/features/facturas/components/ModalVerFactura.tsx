@@ -32,7 +32,6 @@ export function ModalVerFactura({ factura, onCerrar, onImprimir }: ModalVerFactu
           </div>
         </div>
 
-        {/* Contenido de la factura con estilo documento */}
         <div className="p-8" id="factura-para-imprimir">
           <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm max-w-3xl mx-auto">
             {/* Datos del emisor*/}
@@ -83,13 +82,11 @@ export function ModalVerFactura({ factura, onCerrar, onImprimir }: ModalVerFactu
 
             {/* Detalle de venta */}
             <div className="flex flex-col items-end space-y-1 pt-4 border-t-2 border-gray-300">
-              {/* Subtotal */}
               <div className="flex justify-between w-56 text-sm">
                 <span className="text-gray-500">Subtotal</span>
                 <span className="font-mono">{formatCurrency(Number(factura.subtotal))}</span>
               </div>
-
-              {/* ISV: si hay exoneración, mostramos el monto exonerado como ISV */}
+              
               {(() => {
                 const subtotal = Number(factura.subtotal);
                 const isv = Number(factura.isv);
