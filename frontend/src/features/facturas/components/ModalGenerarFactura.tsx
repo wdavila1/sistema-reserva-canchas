@@ -7,10 +7,11 @@ import type { ModalGenerarFacturaProps } from "../types/ModalGenerarFacturaProps
 export function ModalGenerarFactura({ pago, onCancelar, onConfirmar }: ModalGenerarFacturaProps) {
     const [rtn, setRtn] = useState("");
     const [razonSocial, setRazonSocial] = useState("");
+    const [aplicaExoneracion, setAplicaExoneracion] = useState(false); // Nuevo estado booleano
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onConfirmar(pago.pagoid, rtn, razonSocial);
+        onConfirmar(pago.pagoid, rtn, razonSocial, aplicaExoneracion);
     };
 
     return (
@@ -83,6 +84,18 @@ export function ModalGenerarFactura({ pago, onCancelar, onConfirmar }: ModalGene
                                 placeholder="Ej: Juan Pérez S.A."
                                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm shadow-sm"
                             />
+                        </div>
+                        <div className="flex items-center gap-2 pt-1">
+                            <input
+                                id="aplicaExoneracion"
+                                type="checkbox"
+                                checked={aplicaExoneracion}
+                                onChange={(e) => setAplicaExoneracion(e.target.checked)}
+                                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                            />
+                            <label htmlFor="aplicaExoneracion" className="text-sm font-medium text-gray-700">
+                                ¿Aplica exoneración?
+                            </label>
                         </div>
                     </div>
 
