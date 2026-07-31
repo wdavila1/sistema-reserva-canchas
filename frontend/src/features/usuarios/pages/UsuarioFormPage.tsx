@@ -1,40 +1,13 @@
-import { ChevronLeft, Copy } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { useUsuarioForm } from "@/features/usuarios/hooks/useUsuarioForm";
 import { Button } from "@/shared/components/ui/Button";
+import { PasswordTemporalModal } from "@/features/usuarios/components/PasswordTemporalModal";
 
 function UsuarioFormPage() {
   const {
     formData, handleChange, handleSubmit, isLoading, error,
     navigate, isEditMode, roles, passwordTemporal,
   } = useUsuarioForm();
-
-  // Pantalla de "contraseña temporal generada" tras crear un usuario nuevo.
-  if (passwordTemporal) {
-    return (
-      <div className="min-h-screen bg-muted/30 pt-20 flex items-center justify-center px-4">
-        <div className="bg-white rounded-2xl border border-border p-8 shadow-sm max-w-md w-full text-center">
-          <h1 className="text-2xl font-black text-foreground mb-2">Usuario creado</h1>
-          <p className="text-muted-foreground text-sm mb-5">
-            Copia esta contraseña temporal y pásasela a la persona — no se podrá volver a ver.
-          </p>
-          <div className="flex items-center justify-between gap-3 bg-muted rounded-xl px-4 py-3 mb-6">
-            <code className="font-mono text-lg font-bold text-primary">{passwordTemporal}</code>
-            <button
-              type="button"
-              onClick={() => navigator.clipboard.writeText(passwordTemporal)}
-              className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-primary transition-colors"
-              title="Copiar"
-            >
-              <Copy size={16} />
-            </button>
-          </div>
-          <Button variant="primary" className="w-full" onClick={() => navigate("/admin/usuarios")}>
-            Listo, ir al listado
-          </Button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-muted/30 pt-20">
@@ -58,19 +31,19 @@ function UsuarioFormPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="text-sm font-semibold">Primer nombre *</label>
-                <input required maxLength={50} name="primerNombre" value={formData.primerNombre} onChange={handleChange} className="w-full px-4 py-3 bg-input border-2 border-border focus:border-primary outline-none" placeholder="Carlos" />
+                <input required maxLength={50} name="primerNombre" value={formData.primerNombre} onChange={handleChange} className="w-full px-4 py-3 bg-input border-2 border-border focus:border-primary outline-none" placeholder="Carlos" pattern="^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s'\-]+$" title="El nombre solo puede contener letras y espacios." />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-semibold">Segundo nombre</label>
-                <input maxLength={50} name="segundoNombre" value={formData.segundoNombre} onChange={handleChange} className="w-full px-4 py-3 bg-input border-2 border-border focus:border-primary outline-none" placeholder="(opcional)" />
+                <input maxLength={50} name="segundoNombre" value={formData.segundoNombre} onChange={handleChange} className="w-full px-4 py-3 bg-input border-2 border-border focus:border-primary outline-none" placeholder="(opcional)" pattern="^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s'\-]+$" title="El nombre solo puede contener letras y espacios." />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-semibold">Primer apellido *</label>
-                <input required maxLength={50} name="primerApellido" value={formData.primerApellido} onChange={handleChange} className="w-full px-4 py-3 bg-input border-2 border-border focus:border-primary outline-none" placeholder="Mejía" />
+                <input required maxLength={50} name="primerApellido" value={formData.primerApellido} onChange={handleChange} className="w-full px-4 py-3 bg-input border-2 border-border focus:border-primary outline-none" placeholder="Mejía" pattern="^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s'\-]+$" title="El apellido solo puede contener letras y espacios." />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-semibold">Segundo apellido</label>
-                <input maxLength={50} name="segundoApellido" value={formData.segundoApellido} onChange={handleChange} className="w-full px-4 py-3 bg-input border-2 border-border focus:border-primary outline-none" placeholder="(opcional)" />
+                <input maxLength={50} name="segundoApellido" value={formData.segundoApellido} onChange={handleChange} className="w-full px-4 py-3 bg-input border-2 border-border focus:border-primary outline-none" placeholder="(opcional)" pattern="^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s'\-]+$" title="El apellido solo puede contener letras y espacios." />
               </div>
 
               <div className="space-y-2">
@@ -79,12 +52,12 @@ function UsuarioFormPage() {
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-semibold">Nombre de usuario *</label>
-                <input required maxLength={50} name="nombreUsuario" value={formData.nombreUsuario} onChange={handleChange} className="w-full px-4 py-3 bg-input border-2 border-border focus:border-primary outline-none" placeholder="para iniciar sesión" />
+                <input required minLength={3} maxLength={50} name="nombreUsuario" value={formData.nombreUsuario} onChange={handleChange} className="w-full px-4 py-3 bg-input border-2 border-border focus:border-primary outline-none" placeholder="para iniciar sesión" pattern="^[a-zA-Z0-9_\-]{3,50}$" title="El nombre de usuario solo permite letras, números, guiones y guiones bajos (mín. 3 caracteres, sin espacios)." />
               </div>
 
               <div className="space-y-2">
                 <label className="text-sm font-semibold">Teléfono *</label>
-                <input required type="tel" name="telefono" value={formData.telefono} onChange={handleChange} className="w-full px-4 py-3 bg-input border-2 border-border focus:border-primary outline-none" placeholder="+504 0000-0000" />
+                <input required type="tel" name="telefono" value={formData.telefono} onChange={handleChange} className="w-full px-4 py-3 bg-input border-2 border-border focus:border-primary outline-none" placeholder="+504 0000-0000" pattern="^\+?[\d\s\-]{8,15}$" title="Ingrese un número de teléfono válido (mínimo 8 dígitos)" />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-semibold">Rol *</label>
@@ -97,11 +70,11 @@ function UsuarioFormPage() {
 
               <div className="space-y-2">
                 <label className="text-sm font-semibold">Número de identidad</label>
-                <input maxLength={13} name="numeroIdentidad" value={formData.numeroIdentidad} onChange={handleChange} className="w-full px-4 py-3 bg-input border-2 border-border focus:border-primary outline-none" placeholder="(opcional)" />
+                <input name="numeroIdentidad" value={formData.numeroIdentidad} onChange={handleChange} className="w-full px-4 py-3 bg-input border-2 border-border focus:border-primary outline-none" placeholder="Ej: 0801199012345 (13 dígitos sin guiones)" pattern="^\d{13}$" maxLength={13} minLength={13} title="El número de identidad debe tener exactamente 13 dígitos numéricos sin guiones ni espacios." />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-semibold">RTN</label>
-                <input maxLength={40} name="rtn" value={formData.rtn} onChange={handleChange} className="w-full px-4 py-3 bg-input border-2 border-border focus:border-primary outline-none" placeholder="(opcional, para factura con RTN)" />
+                <input name="rtn" value={formData.rtn} onChange={handleChange} className="w-full px-4 py-3 bg-input border-2 border-border focus:border-primary outline-none" placeholder="Ej: 08011990123456 (14 dígitos sin guiones)" pattern="^\d{14}$" maxLength={14} minLength={14} title="El RTN debe tener exactamente 14 dígitos numéricos sin guiones ni espacios." />
               </div>
             </div>
 
@@ -122,6 +95,14 @@ function UsuarioFormPage() {
           </form>
         </div>
       </div>
+
+      {passwordTemporal && (
+        <PasswordTemporalModal
+          isOpen={!!passwordTemporal}
+          onClose={() => navigate("/admin/usuarios")}
+          passwordTemporal={passwordTemporal}
+        />
+      )}
     </div>
   );
 }

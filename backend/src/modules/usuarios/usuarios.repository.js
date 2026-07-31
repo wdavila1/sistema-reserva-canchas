@@ -196,18 +196,26 @@ export async function actualizarUsuario(usuarioId, {
     await client.query(
       `UPDATE Personas SET
           PrimerNombre = COALESCE($1, PrimerNombre),
-          SegundoNombre = COALESCE($2, SegundoNombre),
+          SegundoNombre = $2,
           PrimerApellido = COALESCE($3, PrimerApellido),
-          SegundoApellido = COALESCE($4, SegundoApellido),
-          NumeroIdentidad = COALESCE($5, NumeroIdentidad),
-          RTN = COALESCE($6, RTN),
+          SegundoApellido = $4,
+          NumeroIdentidad = $5,
+          RTN = $6,
           Correo = COALESCE($7, Correo),
           Telefono = COALESCE($8, Telefono),
-          Direccion = COALESCE($9, Direccion)
+          Direccion = $9
         WHERE PersonaID = $10`,
       [
-        primerNombre, segundoNombre, primerApellido, segundoApellido,
-        numeroIdentidad, rtn, correo, telefono, direccion, personaId,
+        primerNombre, 
+        segundoNombre || null, 
+        primerApellido, 
+        segundoApellido || null,
+        numeroIdentidad || null, 
+        rtn || null, 
+        correo, 
+        telefono, 
+        direccion || null, 
+        personaId,
       ]
     );
 

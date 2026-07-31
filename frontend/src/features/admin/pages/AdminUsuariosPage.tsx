@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Plus, Edit2, Trash2, KeyRound, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -7,10 +8,13 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 
 // API
 import { updateUsuarioEstado, deleteUsuario, resetPasswordUsuario } from "@/features/usuarios/services/usuarios.api";
+import type { Usuario } from "@/features/usuarios/services/usuarios.api";
 
 // COMPONENTS
 import { Badge } from "@/shared/components/ui/Badge";
 import { Button } from "@/shared/components/ui/Button";
+import { ConfirmDialog } from "@/shared/components/ui/ConfirmDialog";
+import { PasswordTemporalModal } from "@/features/usuarios/components/PasswordTemporalModal";
 
 function AdminUsuarios() {
   const navigate = useNavigate();
@@ -21,33 +25,56 @@ function AdminUsuarios() {
     nextPage, prevPage, refetch,
   } = useUsuarios(1, 10);
 
+  // Diálogo de confirmación para eliminar
+  const [usuarioAEliminar, setUsuarioAEliminar] = useState<Usuario | null>(null);
+  const [eliminando, setEliminando] = useState(false);
+
+  // Diálogo de confirmación para resetear contraseña
+  const [usuarioAResetear, setUsuarioAResetear] = useState<Usuario | null>(null);
+  const [reseteando, setReseteando] = useState(false);
+
+  // Modal que muestra la contraseña temporal ya generada
+  const [passwordGenerada, setPasswordGenerada] = useState<{ password: string; nombre: string } | null>(null);
+
+  const [accionError, setAccionError] = useState<string | null>(null);
+
   const toggleEstado = async (id: number, estadoActual: boolean) => {
     try {
       await updateUsuarioEstado(id, !estadoActual);
       refetch();
     } catch (err: any) {
-      alert(err.response?.data?.error || "Hubo un error al actualizar el estado del usuario.");
+      setAccionError(err.response?.data?.error || "Hubo un error al actualizar el estado del usuario.");
     }
   };
 
-  const handleResetPassword = async (id: number, nombre: string) => {
-    if (!window.confirm(`¿Generar una contraseña temporal nueva para "${nombre}"?`)) return;
+  const confirmarReset = async () => {
+    if (!usuarioAResetear) return;
+    setReseteando(true);
     try {
-      const { passwordTemporal } = await resetPasswordUsuario(id);
-      alert(`Contraseña temporal generada para ${nombre}:\n\n${passwordTemporal}\n\nCópiala ahora — no se volverá a mostrar.`);
+      const { passwordTemporal } = await resetPasswordUsuario(usuarioAResetear.UsuarioID);
+      const nombre = `${usuarioAResetear.PrimerNombre} ${usuarioAResetear.PrimerApellido}`;
+      setUsuarioAResetear(null);
+      setPasswordGenerada({ password: passwordTemporal, nombre });
     } catch (err: any) {
-      alert(err.response?.data?.error || "Error al comunicarse con el servidor.");
+      setAccionError(err.response?.data?.error || "Error al comunicarse con el servidor.");
+      setUsuarioAResetear(null);
+    } finally {
+      setReseteando(false);
     }
   };
 
-  const handleDelete = async (id: number, nombre: string) => {
-    if (window.confirm(`¿Estás seguro de que deseas eliminar permanentemente a "${nombre}"?`)) {
-      try {
-        await deleteUsuario(id);
-        refetch();
-      } catch (err: any) {
-        alert(err.response?.data?.error || "Error al comunicarse con el servidor.");
-      }
+  const confirmarEliminar = async () => {
+    if (!usuarioAEliminar) return;
+    setEliminando(true);
+    try {
+      await deleteUsuario(usuarioAEliminar.UsuarioID);
+      setUsuarioAEliminar(null);
+      refetch();
+    } catch (err: any) {
+      setAccionError(err.response?.data?.error || "Error al comunicarse con el servidor.");
+      setUsuarioAEliminar(null);
+    } finally {
+      setEliminando(false);
     }
   };
 
@@ -89,9 +116,9 @@ function AdminUsuarios() {
         </select>
       </div>
 
-      {error && (
+      {(error || accionError) && (
         <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm border border-red-200">
-          Hubo un error al cargar los usuarios.
+          {accionError || "Hubo un error al cargar los usuarios."}
         </div>
       )}
 
@@ -130,7 +157,7 @@ function AdminUsuarios() {
                       <td className="px-5 py-4 text-muted-foreground">{u.Correo}</td>
                       <td className="px-5 py-4 text-muted-foreground">{u.Telefono}</td>
                       <td className="px-5 py-4">
-                        <Badge className={u.NombreRol === "Administrador" ? "bg-violet-100 text-violet-700 border-violet-200" : "bg-secondary text-primary border-primary/20"}>
+                        <Badge variant={u.NombreRol === "Administrador" ? "default" : "outline"}>
                           {u.NombreRol}
                         </Badge>
                       </td>
@@ -158,12 +185,12 @@ function AdminUsuarios() {
                             <Edit2 size={14} />
                           </button>
                           <button
-                            onClick={() => handleResetPassword(u.UsuarioID, nombreCompleto)}
+                            onClick={() => setUsuarioAResetear(u)}
                             className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-primary transition-colors" title="Resetear contraseña">
                             <KeyRound size={14} />
                           </button>
                           <button
-                            onClick={() => handleDelete(u.UsuarioID, nombreCompleto)}
+                            onClick={() => setUsuarioAEliminar(u)}
                             disabled={esUnoMismo}
                             title={esUnoMismo ? "No puedes eliminar tu propia cuenta" : "Eliminar"}
                             className="p-1.5 rounded-lg hover:bg-red-50 text-muted-foreground hover:text-destructive transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
@@ -195,6 +222,48 @@ function AdminUsuarios() {
           </div>
         )}
       </div>
+
+      {/* Confirmar eliminación */}
+      <ConfirmDialog
+        isOpen={!!usuarioAEliminar}
+        onClose={() => setUsuarioAEliminar(null)}
+        onConfirm={confirmarEliminar}
+        variant="danger"
+        title="¿Eliminar este usuario?"
+        message={
+          usuarioAEliminar
+            ? `Estás a punto de eliminar permanentemente a "${usuarioAEliminar.PrimerNombre} ${usuarioAEliminar.PrimerApellido}". Esta acción no se puede deshacer.`
+            : ""
+        }
+        confirmLabel="Sí, eliminar"
+        isLoading={eliminando}
+      />
+
+      {/* Confirmar reset de contraseña */}
+      <ConfirmDialog
+        isOpen={!!usuarioAResetear}
+        onClose={() => setUsuarioAResetear(null)}
+        onConfirm={confirmarReset}
+        variant="default"
+        title="¿Generar nueva contraseña?"
+        message={
+          usuarioAResetear
+            ? `Se generará una contraseña temporal nueva para "${usuarioAResetear.PrimerNombre} ${usuarioAResetear.PrimerApellido}". La contraseña anterior dejará de funcionar.`
+            : ""
+        }
+        confirmLabel="Generar"
+        isLoading={reseteando}
+      />
+
+      {/* Mostrar la contraseña temporal generada */}
+      {passwordGenerada && (
+        <PasswordTemporalModal
+          isOpen={!!passwordGenerada}
+          onClose={() => setPasswordGenerada(null)}
+          passwordTemporal={passwordGenerada.password}
+          nombre={passwordGenerada.nombre}
+        />
+      )}
     </div>
   );
 }

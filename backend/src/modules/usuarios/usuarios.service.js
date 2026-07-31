@@ -3,6 +3,45 @@ import { ApiError } from "../../utils/ApiError.js";
 import { hashPassword } from "../../utils/bcrypt.js";
 import { generarPasswordTemporal } from "../../utils/generarPassword.js";
 
+const REGEX_CORREO       = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const REGEX_TELEFONO     = /^\+?[\d\s\-]{8,15}$/;
+const REGEX_IDENTIDAD_HN = /^\d{13}$/;
+const REGEX_RTN_HN       = /^\d{14}$/;
+const REGEX_NOMBRE       = /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s'\-]+$/;
+const REGEX_USUARIO      = /^[a-zA-Z0-9_\-]{3,50}$/;
+
+function validarCamposPersonales(datos) {
+  const { correo, telefono, numeroIdentidad, rtn, primerNombre, segundoNombre, primerApellido, segundoApellido, nombreUsuario } = datos;
+  
+  if (correo && !REGEX_CORREO.test(correo)) {
+    throw new ApiError(400, "El formato del correo electrónico no es válido.");
+  }
+  if (telefono && !REGEX_TELEFONO.test(telefono)) {
+    throw new ApiError(400, "El teléfono no tiene un formato válido (mínimo 8 dígitos).");
+  }
+  if (numeroIdentidad && !REGEX_IDENTIDAD_HN.test(numeroIdentidad)) {
+    throw new ApiError(400, "El número de identidad debe ser exactamente 13 dígitos (sin guiones ni espacios).");
+  }
+  if (rtn && !REGEX_RTN_HN.test(rtn)) {
+    throw new ApiError(400, "El RTN debe ser exactamente 14 dígitos (sin guiones ni espacios).");
+  }
+  if (primerNombre && !REGEX_NOMBRE.test(primerNombre)) {
+    throw new ApiError(400, "El primer nombre solo puede contener letras y espacios.");
+  }
+  if (primerApellido && !REGEX_NOMBRE.test(primerApellido)) {
+    throw new ApiError(400, "El primer apellido solo puede contener letras y espacios.");
+  }
+  if (segundoNombre && !REGEX_NOMBRE.test(segundoNombre)) {
+    throw new ApiError(400, "El segundo nombre solo puede contener letras y espacios.");
+  }
+  if (segundoApellido && !REGEX_NOMBRE.test(segundoApellido)) {
+    throw new ApiError(400, "El segundo apellido solo puede contener letras y espacios.");
+  }
+  if (nombreUsuario && !REGEX_USUARIO.test(nombreUsuario)) {
+    throw new ApiError(400, "El nombre de usuario solo permite letras, números, guiones y guiones bajos (mín. 3 caracteres, sin espacios).");
+  }
+}
+
 /* GET - Lista paginada de usuarios */
 export async function obtenerUsuarios({ page = 1, limit = 10, rolId, busqueda }) {
   const offset = (page - 1) * limit;
@@ -56,6 +95,8 @@ export async function crearUsuario(datos) {
     throw new ApiError(400, "Faltan campos obligatorios para crear el usuario.");
   }
 
+  validarCamposPersonales(datos);
+
   const rolExiste = await UsuariosRepository.existeRolId(rolId);
   if (!rolExiste) {
     throw new ApiError(400, "El rol seleccionado no existe.");
@@ -89,6 +130,8 @@ export async function actualizarUsuario(id, datos) {
   await obtenerUsuarioPorId(id); // lanza 404 si no existe
 
   const { correo, nombreUsuario, numeroIdentidad, rtn, rolId } = datos;
+
+  validarCamposPersonales(datos);
 
   const yaExisteCorreoOUsuario = await UsuariosRepository.existeCorreoOUsuario(correo, nombreUsuario, id);
   if (yaExisteCorreoOUsuario) {
