@@ -6,4 +6,6 @@ export interface UserAccount {
   rol: "admin" | "cliente";
   fechaRegistro: string;
   totalReservas: number;
+  fotoPerfilURL?: string | null;
+  nombreUsuario?: string;
 }

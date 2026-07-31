@@ -33,6 +33,8 @@ function mapUsuarioPublico(row) {
     fechaRegistro: row.fechacreacion,
     // TODO: calcular con un COUNT real contra Reservas cuando exista modules/reservas.
     totalReservas: 0,
+    fotoPerfilURL: row.fotoperfilurl ?? null,
+    nombreUsuario: row.nombreusuario ?? null,
   };
 }
 
