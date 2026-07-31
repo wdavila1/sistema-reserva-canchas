@@ -22,6 +22,7 @@ import Privacidad from "@/pages/Privacidad";
 // Páginas protegidas (requieren login)
 import ReservasPage from "@/features/reservas/pages/ReservasPage";
 import MisReservasPage from "@/features/reservas/pages/MisReservasPage";
+import MiPerfilPage from "@/features/perfil/pages/MiPerfilPage";
 
 // Páginas de administración
 import AdminDashboardPage from "@/features/admin/pages/DashboardPage";
@@ -55,6 +56,7 @@ function AppRouter() {
         <Route element={<ProtectedRoute />}>
           <Route path="/reservar/:courtId" element={<ReservasPage />} />
           <Route path="/mis-reservas" element={<MisReservasPage />} />
+          <Route path="/mi-perfil" element={<MiPerfilPage />} />
         </Route>
       </Route>
 

@@ -14,6 +14,8 @@ export interface AuthContextValue {
   isLoading: boolean;
   login: (usuario: UserAccount, accessToken: string) => void;
   logout: () => void;
+  /** Actualiza campos parciales del usuario en el contexto (ej. tras editar el perfil). */
+  actualizarPerfil: (cambios: Partial<UserAccount>) => void;
 }
 
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -33,6 +35,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Best-effort: le avisamos al backend que borre la cookie del refresh token.
     // No bloqueamos el logout local si esta llamada falla (ej. sin internet).
     authApi.logout().catch(() => {});
+  };
+
+  const actualizarPerfil = (cambios: Partial<UserAccount>) => {
+    setUsuario((prev) => (prev ? { ...prev, ...cambios } : prev));
   };
 
   // Al montar la app: intenta restaurar la sesión con la cookie httpOnly del
@@ -70,6 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isLoading,
       login,
       logout,
+      actualizarPerfil,
     }),
     [usuario, isLoading]
   );
