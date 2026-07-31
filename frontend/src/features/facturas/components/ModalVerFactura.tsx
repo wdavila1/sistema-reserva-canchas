@@ -1,6 +1,7 @@
 import { X, Printer } from "lucide-react";
 import { Button } from "@/shared/components/ui/Button";
 import type { ModalVerFacturaProps } from "../types/ModalVerFacturaProps";
+import { formatCurrency } from "@/shared/utils/formatCurrency";
 
 export function ModalVerFactura({ factura, onCerrar, onImprimir }: ModalVerFacturaProps) {
   return (
@@ -82,23 +83,40 @@ export function ModalVerFactura({ factura, onCerrar, onImprimir }: ModalVerFactu
 
             {/* Detalle de venta */}
             <div className="flex flex-col items-end space-y-1 pt-4 border-t-2 border-gray-300">
-              <div className="flex justify-between w-48 text-sm">
+              {/* Subtotal */}
+              <div className="flex justify-between w-56 text-sm">
                 <span className="text-gray-500">Subtotal</span>
-                <span className="font-mono">{factura.subtotal}</span>
+                <span className="font-mono">{formatCurrency(Number(factura.subtotal))}</span>
               </div>
-              <div className="flex justify-between w-48 text-sm">
-                <span className="text-gray-500">ISV 15%</span>
-                <span className="font-mono">{factura.isv}</span>
-              </div>
-              {Number(factura.exoneracion) > 0 && (
-                <div className="flex justify-between w-48 text-sm text-green-600">
-                  <span>Exoneración</span>
-                  <span className="font-mono">-{factura.exoneracion}</span>
-                </div>
-              )}
-              <div className="flex justify-between w-48 text-lg font-bold pt-2 border-t border-gray-200">
+
+              {/* ISV: si hay exoneración, mostramos el monto exonerado como ISV */}
+              {(() => {
+                const subtotal = Number(factura.subtotal);
+                const isv = Number(factura.isv);
+                const exoneracion = Number(factura.exoneracion);
+                const isvMostrado = exoneracion > 0 ? exoneracion : isv;
+
+                return (
+                  <>
+                    <div className="flex justify-between w-56 text-sm">
+                      <span className="text-gray-500">ISV 15%</span>
+                      <span className="font-mono">{formatCurrency(isvMostrado)}</span>
+                    </div>
+
+                    {exoneracion > 0 && (
+                      <div className="flex justify-between w-56 text-sm text-green-600">
+                        <span>Exoneración</span>
+                        <span className="font-mono">-{formatCurrency(exoneracion)}</span>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
+
+              {/* Total */}
+              <div className="flex justify-between w-56 text-lg font-bold pt-2 border-t border-gray-200">
                 <span>Total</span>
-                <span className="text-blue-600">{factura.total}</span>
+                <span className="text-blue-600">{formatCurrency(Number(factura.total))}</span>
               </div>
             </div>
 
