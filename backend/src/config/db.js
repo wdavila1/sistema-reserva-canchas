@@ -5,7 +5,7 @@ import { env } from "./env.js";
 // Ver README.md sección 4.1
 export const pool = new pg.Pool({
   connectionString: env.DATABASE_URL,
-  ssl: env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
+  ssl: { rejectUnauthorized: false },
 });
 
 pool.on("error", (err) => {

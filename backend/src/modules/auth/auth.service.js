@@ -128,6 +128,8 @@ export async function registrar({
   return login({ identificador: nombreUsuario, contrasena });
 }
 
+//LOGIN ----------------------------------------------------------------------------------
+
 export async function login({ identificador, contrasena }) {
   if (!identificador || !contrasena) {
     throw new ApiError(400, "Debes enviar tu usuario/correo y contraseña.");
