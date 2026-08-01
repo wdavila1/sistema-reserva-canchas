@@ -10,7 +10,7 @@ function Footer() {
         <div className="md:col-span-2 space-y-4">
           <div className="flex items-center gap-2">
             <span className="font-headline-lg text-[40px] leading-none text-white uppercase tracking-tighter">
-              PROYECTO <span className="text-secondary">EXPERTOS</span>
+              POTRA <span className="text-secondary">PLAY</span>
             </span>
           </div>
           <p className="font-body-md text-white/80 max-w-sm mt-4">
@@ -44,7 +44,7 @@ function Footer() {
             </li>
             <li className="flex items-center gap-3">
               <Mail size={20} className="text-secondary shrink-0" />
-              <span>contacto@proyectoexpertos.com</span>
+              <span>contacto@potraplay.com</span>
             </li>
           </ul>
         </div>
@@ -52,7 +52,7 @@ function Footer() {
 
       <div className="max-w-[1440px] mx-auto px-6 pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
         <span className="font-body-md text-sm text-white/50">
-          © 2026 PROYECTO EXPERTOS. Todos los derechos reservados.
+          © 2026 Potra Play. Todos los derechos reservados.
         </span>
         <span className="font-label-sm text-xs text-white/50 uppercase">
           Tegucigalpa, Honduras

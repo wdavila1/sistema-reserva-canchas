@@ -36,7 +36,7 @@ function AdminLayout() {
         <div className="p-6 border-b-2 border-white/10 flex items-center justify-between">
           <div className="flex flex-col">
             <span className="font-headline-lg text-[28px] font-bold text-white tracking-tighter uppercase italic leading-none">
-              PROYECTO <span className="text-secondary">EXPERTOS</span>
+              POTRA <span className="text-secondary">PLAY</span>
             </span>
             <span className="font-label-sm text-secondary uppercase tracking-widest text-[10px]">
               Admin Panel

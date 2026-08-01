@@ -14,6 +14,7 @@ import CanchasPage from "@/features/canchas/pages/CanchasPage";
 import CanchaDetailPage from "@/features/canchas/pages/CanchaDetailPage";
 import LoginPage from "@/features/auth/pages/LoginPage";
 import RegistroPage from "@/features/auth/pages/RegistroPage";
+import PromocionesPublicPage from "@/features/promociones/pages/PromocionesPublicPage";
 import NosotrosPage from "@/pages/NosotrosPage";
 import ContactoPage from "@/pages/ContactoPage";
 import Terminos from "@/pages/Terminos";
@@ -33,6 +34,8 @@ import AdminReportesPage from "@/features/admin/pages/AdminReportesPage";
 import AdminUsuariosPage from "@/features/admin/pages/AdminUsuariosPage";
 import CanchaFormPage from "@/features/canchas/pages/CanchaFormPage";
 import UsuarioFormPage from "@/features/usuarios/pages/UsuarioFormPage";
+import SistemaExpertoPage from "@/features/admin/pages/SistemaExpertoPage";
+import AdminPromocionesPage from "@/features/admin/pages/AdminPromocionesPage";
 
 //Pagina para Error 404
 import PageNotFound from "@/pages/PageNotFound";
@@ -45,6 +48,7 @@ function AppRouter() {
         <Route path="/" element={<Home />} />
         <Route path="/canchas" element={<CanchasPage />} />
         <Route path="/canchas/:id" element={<CanchaDetailPage />} />
+        <Route path="/promociones" element={<PromocionesPublicPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/registro" element={<RegistroPage />} />
         <Route path="/nosotros" element={<NosotrosPage />} />
@@ -73,6 +77,8 @@ function AppRouter() {
           <Route path="usuarios" element={<AdminUsuariosPage />} />
           <Route path="usuarios/nueva" element={<UsuarioFormPage />} />
           <Route path="usuarios/editar/:id" element={<UsuarioFormPage />} />
+          <Route path="promociones" element={<AdminPromocionesPage />} />
+          <Route path="sistema-experto" element={<SistemaExpertoPage />} />
         </Route>
       </Route>
 

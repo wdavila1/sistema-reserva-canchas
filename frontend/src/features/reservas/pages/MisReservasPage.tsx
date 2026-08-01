@@ -123,14 +123,14 @@ function MisReservasPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
                     <span className="font-semibold text-foreground">
-                      {r.bloques.map((b) => b.nombreCancha).join(", ")}
+                      {[...new Set(r.bloques.map((b) => b.nombreCancha))].join(", ")}
                     </span>
                     <Badge className={`${estadoStyle[estado]} border-transparent`}>{estadoLabel[estado]}</Badge>
                   </div>
                   {r.bloques.map((b) => (
                     <div key={b.detalleReservaId} className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
-                      <span className="flex items-center gap-1"><CalendarDays size={13} /> {b.fecha}</span>
-                      <span className="flex items-center gap-1"><Clock size={13} /> {b.horaInicio} – {b.horaFin}</span>
+                      <span className="flex items-center gap-1"><CalendarDays size={13} /> {b.fecha.split('T')[0]}</span>
+                      <span className="flex items-center gap-1"><Clock size={13} /> {b.horaInicio.slice(0, 5)} – {b.horaFin.slice(0, 5)}</span>
                     </div>
                   ))}
                   <span className="font-mono text-xs text-muted-foreground">#{r.reservaId}</span>

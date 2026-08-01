@@ -7,14 +7,14 @@ export async function obtenerPagosPendientes(limit, offset) {
             SELECT
             r.reservaid AS idReserva,
             CONCAT(p.primernombre, ' ', p.primerapellido) AS nombreUsuario,
-            c.nombrecancha AS canchaReservada,
-            dr.preciohora AS precioHora,
-            TO_CHAR(dr.fecha, 'YYYY-MM-DD') AS fechaReserva,
-            TO_CHAR(dr.horainicio, 'HH24:MI') AS horaInicio,
-            TO_CHAR(dr.horafin, 'HH24:MI') AS horaFin,
-            FLOOR(EXTRACT(EPOCH FROM (dr.horafin - dr.horainicio)) / 3600) AS numeroHoras,
-            dr.subtotal AS subtotal,
-            ROUND(dr.subtotal * 0.15, 2) AS isv,
+            STRING_AGG(DISTINCT c.nombrecancha, ', ') AS canchaReservada,
+            MAX(dr.preciohora) AS precioHora,
+            TO_CHAR(MIN(dr.fecha), 'YYYY-MM-DD') AS fechaReserva,
+            TO_CHAR(MIN(dr.horainicio), 'HH24:MI') AS horaInicio,
+            TO_CHAR(MAX(dr.horafin), 'HH24:MI') AS horaFin,
+            SUM(FLOOR(EXTRACT(EPOCH FROM (dr.horafin - dr.horainicio)) / 3600)) AS numeroHoras,
+            SUM(dr.subtotal) AS subtotal,
+            ROUND(SUM(dr.subtotal) * 0.15, 2) AS isv,
             r.total AS total,
             COUNT(*) OVER() AS totalRegistros
         FROM reservas r
@@ -23,7 +23,8 @@ export async function obtenerPagosPendientes(limit, offset) {
         JOIN detallereservas dr ON dr.reservaid = r.reservaid
         JOIN canchas c ON c.canchaid = dr.canchaid
         WHERE r.estadoreserva = 'Pendiente'
-        ORDER BY dr.fecha, dr.horainicio
+        GROUP BY r.reservaid, p.primernombre, p.primerapellido, r.total
+        ORDER BY MIN(dr.fecha), MIN(dr.horainicio)
         LIMIT $1
         OFFSET $2;
         `;
@@ -38,7 +39,7 @@ export async function obtenerPagosConfirmados(limit, offset, facturado) {
       r.reservaid AS reservaId,
       pa.pagoid AS pagoid,
       CONCAT(p.primernombre, ' ', p.primerapellido) AS nombreUsuario,
-      STRING_AGG(c.nombrecancha, ', ') AS canchaReservada,
+      STRING_AGG(DISTINCT c.nombrecancha, ', ') AS canchaReservada,
       pa.monto AS total,
       mp.metodo AS metodoPago,
       TO_CHAR(pa.fechapago, 'YYYY-MM-DD') as fechaPago,

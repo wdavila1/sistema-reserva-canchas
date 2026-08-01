@@ -6,7 +6,7 @@ export async function obtenerReservaPorId(reservaId) {
     `SELECT r.ReservaID, r.UsuarioID, r.FechaReserva, r.EstadoReserva,
             r.Total, r.FechaModificacion,
             d.DetalleReservaID, d.CanchaID, d.Fecha, d.HoraInicio, d.HoraFin,
-            d.PrecioHora, d.Subtotal,
+            d.PrecioHora, d.Subtotal, d.Descuento,
             c.NombreCancha, c.TipoCanchaID, t.NombreTipo
        FROM Reservas r
        JOIN DetalleReservas d ON d.ReservaID = r.ReservaID
@@ -24,7 +24,7 @@ export async function obtenerReservaPorUsuario(usuarioId) {
     const { rows } = await pool.query(
         `SELECT r.ReservaID, r.FechaReserva, r.EstadoReserva, r.Total, r.FechaModificacion,
             d.DetalleReservaID, d.CanchaID, d.Fecha, d.HoraInicio, d.HoraFin,
-            d.PrecioHora, d.Subtotal,
+            d.PrecioHora, d.Subtotal, d.Descuento,
             c.NombreCancha, t.NombreTipo
        FROM Reservas r
        JOIN DetalleReservas d ON d.ReservaID = r.ReservaID
@@ -43,14 +43,14 @@ export async function obtenerTodasLasReservas() { //esta solo sera para el admin
         `SELECT r.ReservaID, r.UsuarioID, r.FechaReserva, r.EstadoReserva, r.Total,
             r.FechaModificacion, p.PrimerNombre, p.PrimerApellido, p.Correo,
             d.DetalleReservaID, d.CanchaID, d.Fecha, d.HoraInicio, d.HoraFin,
-            d.PrecioHora, d.Subtotal, c.NombreCancha, t.NombreTipo 
+            d.PrecioHora, d.Subtotal, d.Descuento, c.NombreCancha, t.NombreTipo 
         FROM Reservas r
         JOIN Usuarios u ON u.UsuarioID = r.UsuarioID
         JOIN Personas p ON p.PersonaID = u.PersonaID
         JOIN DetalleReservas d ON d.ReservaID = r.ReservaID
         JOIN Canchas c ON c.CanchaID = d.CanchaID
         JOIN TiposCancha t ON t.TipoCanchaID = c.TipoCanchaID
-        ORDER BY r.FechaReserva DESC`
+        ORDER BY r.FechaReserva DESC, d.Fecha ASC, d.HoraInicio ASC`
     );
     return rows;
     
@@ -83,8 +83,8 @@ export async function crearReservaConDetalle({ usuarioId, total, bloques }) {
     for (const bloque of bloques) {
       await client.query(
         `INSERT INTO DetalleReservas
-                (ReservaID, CanchaID, Fecha, HoraInicio, HoraFin, PrecioHora, Subtotal)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+                (ReservaID, CanchaID, Fecha, HoraInicio, HoraFin, PrecioHora, Subtotal, Descuento, PromocionID)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
         [
           reservaId,
           bloque.canchaId,
@@ -93,6 +93,8 @@ export async function crearReservaConDetalle({ usuarioId, total, bloques }) {
           bloque.horaFin,
           bloque.precioHora,
           bloque.subtotal,
+          bloque.descuento ?? 0,
+          bloque.promocionId ?? null,
         ]
       );
     }

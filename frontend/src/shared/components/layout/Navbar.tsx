@@ -50,7 +50,7 @@ function Navbar() {
                         Logo
                     </span>
                     <span className="font-headline-md text-foreground text-2xl uppercase tracking-tight hidden sm:block">
-                        Proyecto<span className="text-primary group-hover:text-secondary transition-colors"> Expertos</span>
+                        POTRA<span className="text-primary group-hover:text-secondary transition-colors"> PLAY</span>
                     </span>
                 </button>
 

@@ -40,6 +40,7 @@ export async function generarFactura(datosFacturacion, usuarioEmiteId) {
 
     const numeroFactura = await facturaRepository.generarNumeroFactura(client, cai.caiid);
     const subTotal = detalles.reduce((acc, d) => acc + Number(d.subtotal), 0);
+    const totalDescuento = detalles.reduce((acc, d) => acc + Number(d.descuento || 0), 0);
     const isv = aplicaExoneracion ? 0.00 : Number((subTotal * TASA_ISV).toFixed(2));
     const exoneracion = aplicaExoneracion ? Number((subTotal * TASA_ISV).toFixed(2)) : 0.00;
     const total = Number((subTotal + isv).toFixed(2))
@@ -52,6 +53,7 @@ export async function generarFactura(datosFacturacion, usuarioEmiteId) {
         subTotal,
         isv,
         exoneracion,
+        descuento: Number(totalDescuento.toFixed(2)),
         total,
         rtnCliente: rtn,
         razonSocialCliente,
@@ -61,7 +63,7 @@ export async function generarFactura(datosFacturacion, usuarioEmiteId) {
 
     await client.query("COMMIT");
 
-    return { facturaId, numeroFactura, subTotal, isv, total };
+    return { facturaId, numeroFactura, subTotal, descuento: Number(totalDescuento.toFixed(2)), isv, total };
 }
 
 export async function obtenerDetalleFactura(pagoId) {
