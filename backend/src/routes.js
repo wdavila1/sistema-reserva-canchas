@@ -9,6 +9,7 @@ import facturaRoutes from "./modules/facturas/facturas.routes.js"
 import usuariosRoutes from "./modules/usuarios/usuarios.routes.js"
 import perfilRoutes from "./modules/perfil/perfil.routes.js"
 import promocionesRoutes from "./modules/promociones/promociones.routes.js"
+import expertoRoutes from "./modules/experto/experto.routes.js"
 
 const router = Router();
 
@@ -23,6 +24,7 @@ router.use("/reportes", reportesRoutes);
 router.use("/usuarios", usuariosRoutes);
 router.use("/perfil", perfilRoutes);
 router.use("/promociones", promocionesRoutes);
+router.use("/experto", expertoRoutes);
 
 // Los demás módulos (usuarios, facturas, pagos, reportes)
 // se montan aquí cuando se implementen:
