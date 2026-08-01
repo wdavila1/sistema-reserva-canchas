@@ -33,6 +33,7 @@ import AdminReportesPage from "@/features/admin/pages/AdminReportesPage";
 import AdminUsuariosPage from "@/features/admin/pages/AdminUsuariosPage";
 import CanchaFormPage from "@/features/canchas/pages/CanchaFormPage";
 import UsuarioFormPage from "@/features/usuarios/pages/UsuarioFormPage";
+import SistemaExpertoPage from "@/features/admin/pages/SistemaExpertoPage";
 
 //Pagina para Error 404
 import PageNotFound from "@/pages/PageNotFound";
@@ -73,6 +74,7 @@ function AppRouter() {
           <Route path="usuarios" element={<AdminUsuariosPage />} />
           <Route path="usuarios/nueva" element={<UsuarioFormPage />} />
           <Route path="usuarios/editar/:id" element={<UsuarioFormPage />} />
+          <Route path="sistema-experto" element={<SistemaExpertoPage />} />
         </Route>
       </Route>
 

@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { StatCard } from "@/shared/components/ui/StatCard";
-import { CalendarDays, CreditCard, Users, Layers } from "lucide-react";
+import { CalendarDays, CreditCard, Users, Layers, Flame, Lightbulb } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, } from "recharts";
 
 //MOCKS
@@ -15,15 +15,25 @@ import { estadoStyle } from "@/shared/utils/estadoStyle";
 import { estadoLabel } from "@/shared/utils/estadoLabel";
 import { formatCurrency } from "@/shared/utils/formatCurrency";
 
+// SISTEMA EXPERTO
+import { useResumenExperto } from "@/features/experto/hooks/useExperto";
+
 function AdminDashboardPage() {
   const navigate = useNavigate();
+  const { resumen } = useResumenExperto();
+
+  const hoy = new Date().toLocaleDateString("es-HN", {
+    weekday: "long", year: "numeric", month: "long", day: "numeric",
+  });
+  const hoyStr = hoy.charAt(0).toUpperCase() + hoy.slice(1);
+
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-black text-foreground" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
           Panel de Control
         </h1>
-        <p className="text-muted-foreground text-sm mt-0.5">Lunes, 22 de junio de 2026</p>
+        <p className="text-muted-foreground text-sm mt-0.5">{hoyStr}</p>
       </div>
 
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
@@ -31,6 +41,39 @@ function AdminDashboardPage() {
         <StatCard title="Ingresos del mes" value="L. 94,800" sub="ISV incluido" icon={<CreditCard size={18} />} />
         <StatCard title="Canchas activas" value="5/6" sub="1 en mantenimiento" icon={<Layers size={18} />} />
         <StatCard title="Usuarios" value="42" sub="4 nuevos esta semana" icon={<Users size={18} />} />
+      </div>
+
+      {/* Sistema Experto — Alertas rápidas */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <button
+          onClick={() => navigate("/admin/sistema-experto")}
+          className="flex items-center gap-4 p-4 bg-red-50 border-2 border-red-300 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all text-left"
+        >
+          <div className="w-12 h-12 bg-red-500 flex items-center justify-center rounded-lg flex-shrink-0">
+            <Flame size={22} className="text-white" />
+          </div>
+          <div>
+            <p className="font-bold text-red-700 text-lg leading-tight">
+              {resumen ? resumen.horarios_pico : "—"} horario{resumen?.horarios_pico !== 1 ? "s" : ""} pico
+            </p>
+            <p className="text-sm text-red-500">Detectados en los últimos 60 días → Ver análisis</p>
+          </div>
+        </button>
+
+        <button
+          onClick={() => navigate("/admin/sistema-experto")}
+          className="flex items-center gap-4 p-4 bg-yellow-50 border-2 border-yellow-300 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all text-left"
+        >
+          <div className="w-12 h-12 bg-yellow-400 flex items-center justify-center rounded-lg flex-shrink-0">
+            <Lightbulb size={22} className="text-white" />
+          </div>
+          <div>
+            <p className="font-bold text-yellow-700 text-lg leading-tight">
+              {resumen ? resumen.sugerencias_pendientes : "—"} promocione{resumen?.sugerencias_pendientes !== 1 ? "s" : ""} sugeridas
+            </p>
+            <p className="text-sm text-yellow-600">Por baja ocupación → Aprobar sugerencias</p>
+          </div>
+        </button>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
