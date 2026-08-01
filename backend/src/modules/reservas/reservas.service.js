@@ -54,6 +54,7 @@ function agruparReserva(filas) {
       horaFin: f.horafin,
       precioHora: f.preciohora,
       subtotal: f.subtotal,
+      descuento: f.descuento,
     })),
   };
 }
@@ -87,6 +88,7 @@ export function agruparListado(filas) {
       horaFin: f.horafin,
       precioHora: f.preciohora,
       subtotal: f.subtotal,
+      descuento: f.descuento,
     });
   }
  
@@ -182,35 +184,42 @@ export async function crearReserva(usuarioId, camposSolicitados) {
 
     }
 
-    const horas = await calcularHoras(bloque.horaInicio, bloque.horaFin);
-    const subtotalBruto = Number((cancha.PrecioPorHora * horas).toFixed(2));
+    const startHour = parseInt(bloque.horaInicio.split(":")[0]);
+    const endHour = parseInt(bloque.horaFin.split(":")[0]);
 
-    // Sistema Experto: buscar promoción activa para este bloque
-    const promocion = await promocionesService.buscarPromocionAplicable(
-      bloque.fecha,
-      bloque.horaInicio
-    );
+    for (let h = startHour; h < endHour; h++) {
+      const horaActual = `${String(h).padStart(2, '0')}:00`;
+      const horaFinActual = `${String(h + 1).padStart(2, '0')}:00`;
+      
+      const subtotalBruto = Number(cancha.PrecioPorHora); // Es exactamente 1 hora
 
-    let descuento = 0;
-    let promocionId = null;
-    if (promocion) {
-      descuento = Number((subtotalBruto * (promocion.porcentajedescuento / 100)).toFixed(2));
-      promocionId = promocion.promocionid;
+      // Sistema Experto: buscar promoción activa para esta hora específica
+      const promocion = await promocionesService.buscarPromocionAplicable(
+        bloque.fecha,
+        horaActual
+      );
+
+      let descuento = 0;
+      let promocionId = null;
+      if (promocion) {
+        descuento = Number((subtotalBruto * (promocion.porcentajedescuento / 100)).toFixed(2));
+        promocionId = promocion.promocionid;
+      }
+
+      const subtotal = Number((subtotalBruto - descuento).toFixed(2));
+
+      bloquesParaInsertar.push({
+        canchaId: bloque.canchaId,
+        fecha: bloque.fecha,
+        horaInicio: horaActual,
+        horaFin: horaFinActual,
+        precioHora: cancha.PrecioPorHora,
+        subtotal,
+        descuento,
+        promocionId,
+      });
+      total += subtotal;
     }
-
-    const subtotal = Number((subtotalBruto - descuento).toFixed(2));
-
-    bloquesParaInsertar.push({
-      canchaId: bloque.canchaId,
-      fecha: bloque.fecha,
-      horaInicio: bloque.horaInicio,
-      horaFin: bloque.horaFin,
-      precioHora: cancha.PrecioPorHora,
-      subtotal,
-      descuento,
-      promocionId,
-    });
-    total += subtotal;
   }
 
   total = Number((total * (1 + ISV)).toFixed(2));

@@ -15,12 +15,18 @@ function SistemExpertoPage() {
   const handleCrearPromocion = async (idx: number, sug: typeof sugerencias[0]) => {
     setCreando(idx);
     try {
+      // Calcular horaFin (1 hora después)
+      const [h, m] = sug.horaInicio.split(":");
+      const hFin = String(Number(h) + 1).padStart(2, "0");
+      const horaFinCalculada = `${hFin}:${m}`;
+
       await crearPromocion({
         titulo: sug.promocionSugerida.titulo,
         descripcion: `Promoción automática generada por el sistema experto para los ${DIAS[sug.diaSemana]} a las ${sug.horaInicio}.`,
         porcentajeDescuento: sug.descuentoSugerido,
         diaSemana: sug.diaSemana,
         horaInicio: sug.horaInicio,
+        horaFin: horaFinCalculada,
       });
       setExito(idx);
       setTimeout(() => { setExito(null); refetch(); }, 2500);
@@ -40,7 +46,7 @@ function SistemExpertoPage() {
             <Zap size={20} className="text-white" />
           </div>
           <h1 className="font-headline-lg text-[32px] text-primary uppercase italic leading-none">
-            Sistema Experto
+            Potra Insights
           </h1>
         </div>
         <p className="text-muted-foreground text-sm ml-13 pl-1">
@@ -51,7 +57,7 @@ function SistemExpertoPage() {
       {/* ── Sección 1: Horarios Pico ─────────────────────────────────────── */}
       <section>
         <div className="flex items-center gap-3 mb-4">
-          <Flame size={20} className="text-red-500" />
+          {/* <Flame size={20} className="text-red-500" /> */}
           <h2 className="font-bold text-xl text-foreground uppercase tracking-wide">
             Horarios de Alta Demanda
           </h2>
@@ -118,10 +124,10 @@ function SistemExpertoPage() {
         )}
       </section>
 
-      {/* ── Sección 2: Sugerencias de Promoción ──────────────────────────── */}
+      {/* ── Sección 2: Sugerencias de Promoción */}
       <section>
         <div className="flex items-center gap-3 mb-4">
-          <Lightbulb size={20} className="text-yellow-500" />
+          {/* <Lightbulb size={20} className="text-yellow-500" /> */}
           <h2 className="font-bold text-xl text-foreground uppercase tracking-wide">
             Sugerencias de Promociones
           </h2>

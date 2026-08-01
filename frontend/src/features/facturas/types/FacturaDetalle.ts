@@ -1,3 +1,12 @@
+export interface ReservaItem {
+    cancha: string;
+    fecha: string;
+    horaInicio: string;
+    horaFin: string;
+    precioHora: string;
+    subtotal: string;
+}
+
 export interface FacturaDetalle {
     facturaid: number;
     razonsocial : string;
@@ -9,8 +18,9 @@ export interface FacturaDetalle {
     numerofactura : string;
     fechaemision : string;
     rtncliente: string;
-    servicioadquirido : string;
+    detalles: ReservaItem[];
     subtotal : string;
+    descuento: string;
     isv : string;
     exoneracion : string;
     total : string;

@@ -72,18 +72,30 @@ export async function obtenerDetalleFactura(pagoId) {
     f.numerofactura AS numerofactura,
     TO_CHAR(f.fechaemision,'YYYY-MM-DD') AS fechaemision,
     f.rtncliente AS rtncliente,
-    c.nombrecancha AS servicioadquirido,
     f.subtotal AS subtotal,
     f.descuento AS descuento,
     f.isv AS isv,
     f.exoneracion AS exoneracion,
-    f.total AS total
+    f.total AS total,
+    (
+      SELECT json_agg(
+        json_build_object(
+          'cancha', c.nombrecancha,
+          'fecha', TO_CHAR(dr.fecha, 'YYYY-MM-DD'),
+          'horaInicio', dr.horainicio,
+          'horaFin', dr.horafin,
+          'precioHora', dr.preciohora,
+          'subtotal', dr.subtotal
+        )
+      )
+      FROM detallereservas dr
+      JOIN canchas c ON c.canchaid = dr.canchaid
+      WHERE dr.reservaid = f.reservaid
+    ) AS detalles
     FROM empresa e
     JOIN caicontrol cc ON e.empresaid = cc.empresaid
     JOIN facturas f ON cc.caiid = f.caiid
     JOIN reservas r ON r.reservaid = f.reservaid
-    JOIN detallereservas dr ON dr.reservaid = r.reservaid
-    JOIN canchas c ON c.canchaid = dr.canchaid
     JOIN pagos p ON p.reservaid = r.reservaid
     WHERE p.pagoid = $1
   `

@@ -95,15 +95,30 @@ export function ModalVerFactura({ factura, onCerrar }: ModalVerFacturaProps) {
                 <table className="w-full text-sm">
                   <thead className="bg-gray-50 border-b border-gray-200">
                     <tr>
-                      <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Servicio</th>
-                      <th className="px-4 py-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Monto</th>
+                      <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Cancha</th>
+                      <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Horario</th>
+                      <th className="px-4 py-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Precio/Hr</th>
+                      <th className="px-4 py-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Subtotal</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr className="border-b border-gray-100">
-                      <td className="px-4 py-3 text-gray-800">{factura.servicioadquirido}</td>
-                      <td className="px-4 py-3 text-right font-mono text-gray-800">{factura.subtotal}</td>
-                    </tr>
+                    {factura.detalles && factura.detalles.length > 0 ? (
+                      factura.detalles.map((d, i) => (
+                        <tr key={i} className="border-b border-gray-100 last:border-0">
+                          <td className="px-4 py-3 text-gray-800 font-medium">{d.cancha}</td>
+                          <td className="px-4 py-3 text-gray-600">
+                            {d.fecha} <br />
+                            <span className="font-mono text-xs">{d.horaInicio.slice(0, 5)} - {d.horaFin.slice(0, 5)}</span>
+                          </td>
+                          <td className="px-4 py-3 text-right text-gray-600">{formatCurrency(Number(d.precioHora))}</td>
+                          <td className="px-4 py-3 text-right font-mono text-gray-800">{formatCurrency(Number(d.subtotal))}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr className="border-b border-gray-100">
+                        <td colSpan={4} className="px-4 py-3 text-gray-500 text-center">Sin detalles de reserva</td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -112,9 +127,16 @@ export function ModalVerFactura({ factura, onCerrar }: ModalVerFacturaProps) {
             {/* Detalle de venta */}
             <div className="flex flex-col items-end space-y-1 pt-4 border-t-2 border-gray-300">
               <div className="flex justify-between w-56 text-sm">
-                <span className="text-gray-500">Subtotal</span>
+                <span className="text-gray-500">Subtotal Bruto</span>
                 <span className="font-mono">{formatCurrency(Number(factura.subtotal))}</span>
               </div>
+
+              {Number(factura.descuento) > 0 && (
+                <div className="flex justify-between w-56 text-sm text-green-600 font-medium">
+                  <span>Descuento Promocional</span>
+                  <span className="font-mono">-{formatCurrency(Number(factura.descuento))}</span>
+                </div>
+              )}
 
               {(() => {
                 const subtotal = Number(factura.subtotal);

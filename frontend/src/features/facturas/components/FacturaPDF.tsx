@@ -106,10 +106,17 @@ const styles = StyleSheet.create({
     tableRowLast: {
         borderBottomWidth: 0,
     },
-    servicioCol: {
-        flex: 3,
+    canchaCol: {
+        flex: 2,
     },
-    montoCol: {
+    horarioCol: {
+        flex: 2,
+    },
+    precioCol: {
+        flex: 1,
+        textAlign: 'right',
+    },
+    subtotalCol: {
         flex: 1,
         textAlign: 'right',
     },
@@ -199,21 +206,54 @@ export function FacturaPDF({ factura }: { factura: FacturaDetalle }) {
                 </View>
                 <View style={styles.table}>
                     <View style={styles.tableHeader}>
-                        <Text style={[styles.tableHeaderText, styles.servicioCol]}>Servicio</Text>
-                        <Text style={[styles.tableHeaderText, styles.montoCol]}>Monto</Text>
+                        <Text style={[styles.tableHeaderText, styles.canchaCol]}>Cancha</Text>
+                        <Text style={[styles.tableHeaderText, styles.horarioCol]}>Horario</Text>
+                        <Text style={[styles.tableHeaderText, styles.precioCol]}>Precio/Hr</Text>
+                        <Text style={[styles.tableHeaderText, styles.subtotalCol]}>Subtotal</Text>
                     </View>
-                    <View style={[styles.tableRow, styles.tableRowLast]}>
-                        <Text style={[styles.servicioCol, { fontSize: 10 }]}>{factura.servicioadquirido}</Text>
-                        <Text style={[styles.montoCol, { fontFamily: 'Courier', fontSize: 10 }]}>
-                            {formatCurrency(subtotal)}
-                        </Text>
-                    </View>
+                    
+                    {factura.detalles && factura.detalles.length > 0 ? (
+                        factura.detalles.map((d, index) => {
+                            const isLast = index === factura.detalles.length - 1;
+                            return (
+                                <View key={index} style={[styles.tableRow, isLast ? styles.tableRowLast : {}]}>
+                                    <Text style={[styles.canchaCol, { fontSize: 9 }]}>{d.cancha}</Text>
+                                    <View style={styles.horarioCol}>
+                                        <Text style={{ fontSize: 9 }}>{d.fecha}</Text>
+                                        <Text style={{ fontFamily: 'Courier', fontSize: 8, color: '#4b5563' }}>
+                                            {d.horaInicio.slice(0, 5)} - {d.horaFin.slice(0, 5)}
+                                        </Text>
+                                    </View>
+                                    <Text style={[styles.precioCol, { fontFamily: 'Courier', fontSize: 9 }]}>
+                                        {formatCurrency(Number(d.precioHora))}
+                                    </Text>
+                                    <Text style={[styles.subtotalCol, { fontFamily: 'Courier', fontSize: 9 }]}>
+                                        {formatCurrency(Number(d.subtotal))}
+                                    </Text>
+                                </View>
+                            );
+                        })
+                    ) : (
+                        <View style={[styles.tableRow, styles.tableRowLast]}>
+                            <Text style={{ fontSize: 9, flex: 1, textAlign: 'center', color: '#9ca3af' }}>
+                                Sin detalles de reserva
+                            </Text>
+                        </View>
+                    )}
                 </View>
                 <View style={styles.totals}>
                     <View style={styles.totalRow}>
-                        <Text style={styles.totalLabel}>Subtotal</Text>
+                        <Text style={styles.totalLabel}>Subtotal Bruto</Text>
                         <Text style={styles.totalValue}>{formatCurrency(subtotal)}</Text>
                     </View>
+                    {Number(factura.descuento) > 0 && (
+                        <View style={styles.totalRow}>
+                            <Text style={styles.totalLabel}>Descuento Promocional</Text>
+                            <Text style={[styles.totalValue, { color: '#16a34a' }]}>
+                                -{formatCurrency(Number(factura.descuento))}
+                            </Text>
+                        </View>
+                    )}
                     <View style={styles.totalRow}>
                         <Text style={styles.totalLabel}>ISV 15%</Text>
                         <Text style={styles.totalValue}>{formatCurrency(Number(isvMostrado.toFixed(2)))}</Text>

@@ -161,14 +161,13 @@ function AdminReservas() {
                       <div className="text-xs text-muted-foreground">{r.cliente?.correo}</div>
                     </td>
                     <td className="px-5 py-3.5 text-muted-foreground whitespace-nowrap text-xs">
-                      {r.bloques.map((b) => b.nombreCancha).join(", ")}
+                      {[...new Set(r.bloques.map((b) => b.nombreCancha))].join(", ")}
                     </td>
                     <td className="px-5 py-3.5 text-muted-foreground whitespace-nowrap">
-                      {primerBloque?.fecha}
-                      {r.bloques.length > 1 && <span className="text-xs"> (+{r.bloques.length - 1} más)</span>}
+                      {[...new Set(r.bloques.map((b) => b.fecha.split('T')[0]))].join(", ")}
                     </td>
                     <td className="px-5 py-3.5 text-muted-foreground whitespace-nowrap">
-                      {primerBloque && `${primerBloque.horaInicio} – ${primerBloque.horaFin}`}
+                      {primerBloque && `${primerBloque.horaInicio.slice(0, 5)} – ${r.bloques[r.bloques.length - 1].horaFin.slice(0, 5)}`}
                     </td>
                     <td className="px-5 py-3.5 font-bold text-primary whitespace-nowrap">{formatCurrency(r.total)}</td>
                     <td className="px-5 py-3.5">

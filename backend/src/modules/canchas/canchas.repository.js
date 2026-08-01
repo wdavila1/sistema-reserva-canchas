@@ -109,7 +109,7 @@ export async function obtenerHorasOcupadas(canchaId, fecha) {
        JOIN Reservas r ON r.ReservaID = dr.ReservaID
       WHERE dr.CanchaID = $1 
         AND dr.Fecha = $2
-        AND r.EstadoReserva IN ('Pendiente', 'Confirmada')
+        AND r.EstadoReserva IN ('Pendiente', 'Confirmada', 'Completada')
       ORDER BY HoraInicio`,
     [canchaId, fecha]
   );
@@ -124,7 +124,7 @@ export async function obtenerHorasOcupadasRango(canchaId, fechaInicio, fechaFin)
        JOIN Reservas r ON r.ReservaID = dr.ReservaID
       WHERE dr.CanchaID = $1 
         AND dr.Fecha BETWEEN $2 AND $3
-        AND r.EstadoReserva IN ('Pendiente', 'Confirmada')
+        AND r.EstadoReserva IN ('Pendiente', 'Confirmada', 'Completada')
       ORDER BY dr.Fecha, dr.HoraInicio`,
     [canchaId, fechaInicio, fechaFin]
   );
