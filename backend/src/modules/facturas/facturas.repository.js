@@ -44,17 +44,17 @@ export async function generarNumeroFactura(client, caiId) {
 export async function crearFactura(client, datos) {
   const {
     reservaId, caiId, usuarioEmiteId, numeroFactura,
-    subTotal, isv, exoneracion, total, rtnCliente, razonSocialCliente
+    subTotal, isv, exoneracion, descuento, total, rtnCliente, razonSocialCliente
   } = datos;
 
   const query = `
     INSERT INTO Facturas
-      (ReservaID, CAIID, UsuarioEmiteID, NumeroFactura, SubTotal, ISV, Exoneracion, Total, RTNCliente, RazonSocialCliente)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      (ReservaID, CAIID, UsuarioEmiteID, NumeroFactura, SubTotal, ISV, Exoneracion, Descuento, Total, RTNCliente, RazonSocialCliente)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
     RETURNING FacturaID;
   `
   const { rows } = await client.query(query, [
-    reservaId, caiId, usuarioEmiteId, numeroFactura, subTotal, isv, exoneracion, total, rtnCliente, razonSocialCliente
+    reservaId, caiId, usuarioEmiteId, numeroFactura, subTotal, isv, exoneracion, descuento ?? 0, total, rtnCliente, razonSocialCliente
   ]);
   return rows[0].facturaid;
 }
@@ -74,6 +74,7 @@ export async function obtenerDetalleFactura(pagoId) {
     f.rtncliente AS rtncliente,
     c.nombrecancha AS servicioadquirido,
     f.subtotal AS subtotal,
+    f.descuento AS descuento,
     f.isv AS isv,
     f.exoneracion AS exoneracion,
     f.total AS total

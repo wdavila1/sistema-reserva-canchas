@@ -1,5 +1,6 @@
 import * as reservasRepository from "./reservas.repository.js";
 import * as canchasService from "../canchas/canchas.service.js";
+import * as promocionesService from "../promociones/promociones.service.js";
 import { ApiError } from "../../utils/ApiError.js";
 
 const ISV = 0.15;
@@ -182,7 +183,22 @@ export async function crearReserva(usuarioId, camposSolicitados) {
     }
 
     const horas = await calcularHoras(bloque.horaInicio, bloque.horaFin);
-    const subtotal = Number((cancha.PrecioPorHora * horas).toFixed(2));
+    const subtotalBruto = Number((cancha.PrecioPorHora * horas).toFixed(2));
+
+    // Sistema Experto: buscar promoción activa para este bloque
+    const promocion = await promocionesService.buscarPromocionAplicable(
+      bloque.fecha,
+      bloque.horaInicio
+    );
+
+    let descuento = 0;
+    let promocionId = null;
+    if (promocion) {
+      descuento = Number((subtotalBruto * (promocion.porcentajedescuento / 100)).toFixed(2));
+      promocionId = promocion.promocionid;
+    }
+
+    const subtotal = Number((subtotalBruto - descuento).toFixed(2));
 
     bloquesParaInsertar.push({
       canchaId: bloque.canchaId,
@@ -191,6 +207,8 @@ export async function crearReserva(usuarioId, camposSolicitados) {
       horaFin: bloque.horaFin,
       precioHora: cancha.PrecioPorHora,
       subtotal,
+      descuento,
+      promocionId,
     });
     total += subtotal;
   }

@@ -83,8 +83,8 @@ export async function crearReservaConDetalle({ usuarioId, total, bloques }) {
     for (const bloque of bloques) {
       await client.query(
         `INSERT INTO DetalleReservas
-                (ReservaID, CanchaID, Fecha, HoraInicio, HoraFin, PrecioHora, Subtotal)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+                (ReservaID, CanchaID, Fecha, HoraInicio, HoraFin, PrecioHora, Subtotal, Descuento, PromocionID)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
         [
           reservaId,
           bloque.canchaId,
@@ -93,6 +93,8 @@ export async function crearReservaConDetalle({ usuarioId, total, bloques }) {
           bloque.horaFin,
           bloque.precioHora,
           bloque.subtotal,
+          bloque.descuento ?? 0,
+          bloque.promocionId ?? null,
         ]
       );
     }
