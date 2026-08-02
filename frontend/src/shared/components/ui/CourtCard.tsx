@@ -24,7 +24,7 @@ export function CourtCard({
         {court.Estado !== 'Disponible' && (
           <div className="absolute inset-0 bg-primary/50 flex items-center justify-center backdrop-blur-[2px]">
             <Badge variant="danger" className="uppercase tracking-wide font-bold px-3 py-1 text-xs">
-              {court.Estado === 'Mantenimiento' ? '🔧 En Mantenimiento' : 'Ocupada'}
+              {court.Estado === 'Mantenimiento' ? 'En Mantenimiento' : 'Ocupada'}
             </Badge>
           </div>
         )}

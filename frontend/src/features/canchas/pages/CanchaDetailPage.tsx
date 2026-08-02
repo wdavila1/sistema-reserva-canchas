@@ -66,7 +66,7 @@ function CanchaDetailPage() {
                       ? "bg-amber-100 text-amber-800 border-amber-200 font-semibold"
                       : "bg-rose-100 text-rose-700 border-rose-200"
                 }>
-                  {estaDisponible ? "● Disponible" : court.Estado === 'Mantenimiento' ? "● En Mantenimiento" : "● Ocupada"}
+                  {estaDisponible ? "Disponible" : court.Estado === 'Mantenimiento' ? "En Mantenimiento" : "Ocupada"}
                 </Badge>
               </div>
               <h1 className="text-3xl sm:text-4xl font-black text-foreground" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
@@ -174,7 +174,7 @@ function CanchaDetailPage() {
                 <div className="text-center p-4 rounded-xl bg-muted border border-border">
                   <XCircle size={24} className="mx-auto mb-2 text-muted-foreground" />
                   <p className="text-sm text-muted-foreground font-medium">
-                    {court.Estado === 'Mantenimiento' ? '🔧 Cancha en mantenimiento' : 'Cancha no disponible temporalmente'}
+                    {court.Estado === 'Mantenimiento' ? 'Cancha en mantenimiento' : 'Cancha no disponible temporalmente'}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">Consulta otras opciones disponibles</p>
                 </div>
