@@ -22,8 +22,10 @@ export function CourtCard({
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
         {court.Estado !== 'Disponible' && (
-          <div className="absolute inset-0 bg-primary/40 flex items-center justify-center backdrop-blur-[2px]">
-            <Badge variant="danger">Ocupada</Badge>
+          <div className="absolute inset-0 bg-primary/50 flex items-center justify-center backdrop-blur-[2px]">
+            <Badge variant="danger" className="uppercase tracking-wide font-bold px-3 py-1 text-xs">
+              {court.Estado === 'Mantenimiento' ? '🔧 En Mantenimiento' : 'Ocupada'}
+            </Badge>
           </div>
         )}
       </div>
@@ -53,8 +55,10 @@ export function CourtCard({
           </span>
           {court.Estado === 'Disponible' ? (
             <Badge variant="success">DISPONIBLE</Badge>
+          ) : court.Estado === 'Mantenimiento' ? (
+            <Badge variant="danger" className="bg-amber-100 text-amber-800 border-amber-300 font-bold uppercase text-[10px]">MANTENIMIENTO</Badge>
           ) : (
-            <Badge variant="danger">NO DISPONIBLE</Badge>
+            <Badge variant="danger">OCUPADA</Badge>
           )}
         </div>
       </div>
