@@ -7,7 +7,7 @@ const cookieOpts = {
   secure: env.NODE_ENV === "production",
   sameSite: env.NODE_ENV === "production" ? "none" : "lax",
   maxAge: 1 * 24 * 60 * 60 * 1000, // 1 día, debe calzar con JWT_REFRESH_EXPIRES_IN
-  path: "/api/auth",
+  path: "/api/auth", //El navegador solo envia lo cokoe a esta ruta /api/auth/refresh
 };
 
 export const registrar = asyncHandler(async (req, res) => {

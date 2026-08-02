@@ -20,6 +20,7 @@ export function setAccessToken(token: string | null) {
 
 axiosClient.interceptors.request.use((config) => {
   if (accessToken) {
+    // Si tenemos un Access Token en memoria, lo pegamos en la cabecera
     config.headers.Authorization = `Bearer ${accessToken}`;
   }
   return config;

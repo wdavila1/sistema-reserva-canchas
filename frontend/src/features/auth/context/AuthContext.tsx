@@ -44,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Al montar la app: intentamos restaurar la sesión con la cookie httpOnly del
   // refresh token (si el usuario refrescó la página o volvió a abrir la pestaña).
   // Si no hay cookie válida, el backend responde 401 y simplemente nos quedamos
-  // deslogueados — es el flujo normal de un visitante sin sesión.
+  // deslogueados
   useEffect(() => {
     authApi
       .refresh()

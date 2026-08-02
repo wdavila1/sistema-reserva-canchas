@@ -3,7 +3,7 @@ import { hashPassword, compararPassword } from "../../utils/bcrypt.js";
 import { firmarAccessToken, firmarRefreshToken, verificarRefreshToken } from "../../utils/jwt.js";
 import * as authRepository from "./auth.repository.js";
 
-// ─── Regex de validación de campos ───────────────────────────────────────────
+// Regex de validación de campos 
 const REGEX_CONTRASENA   = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+\[\]{};:'",.<>?/\\|`~])/;
 const REGEX_CORREO       = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const REGEX_NOMBRE       = /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s'\-]+$/;  // letras, tildes, espacios, apóstrofe, guion
@@ -51,7 +51,7 @@ export async function registrar({
   correo, telefono, nombreUsuario, contrasena,
   numeroIdentidad, rtn, direccion,
 }) {
-  // ── 1. Normalizar — trim en todos los strings ─────────────────────────────
+  // 1. Normalizar — trim en todos los strings 
   primerNombre    = (primerNombre    ?? "").trim();
   segundoNombre   = (segundoNombre   ?? "").trim() || null;
   primerApellido  = (primerApellido  ?? "").trim();
@@ -63,12 +63,12 @@ export async function registrar({
   rtn             = (rtn             ?? "").trim() || null;
   direccion       = (direccion       ?? "").trim() || null;
 
-  // ── 2. Campos obligatorios ────────────────────────────────────────────────
+  //2. Campos obligatorios 
   if (!primerNombre || !primerApellido || !correo || !telefono || !nombreUsuario || !contrasena) {
     throw new ApiError(400, "Faltan campos obligatorios para el registro.");
   }
 
-  // ── 3. Formato de nombres/apellidos (solo letras y tildes) ────────────────
+  // 3. Formato de nombres/apellidos (solo letras y tildes) 
   if (!REGEX_NOMBRE.test(primerNombre))
     throw new ApiError(400, "El primer nombre solo puede contener letras y espacios.");
   if (!REGEX_NOMBRE.test(primerApellido))
@@ -78,35 +78,35 @@ export async function registrar({
   if (segundoApellido && !REGEX_NOMBRE.test(segundoApellido))
     throw new ApiError(400, "El segundo apellido solo puede contener letras y espacios.");
 
-  // ── 4. Formato de correo ──────────────────────────────────────────────────
+  // 4. Formato de correo 
   if (!REGEX_CORREO.test(correo))
     throw new ApiError(400, "El formato del correo electrónico no es válido.");
 
-  // ── 5. Formato de nombre de usuario ──────────────────────────────────────
+  // 5. Formato de nombre de usuario 
   if (!REGEX_USUARIO.test(nombreUsuario))
     throw new ApiError(400, "El nombre de usuario solo puede contener letras, números, guiones y guiones bajos (mínimo 3 caracteres, sin espacios).");
 
-  // ── 6. Formato de teléfono ────────────────────────────────────────────────
+  // 6. Formato de teléfono 
   if (!REGEX_TELEFONO.test(telefono))
     throw new ApiError(400, "El teléfono no tiene un formato válido (mínimo 8 dígitos).");
 
-  // ── 7. Contraseña ─────────────────────────────────────────────────────────
+  // 7. Contraseña 
   const errorContrasena = validarContrasena(contrasena);
   if (errorContrasena) throw new ApiError(400, errorContrasena);
 
-  // ── 8. Formato de identidad hondureña (13 dígitos exactos) ───────────────
+  // 8. Formato de identidad hondureña (13 dígitos exactos) 
   if (numeroIdentidad && !REGEX_IDENTIDAD_HN.test(numeroIdentidad))
     throw new ApiError(400, "El número de identidad debe ser exactamente 13 dígitos (sin guiones ni espacios).");
 
-  // ── 9. Formato de RTN hondureño (14 dígitos exactos) ─────────────────────
+  // 9. Formato de RTN hondureño (14 dígitos exactos) 
   if (rtn && !REGEX_RTN_HN.test(rtn))
     throw new ApiError(400, "El RTN debe ser exactamente 14 dígitos (sin guiones ni espacios).");
 
-  // ── 10. Unicidad de correo y nombre de usuario ────────────────────────────
+  // 10. Unicidad de correo y nombre de usuario 
   const yaExiste = await authRepository.existeCorreoOUsuario(correo, nombreUsuario);
   if (yaExiste) throw new ApiError(409, "Ya existe una cuenta con ese correo o nombre de usuario.");
 
-  // ── 11. Unicidad de identidad y RTN ──────────────────────────────────────
+  // 11. Unicidad de identidad y RTN 
   if (numeroIdentidad || rtn) {
     const duplicados = await authRepository.existeIdentidadORtn(numeroIdentidad, rtn);
     if (duplicados.identidad)
