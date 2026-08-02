@@ -65,7 +65,7 @@ export async function obtenerPatronesAltaDemanda() {
         ROUND((b.total_reservas::NUMERIC / ca.total) * 100, 1) AS porcentaje_ocupacion
      FROM bloques b, canchas_activas ca
      WHERE ROUND((b.total_reservas::NUMERIC / ca.total) * 100, 1) >= 70
-     ORDER BY porcentaje_ocupacion DESC`
+     ORDER BY porcentaje_ocupacion DESC LIMIT 5`
   );
 
   return rows;
@@ -127,7 +127,7 @@ export async function obtenerSugerenciasPromociones() {
               AND (p.HoraFin    IS NULL OR p.HoraFin    >  co.hora_inicio::TIME)
         ) AS ya_tiene_promocion
      FROM con_ocupacion co
-     ORDER BY co.porcentaje_ocupacion ASC`
+     ORDER BY co.porcentaje_ocupacion ASC LIMIT 5`
   );
 
   return rows;

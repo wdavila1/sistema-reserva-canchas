@@ -1,6 +1,6 @@
--- =====================================================================
+
 -- NUEVAS TABLAS Y ALTERACIONES: Sistema Experto + Promociones
--- =====================================================================
+
 
 -- 1. Tabla de Promociones
 CREATE TABLE Promociones (
