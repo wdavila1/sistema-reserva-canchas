@@ -1,5 +1,11 @@
 import * as CanchaRepository from './canchas.repository.js';
 import {ApiError} from "../../utils/ApiError.js";
+import { env } from "../../config/env.js";
+import { createClient } from "@supabase/supabase-js";
+
+const MIME_PERMITIDOS = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const MAX_BYTES = 5 * 1024 * 1024; // 5 MB para fotos de canchas
+
 
 const HORARIO_OPERACION = [
   "07:00","08:00","09:00","10:00","11:00","12:00",
@@ -151,4 +157,67 @@ export async function eliminarCancha(id) {
     
     await CanchaRepository.eliminarCancha(id);
     return { mensaje: "Cancha eliminada exitosamente" };
+}
+
+/* PATCH - Subir foto de cancha a Supabase Storage y guardar URL en la BD */
+export async function subirImagenCancha(canchaId, archivo) {
+    await obtenerCanchaPorId(canchaId); // Valida que la cancha exista
+
+    if (!archivo) throw new ApiError(400, "No se recibió ningún archivo.");
+    if (!MIME_PERMITIDOS.includes(archivo.mimetype)) {
+        throw new ApiError(400, "Solo se permiten imágenes en formato JPG, PNG, WebP o GIF.");
+    }
+    if (archivo.size > MAX_BYTES) {
+        throw new ApiError(400, "La imagen de la cancha no debe superar los 5 MB.");
+    }
+
+    if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
+        throw new ApiError(500, "El servidor no está configurado para subir archivos (falta Supabase).");
+    }
+
+    const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+
+    const ext  = archivo.originalname.split(".").pop();
+    const path = `canchas/${canchaId}/foto.${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+        .from("canchas")
+        .upload(path, archivo.buffer, {
+            contentType: archivo.mimetype,
+            upsert: true,
+        });
+
+    if (uploadError) {
+        throw new ApiError(500, `Error al subir la imagen: ${uploadError.message}`);
+    }
+
+    const { data } = supabase.storage.from("canchas").getPublicUrl(path);
+    const url = `${data.publicUrl}?t=${Date.now()}`; // Forzar recarga ignorando caché
+
+    await CanchaRepository.actualizarCancha(canchaId, { imagenUrl: url });
+
+    return { imagenUrl: url, mensaje: "Imagen de cancha actualizada exitosamente." };
+}
+
+/* DELETE - Eliminar foto de la cancha de Supabase y limpiar BD */
+export async function eliminarImagenCancha(canchaId) {
+    const cancha = await obtenerCanchaPorId(canchaId);
+    if (!cancha.ImagenURL) {
+        throw new ApiError(400, "Esta cancha no tiene una imagen para eliminar.");
+    }
+
+    try {
+        const urlObj = new URL(cancha.ImagenURL);
+        const pathIndex = urlObj.pathname.indexOf("/canchas/");
+        if (pathIndex !== -1 && env.SUPABASE_URL && env.SUPABASE_SERVICE_ROLE_KEY) {
+            const filePath = urlObj.pathname.substring(pathIndex + "/canchas/".length);
+            const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+            await supabase.storage.from("canchas").remove([filePath]);
+        }
+    } catch (err) {
+        console.warn("Error al intentar borrar el archivo de Supabase Storage:", err);
+    }
+
+    await CanchaRepository.actualizarCancha(canchaId, { imagenUrl: null });
+    return { mensaje: "Imagen de cancha eliminada exitosamente." };
 }
