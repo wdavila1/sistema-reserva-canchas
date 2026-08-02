@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Button } from "../ui/Button";
 
 interface RangeState {
   value: number;
@@ -7,19 +8,84 @@ interface RangeState {
   step: number;
 }
 
+const STORAGE_KEY = "a11y_preferences";
+
 export function MenuAccesibilidad() {
   const [isOpen, setIsOpen] = useState(false);
 
+  //inicializar estado desde localStorage
+  const getInitialState = <T,>(key: string, defaultValue: T): T => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed[key] !== undefined) return parsed[key];
+      }
+    } catch (e) {
+      console.error("Error reading accessibility preferences:", e);
+    }
+    return defaultValue;
+  };
+
   // Estados
-  const [fontSize, setFontSize] = useState<RangeState>({ value: 100, min: 90, max: 130, step: 10 });
-  const [wordSpacing, setWordSpacing] = useState<RangeState>({ value: 0, min: 0, max: 0.3, step: 0.05 });
-  const [lineHeight, setLineHeight] = useState<RangeState>({ value: 1.5, min: 1.2, max: 2.1, step: 0.3 });
-  const [dyslexicFont, setDyslexicFont] = useState(false);
-  const [monochrome, setMonochrome] = useState(false); 
-  const [highlightLinks, setHighlightLinks] = useState(false);
-  const [readingGuide, setReadingGuide] = useState(false);
-  const [focusMode, setFocusMode] = useState(false);
-  const [highContrast, setHighContrast] = useState(false);
+  const [fontSize, setFontSize] = useState<RangeState>(() =>
+    getInitialState("fontSize", { value: 100, min: 90, max: 130, step: 10 })
+  );
+  const [wordSpacing, setWordSpacing] = useState<RangeState>(() =>
+    getInitialState("wordSpacing", { value: 0, min: 0, max: 0.3, step: 0.05 })
+  );
+  const [lineHeight, setLineHeight] = useState<RangeState>(() =>
+    getInitialState("lineHeight", { value: 1.5, min: 1.2, max: 2.1, step: 0.3 })
+  );
+  const [dyslexicFont, setDyslexicFont] = useState<boolean>(() =>
+    getInitialState("dyslexicFont", false)
+  );
+  const [monochrome, setMonochrome] = useState<boolean>(() =>
+    getInitialState("monochrome", false)
+  );
+  const [highlightLinks, setHighlightLinks] = useState<boolean>(() =>
+    getInitialState("highlightLinks", false)
+  );
+  const [readingGuide, setReadingGuide] = useState<boolean>(() =>
+    getInitialState("readingGuide", false)
+  );
+  const [focusMode, setFocusMode] = useState<boolean>(() =>
+    getInitialState("focusMode", false)
+  );
+  const [highContrast, setHighContrast] = useState<boolean>(() =>
+    getInitialState("highContrast", false)
+  );
+  const [noAnimations, setNoAnimations] = useState<boolean>(() =>
+    getInitialState("noAnimations", false)
+  );
+
+  // Guardar cambios en localStorage
+  useEffect(() => {
+    const preferences = {
+      fontSize,
+      wordSpacing,
+      lineHeight,
+      dyslexicFont,
+      monochrome,
+      highlightLinks,
+      readingGuide,
+      focusMode,
+      highContrast,
+      noAnimations, 
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(preferences));
+  }, [
+    fontSize,
+    wordSpacing,
+    lineHeight,
+    dyslexicFont,
+    monochrome,
+    highlightLinks,
+    readingGuide,
+    focusMode,
+    highContrast,
+    noAnimations,
+  ]);
 
   // Hook para tipografía y espaciados
   useEffect(() => {
@@ -27,111 +93,67 @@ export function MenuAccesibilidad() {
     document.body.style.wordSpacing = `${wordSpacing.value}rem`;
     document.body.style.lineHeight = `${lineHeight.value}`;
   }, [fontSize.value, wordSpacing.value, lineHeight.value]);
-  
-  //Hook cambiar contrastes 
+
+  // Hook unificado para Clases y Filtros en <html> / <body>
   useEffect(() => {
     document.body.classList.toggle("a11y-dyslexic", dyslexicFont);
     document.body.classList.toggle("a11y-highlight-links", highlightLinks);
-    
-    // Lógica de Filtros Combinados 
+
     let filterStyle = "";
-  
-    if (monochrome) {
-      filterStyle += "grayscale(100%) ";
-    }
-  
-    if (highContrast) {
-      filterStyle += "contrast(120%) brightness(100%) ";
-    }
-  
+    if (monochrome) filterStyle += "grayscale(100%) ";
+    if (highContrast) filterStyle += "contrast(120%) brightness(100%) ";
+
     document.documentElement.style.filter = filterStyle.trim() || "none";
   }, [dyslexicFont, highlightLinks, monochrome, highContrast]);
 
-  // Hook para clases e invocar Escala de Grises
+  // Posicionamiento de la Guía de Lectura
   useEffect(() => {
-    document.body.classList.toggle("a11y-dyslexic", dyslexicFont);
-    document.body.classList.toggle("a11y-highlight-links", highlightLinks);
-    
-    // Filtro global para Escala de Grises
-    if (monochrome) {
-      document.documentElement.style.filter = "grayscale(100%)";
-    } else {
-      document.documentElement.style.filter = "none";
-    }
-  }, [dyslexicFont, highlightLinks, monochrome]);
+    if (!readingGuide) return;
 
-  // Hook para la Guía de Lectura Corta
-  useEffect(() => {
-    let guideElement = document.getElementById("a11y-reading-guide");
-
-    if (readingGuide) {
-      if (!guideElement) {
-        guideElement = document.createElement("div");
-        guideElement.id = "a11y-reading-guide";
-        document.body.appendChild(guideElement);
+    const guideElement = document.getElementById("a11y-reading-guide");
+    const handleMouseMove = (e: MouseEvent) => {
+      if (guideElement) {
+        guideElement.style.left = `${e.clientX - 350}px`;
+        guideElement.style.top = `${e.clientY - 5}px`;
       }
-      guideElement.style.display = "block";
+    };
 
-      const handleMouseMove = (e: MouseEvent) => {
-        if (guideElement) {
-          guideElement.style.left = `${e.clientX - 300}px`; 
-          guideElement.style.top = `${e.clientY - 5}px`;
-        }
-      };
-      window.addEventListener("mousemove", handleMouseMove);
-      return () => window.removeEventListener("mousemove", handleMouseMove);
-    } else if (guideElement) {
-      guideElement.style.display = "none";
-    }
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [readingGuide]);
 
-  // Hook para el Modo Enfocado 
+  // Posicionamiento de la Máscara de Enfoque
   useEffect(() => {
-    let topMask = document.getElementById("a11y-focus-top");
-    let bottomMask = document.getElementById("a11y-focus-bottom");
+    if (!focusMode) return;
 
-    if (focusMode) {
-      if (!topMask) {
-        topMask = document.createElement("div");
-        topMask.id = "a11y-focus-top";
-        topMask.className = "a11y-focus-mask";
-        document.body.appendChild(topMask);
+    const topMask = document.getElementById("a11y-focus-top");
+    const bottomMask = document.getElementById("a11y-focus-bottom");
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const gap = 85;
+      if (topMask && bottomMask) {
+        topMask.style.height = `${Math.max(0, e.clientY - gap)}px`;
+        bottomMask.style.top = `${e.clientY + gap}px`;
       }
-      if (!bottomMask) {
-        bottomMask = document.createElement("div");
-        bottomMask.id = "a11y-focus-bottom";
-        bottomMask.className = "a11y-focus-mask";
-        document.body.appendChild(bottomMask);
-      }
+    };
 
-      topMask.style.display = "block";
-      bottomMask.style.display = "block";
-
-      const handleMouseMove = (e: MouseEvent) => {
-        const gap = 85; 
-        if (topMask && bottomMask) {
-          topMask.style.height = `${Math.max(0, e.clientY - gap)}px`;
-          bottomMask.style.top = `${e.clientY + gap}px`;
-        }
-      };
-
-      window.addEventListener("mousemove", handleMouseMove);
-      return () => window.removeEventListener("mousemove", handleMouseMove);
-    } else {
-      if (topMask) topMask.style.display = "none";
-      if (bottomMask) bottomMask.style.display = "none";
-    }
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [focusMode]);
 
   const handleRangeChange = (
-    setter: React.Dispatch<React.SetStateAction<RangeState>>, 
-    state: RangeState, 
+    setter: React.Dispatch<React.SetStateAction<RangeState>>,
+    state: RangeState,
     delta: number
   ) => {
     const newValue = parseFloat((state.value + delta).toFixed(2));
     const finalValue = Math.min(Math.max(newValue, state.min), state.max);
     setter({ ...state, value: finalValue });
   };
+  // Hook para desactivar animaciones
+  useEffect(() => {
+    document.body.classList.toggle("a11y-no-animations", noAnimations);
+  }, [noAnimations]);
 
   const resetAll = () => {
     setFontSize({ ...fontSize, value: 100 });
@@ -142,92 +164,142 @@ export function MenuAccesibilidad() {
     setHighlightLinks(false);
     setReadingGuide(false);
     setFocusMode(false);
+    setHighContrast(false);
+    setNoAnimations(false);
+
     document.documentElement.style.fontSize = "100%";
     document.body.style.wordSpacing = "normal";
     document.body.style.lineHeight = "normal";
     document.documentElement.style.filter = "none";
-    setHighContrast(false);
-    setMonochrome(false);
-    document.documentElement.style.filter = "none";
+    document.body.classList.remove("a11y-no-animations");
+
+    localStorage.removeItem(STORAGE_KEY);
   };
 
-  const RangeOption = ({ label, state, setter, unit = "" }: { label: string, state: RangeState, setter: React.Dispatch<React.SetStateAction<RangeState>>, unit?: string }) => (
+  const RangeOption = ({
+    label,
+    state,
+    setter,
+    unit = "",
+  }: {
+    label: string;
+    state: RangeState;
+    setter: React.Dispatch<React.SetStateAction<RangeState>>;
+    unit?: string;
+  }) => (
     <div style={optionGroupStyle}>
-      <span style={labelStyle}>{label}: <strong>{state.value}{unit}</strong></span>
+      <span >
+        {label}: <strong>{state.value}{unit}</strong>
+      </span>
       <div style={{ display: "flex", gap: "10px" }}>
-        <button onClick={() => handleRangeChange(setter, state, -state.step)} style={rangeButtonStyle} aria-label={`Disminuir ${label}`}>-</button>
-        <button onClick={() => handleRangeChange(setter, state, state.step)} style={rangeButtonStyle} aria-label={`Aumentar ${label}`}>+</button>
+        <Button
+          onClick={() => handleRangeChange(setter, state, -state.step)}
+          style={rangeButtonStyle}
+          aria-label={`Disminuir ${label}`}
+        >
+          -
+        </Button>
+        <Button
+          onClick={() => handleRangeChange(setter, state, state.step)}
+          style={rangeButtonStyle}
+          aria-label={`Aumentar ${label}`}
+        >
+          +
+        </Button>
       </div>
     </div>
   );
 
-  const ToggleOption = ({ label, state, setter }: { label: string, state: boolean, setter: React.Dispatch<React.SetStateAction<boolean>> }) => (
-    <button
+  const ToggleOption = ({
+    label,
+    state,
+    setter,
+  }: {
+    label: string;
+    state: boolean;
+    setter: React.Dispatch<React.SetStateAction<boolean>>;
+  }) => (
+    <Button
       onClick={() => setter(!state)}
       style={{
         ...toggleButtonStyle,
         backgroundColor: state ? "#0056b3" : "#f1f3f5",
-        color: state ? "#ffffff" : "#1a1d20"
+        color: state ? "#ffffff" : "#1a1d20",
       }}
       aria-pressed={state}
     >
       {state ? "✓" : ""} {label}
-    </button>
+    </Button>
   );
 
   return (
-    <div style={{ position: "fixed", top: "15px", right: "30px", zIndex: 10000 }}>
-      {/* Botón flotante */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        aria-label="Menú de Opciones de Accesibilidad"
-        style={floatingButtonStyle}
-      >
-        ♿
-      </button>
+    <>
+      {/* Guía de lectura integrada en el árbol de React */}
+      {readingGuide && <div id="a11y-reading-guide" style={{ display: "block" }} />}
 
-      {/* Menú Desplegable */}
-      {isOpen && (
-        <div role="dialog" aria-label="Ajustes de accesibilidad" style={menuContainerStyle}>
-          <div style={headerStyle}>
-            <h2 style={{ fontSize: "18px", margin: 0, color: "#1a1d20" }}>Menú de Accesibilidad</h2>
-            <button onClick={() => setIsOpen(false)} style={closeButtonStyle} aria-label="Cerrar">✕</button>
-          </div>
+      {/* Máscaras de enfoque integradas en el árbol de React */}
+      {focusMode && (
+        <>
+          <div id="a11y-focus-top" className="a11y-focus-mask" style={{ display: "block" }} />
+          <div id="a11y-focus-bottom" className="a11y-focus-mask" style={{ display: "block" }} />
+        </>
+      )}
 
-          <hr style={dividerStyle} />
+      <div style={{ position: "fixed", top: "15px", right: "30px", zIndex: 10000 }}>
+        {/* Botón flotante */}
+        <Button
+          onClick={() => setIsOpen(!isOpen)}
+          aria-label="Menú de Opciones de Accesibilidad"
+          style={floatingButtonStyle}
+        >
+          ♿
+        </Button>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            <RangeOption label="Tamaño de texto" state={fontSize} setter={setFontSize} unit="%" />
-            <RangeOption label="Espaciado palabras" state={wordSpacing} setter={setWordSpacing} unit="rem" />
-            <RangeOption label="Altura de línea" state={lineHeight} setter={setLineHeight} />
-
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-              <ToggleOption label="Fuente Lectura Fácil (Dislexia)" state={dyslexicFont} setter={setDyslexicFont} />
-              <ToggleOption label="Alto Contraste" state={highContrast} setter={setHighContrast} />
-              <ToggleOption label="Escala de Grises (Monocromo)" state={monochrome} setter={setMonochrome} />
-              <ToggleOption label="Resaltar Enlaces" state={highlightLinks} setter={setHighlightLinks} />
-              <ToggleOption label="Guía de Lectura (Barra)" state={readingGuide} setter={setReadingGuide} />
-              <ToggleOption label="Modo Enfocado (Máscara)" state={focusMode} setter={setFocusMode} />
+        {/* Menú Desplegable */}
+        {isOpen && (
+          <div role="dialog" aria-label="Ajustes de accesibilidad" style={menuContainerStyle}>
+            <div style={headerStyle}>
+              <h2 style={{ fontSize: "18px", margin: 0, color: "#1a1d20" }}>Menú de Accesibilidad</h2>
+              <Button onClick={() => setIsOpen(false)}  aria-label="Cerrar">
+                ✕
+              </Button>
             </div>
 
-            <button onClick={resetAll} style={resetButtonStyle}>
-              Restablecer todos los ajustes
-            </button>
+            <hr style={dividerStyle} />
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+              
+              <RangeOption label="Tamaño de texto" state={fontSize} setter={setFontSize} unit="%" />
+              <RangeOption label="Espaciado palabras" state={wordSpacing} setter={setWordSpacing} unit="rem" />
+              <RangeOption label="Altura de línea" state={lineHeight} setter={setLineHeight} />
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                <ToggleOption label="Fuente Lectura Fácil (Dislexia)" state={dyslexicFont} setter={setDyslexicFont} />
+                <ToggleOption label="Alto Contraste" state={highContrast} setter={setHighContrast} />
+                <ToggleOption label="Escala de Grises (Monocromo)" state={monochrome} setter={setMonochrome} />
+                <ToggleOption label="Resaltar Enlaces" state={highlightLinks} setter={setHighlightLinks} />
+                <ToggleOption label="Guía de Lectura (Barra)" state={readingGuide} setter={setReadingGuide} />
+                <ToggleOption label="Modo Enfocado (Máscara)" state={focusMode} setter={setFocusMode} />
+                <ToggleOption label="Detener Animaciones" state={noAnimations} setter={setNoAnimations} />
+              </div>
+
+              <Button onClick={resetAll} style={resetButtonStyle}>
+                Restablecer todos los ajustes
+              </Button>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 }
 
-// Estilos
-const floatingButtonStyle: React.CSSProperties = { width: "60px", height: "60px", borderRadius: "50%", backgroundColor: "#0056b3", color: "#ffffff", border: "none", cursor: "pointer", boxShadow: "0 6px 16px rgba(0,0,0,0.3)", fontSize: "26px", display: "flex", alignItems: "center", justifyContent: "center" };
-const menuContainerStyle: React.CSSProperties = { position: "absolute", top: "75px", right: "0", width: "320px", backgroundColor: "#ffffff", color: "#1a1d20", borderRadius: "16px", padding: "20px", boxShadow: "0 10px 30px rgba(0,0,0,0.25)", border: "1px solid #e9ecef", fontFamily: "system-ui, -apple-system, sans-serif", overflowY: "auto", maxHeight: "80vh" };
+// Estilos personalizados
+const floatingButtonStyle: React.CSSProperties = { width: "60px", height: "60px",  backgroundColor: "#0056b3", color: "#ffffff", border: "none", cursor: "pointer", boxShadow: "0 6px 16px rgba(0,0,0,0.3)", fontSize: "26px", display: "flex", alignItems: "center", justifyContent: "center" };
+const menuContainerStyle: React.CSSProperties = { position: "absolute", top: "75px", right: "0", width: "320px", backgroundColor: "#ffffff", color: "#1a1d20", borderRadius: "16px", padding: "20px", boxShadow: "0 10px 30px rgba(0,0,0,0.25)", border: "1px solid #e9ecef", fontFamily: "system-ui, -apple-system, sans-serif", overflowY: "auto", maxHeight: "90vh" };
 const headerStyle: React.CSSProperties = { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" };
-const closeButtonStyle: React.CSSProperties = { background: "none", border: "none", cursor: "pointer", fontSize: "18px", color: "#868e96" };
 const dividerStyle: React.CSSProperties = { border: "none", borderTop: "1px solid #e9ecef", margin: "0 0 16px 0" };
 const optionGroupStyle: React.CSSProperties = { display: "flex", flexDirection: "column", gap: "8px" };
-const labelStyle: React.CSSProperties = { fontSize: "14px", fontWeight: 600 };
-const rangeButtonStyle: React.CSSProperties = { flex: 1, padding: "10px", borderRadius: "8px", border: "1px solid #ced4da", cursor: "pointer", fontSize: "16px", fontWeight: "bold", backgroundColor: "#fff" };
-const toggleButtonStyle: React.CSSProperties = { display: "block", width: "100%", textAlign: "left", padding: "12px", borderRadius: "10px", border: "1px solid #ced4da", cursor: "pointer", fontSize: "14px", fontWeight: "600" };
+const rangeButtonStyle: React.CSSProperties = { flex: 1, padding: "10px", borderRadius: "8px",  cursor: "pointer", fontSize: "16px", fontWeight: "bold" };
+const toggleButtonStyle: React.CSSProperties = { display: "block", width: "100%", textAlign: "left", padding: "12px", borderRadius: "10px", border: "1px solid #ced4da", cursor: "pointer"};
 const resetButtonStyle: React.CSSProperties = { ...rangeButtonStyle, backgroundColor: "#fff5f5", color: "#c53030", border: "1px solid #feb2b2", marginTop: "10px" };
