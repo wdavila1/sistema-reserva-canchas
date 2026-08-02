@@ -4,7 +4,7 @@ import { Button } from "@/shared/components/ui/Button";
 
 function CanchaFormPage() {
   // Conectamos la vista a nuestro hook
-  const { formData, handleChange, handleSubmit, isLoading, error, navigate, isEditMode } = useCanchaForm();
+  const { formData, handleChange, handleImageChange, imagenPreview, handleSubmit, isLoading, error, navigate, isEditMode } = useCanchaForm();
 
   return (
     <div className="min-h-screen bg-muted/30 pt-20">
@@ -59,9 +59,22 @@ function CanchaFormPage() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-semibold">URL de la Imagen</label>
-              <input name="imagenUrl" value={formData.imagenUrl} onChange={handleChange} className="w-full px-4 py-3 bg-input border-2 border-border focus:border-primary outline-none" placeholder="https://ejemplo.com/foto.jpg" />
+            <div className="space-y-3">
+              <label className="text-sm font-semibold block">Foto de la Cancha (Opcional)</label>
+              <div className="flex items-center gap-4">
+                {imagenPreview && (
+                  <img src={imagenPreview} alt="Previsualización" className="w-20 h-20 rounded-xl object-cover border border-border shadow-sm flex-shrink-0" />
+                )}
+                <div className="flex-1">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="w-full px-4 py-2.5 bg-input border-2 border-border rounded-lg text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 transition-colors cursor-pointer outline-none"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">Sube una imagen desde tu computadora en formato JPG, PNG o WebP (máximo 5 MB).</p>
+                </div>
+              </div>
             </div>
 
             <div className="space-y-2">

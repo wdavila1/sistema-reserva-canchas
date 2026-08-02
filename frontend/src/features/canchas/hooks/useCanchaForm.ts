@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { createCancha, getCanchaById, updateCancha } from "../services/canchas.api";
+import { createCancha, getCanchaById, updateCancha, uploadCanchaImagen } from "../services/canchas.api";
 
 export function useCanchaForm() {
   const navigate = useNavigate();
@@ -9,6 +9,8 @@ export function useCanchaForm() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [imagenFile, setImagenFile] = useState<File | null>(null);
+  const [imagenPreview, setImagenPreview] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     nombreCancha: "",
@@ -36,6 +38,7 @@ export function useCanchaForm() {
             imagenUrl: cancha.ImagenURL || "",
             estado: cancha.Estado
           });
+          if (cancha.ImagenURL) setImagenPreview(cancha.ImagenURL);
         } catch (err) {
           console.error(err);
           setError("Error al cargar los datos de la cancha para editar.");
@@ -58,6 +61,14 @@ export function useCanchaForm() {
     }));
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImagenFile(file);
+      setImagenPreview(URL.createObjectURL(file));
+    }
+  };
+
   // Función que se ejecuta al apretar "Guardar"
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); 
@@ -65,19 +76,26 @@ export function useCanchaForm() {
     setError(null);
 
     try {
+      let targetId: string | number | undefined = id;
       if (isEditMode) {
         await updateCancha(id, formData);
       } else {
-        await createCancha(formData);
+        const nuevaCancha = await createCancha(formData);
+        targetId = nuevaCancha.CanchaID;
       }
+
+      if (imagenFile && targetId) {
+        await uploadCanchaImagen(targetId, imagenFile);
+      }
+
       navigate("/admin");
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data?.mensaje || "Hubo un error al guardar la cancha");
+      setError(err.response?.data?.mensaje || err.message || "Hubo un error al guardar la cancha");
     } finally {
       setIsLoading(false);
     }
   };
 
-  return { formData, handleChange, handleSubmit, isLoading, error, navigate, isEditMode };
+  return { formData, handleChange, handleImageChange, imagenPreview, handleSubmit, isLoading, error, navigate, isEditMode };
 }

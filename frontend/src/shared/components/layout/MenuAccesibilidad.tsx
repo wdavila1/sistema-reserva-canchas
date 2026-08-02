@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "../ui/Button";
+import { Accessibility } from "lucide-react";
 
 interface RangeState {
   value: number;
@@ -245,15 +246,15 @@ export function MenuAccesibilidad() {
         </>
       )}
 
-      <div style={{ position: "fixed", top: "15px", right: "30px", zIndex: 10000 }}>
-        {/* Botón flotante */}
-        <Button
-          onClick={() => setIsOpen(!isOpen)}
-          aria-label="Menú de Opciones de Accesibilidad"
-          style={floatingButtonStyle}
-        >
-          ♿
-        </Button>
+      <div className="fixed top-[15px] right-[30px] z-[10000]">
+            {/* Botón flotante Brutalista */}
+            <Button
+              onClick={() => setIsOpen(!isOpen)}
+              aria-label="Menú de Opciones de Accesibilidad"
+              className="w-12 h-12 !p-0 rounded-none bg-primary text-white border-2 border-primary shadow-[4px_4px_0px_0px_#ff6b2b] hover:translate-y-1 hover:translate-x-1 hover:shadow-none transition-all cursor-pointer flex items-center justify-center"
+            >
+              <Accessibility size={24} strokeWidth={2.5} />
+            </Button>
 
         {/* Menú Desplegable */}
         {isOpen && (
