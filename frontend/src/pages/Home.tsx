@@ -1,8 +1,14 @@
 import { useNavigate } from "react-router-dom";
-import { MapPin } from "lucide-react";
+import { MapPin, Sparkles, CalendarDays } from "lucide-react";
+import { useAuth } from "@/features/auth/hooks/useAuth";
+import { useSugerenciaUsuario } from "@/features/experto/hooks/useExperto";
 
 function Home() {
     const navigate = useNavigate();
+    const { usuario, isAuthenticated } = useAuth();
+    const isCliente = usuario?.rol === "cliente";
+    const { sugerenciaData } = useSugerenciaUsuario(isAuthenticated && isCliente);
+
 
     return (
         <main className="mt-20">
@@ -46,6 +52,55 @@ function Home() {
                     <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent group-hover:opacity-0 transition-opacity duration-700 pointer-events-none"></div>
                 </div>
             </section>
+            
+            {/* SUGERENCIA EXPERTO */}
+            {sugerenciaData?.tieneSugerencia && sugerenciaData.sugerencia ? (
+                <section className="bg-secondary text-secondary-foreground py-8 px-6 md:px-margin-desktop border-b-4 border-border relative overflow-hidden">
+                    <div className="absolute inset-0 chalk-texture opacity-10 pointer-events-none"></div>
+                    <div className="max-w-[1200px] mx-auto relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div className="flex items-start gap-4">
+                            <div className="bg-primary p-3 shadow-[4px_4px_0px_0px_#0b1f3a]">
+                                <Sparkles className="text-primary-foreground w-8 h-8" />
+                            </div>
+                            <div>
+                                <h3 className="font-headline-lg text-2xl uppercase italic mb-1 flex items-center gap-2">
+                                    Sugerencia Especial para Ti
+                                </h3>
+                                <p className="font-body-lg text-secondary-foreground/90 max-w-2xl">
+                                    {sugerenciaData.sugerencia.mensaje}
+                                </p>
+                            </div>
+                        </div>
+                        <button 
+                            onClick={() => navigate('/canchas')}
+                            className="shrink-0 bg-primary text-primary-foreground font-headline-md px-6 py-3 border-2 border-primary-foreground shadow-[6px_6px_0px_0px_#0b1f3a] hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_#0b1f3a] transition-all flex items-center gap-2"
+                        >
+                            <CalendarDays size={20} />
+                            RESERVAR {sugerenciaData.sugerencia.nombreDia.toUpperCase()} {sugerenciaData.sugerencia.horaInicio}
+                        </button>
+                    </div>
+                </section>
+            ) : (isAuthenticated && isCliente && sugerenciaData && !sugerenciaData.tieneSugerencia) ? (
+                <section className="bg-secondary text-secondary-foreground py-8 px-6 md:px-margin-desktop border-b-4 border-border relative overflow-hidden">
+                    <div className="absolute inset-0 chalk-texture opacity-10 pointer-events-none"></div>
+                    <div className="max-w-[1200px] mx-auto relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div className="flex items-start gap-4">
+                            <div className="bg-primary p-3 shadow-[4px_4px_0px_0px_#0b1f3a] opacity-50">
+                                <Sparkles className="text-primary-foreground w-8 h-8" />
+                            </div>
+                            <div>
+                                <h3 className="font-headline-lg text-2xl uppercase italic mb-1 flex items-center gap-2 opacity-80">
+                                    Sugerencia Especial para Ti
+                                </h3>
+                                <p className="font-body-lg text-secondary-foreground/90 max-w-2xl opacity-90">
+                                    {sugerenciaData.mensaje || "Aún no tienes suficiente historial para generar una sugerencia personalizada. ¡Haz tu primera reserva!"}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            ) : null}
+
             {/* ¿POR QUÉ ELEGIRNOS?*/}
 
             <section className="bg-primary text-primary-foreground py-stack-lg px-margin-mobile md:px-margin-desktop relative overflow-hidden">

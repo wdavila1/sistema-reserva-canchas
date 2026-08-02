@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getResumenExperto, getPatronesAltaDemanda, getSugerenciasPromociones } from "../services/experto.api";
-import type { ResumenExperto, PatronDemanda, SugerenciaPromocion } from "../services/experto.api";
+import { getResumenExperto, getPatronesAltaDemanda, getSugerenciasPromociones, getSugerenciaUsuario } from "../services/experto.api";
+import type { ResumenExperto, PatronDemanda, SugerenciaPromocion, SugerenciaUsuario } from "../services/experto.api";
 
 /** Hook que carga el resumen rápido de métricas del sistema experto (para StatCards del dashboard) */
 export function useResumenExperto() {
@@ -60,3 +60,23 @@ export function useSugerenciasPromociones() {
 
   return { sugerencias, total, loading, error, refetch: cargar };
 }
+
+/** Hook que carga la sugerencia personalizada para el usuario cliente */
+export function useSugerenciaUsuario(isAuthenticated: boolean) {
+  const [sugerenciaData, setSugerenciaData] = useState<SugerenciaUsuario | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    
+    setLoading(true);
+    getSugerenciaUsuario()
+      .then(setSugerenciaData)
+      .catch((e) => setError(e))
+      .finally(() => setLoading(false));
+  }, [isAuthenticated]);
+
+  return { sugerenciaData, loading, error };
+}
+
