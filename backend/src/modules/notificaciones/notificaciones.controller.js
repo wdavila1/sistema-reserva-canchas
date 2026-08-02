@@ -15,10 +15,3 @@ export const marcarLeida = asyncHandler(async (req, res) => {
   );
   res.json({ notificacion });
 });
-
-// POST /api/notificaciones/generar-pendientes — para forzar la generación manualmente (admin o testing).
-// El cron NO usa este endpoint: llama a generarRecordatorios() directo desde server.js.
-export const generarPendientes = asyncHandler(async (req, res) => {
-  const creadas = await notificacionesService.generarRecordatorios();
-  res.json({ creadas });
-});

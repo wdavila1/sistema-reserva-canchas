@@ -15,8 +15,3 @@ export const getCanchasMasUsadas = asyncHandler(async (req, res) => {
   const data = await reportesService.obtenerCanchasMasUsadas(req.query);
   res.json(data);
 });
-
-export const getReservasHoy = asyncHandler(async (req, res) => {
-  const reservasHoy = await reportesService.obtenerReservasHoy();
-  res.json({ reservasHoy });
-});

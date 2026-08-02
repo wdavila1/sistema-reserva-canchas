@@ -9,7 +9,4 @@ router.use(verificarToken);
 
 router.get("/",                     notificacionesController.getMisNotificaciones);
 router.patch("/:id/leida",          notificacionesController.marcarLeida);
-
-router.post("/generar-pendientes", requiereRol(["Administrador"]), notificacionesController.generarPendientes);
-
 export default router;

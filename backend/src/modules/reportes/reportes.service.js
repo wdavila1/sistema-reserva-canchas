@@ -66,8 +66,3 @@ export async function obtenerCanchasMasUsadas(filtros = {}) {
     ingreso: round2(f.ingresos),
   }));
 }
-
-export async function obtenerReservasHoy() {
-  const row = await reportesRepository.obtenerReservasHoy();
-  return row?.reservashoy ?? 0;
-}

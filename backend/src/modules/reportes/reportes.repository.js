@@ -63,13 +63,3 @@ export async function kpisResumen({ fechaInicio, fechaFin, soloConIngreso = true
 
     return rows[0] || null;
 }
-
-export async function obtenerReservasHoy() {
-  const { rows } = await pool.query(
-    `SELECT COUNT(*)::int AS reservashoy
-       FROM Reservas
-      WHERE EstadoReserva IN ('Confirmada','Pendiente','Completada')
-        AND FechaReserva::date = CURRENT_DATE`
-  );
-  return rows[0];
-}
