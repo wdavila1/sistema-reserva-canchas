@@ -1,11 +1,15 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { StatCard } from "@/shared/components/ui/StatCard";
-import { CalendarDays, CreditCard, Users, Layers } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, } from "recharts";
+import { CalendarDays, CreditCard, Users, Layers, Loader2 } from "lucide-react";
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, LineChart, Line,
+} from "recharts";
 
-//MOCKS
-import { RESERVACIONES } from "@/shared/mocks/reservaciones";
-import { DATA_MENSUAL } from "@/shared/mocks/dataMensual";
+//API
+import { useReportes } from "@/features/reportes/hooks/useReportes";
+import { getTodasLasReservas, type Reserva } from "@/features/reservas/services/reservas.api";
 
 //COMPONENTS
 import { Badge } from "@/shared/components/ui/Badge";
@@ -15,29 +19,88 @@ import { estadoStyle } from "@/shared/utils/estadoStyle";
 import { estadoLabel } from "@/shared/utils/estadoLabel";
 import { formatCurrency } from "@/shared/utils/formatCurrency";
 
+const MESES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+function formatPeriodo(p: string) {
+  const [y, m] = p.split("-");
+  return `${MESES[Number(m) - 1]} ${y}`;
+}
+
 function AdminDashboardPage() {
   const navigate = useNavigate();
+  const { kpis, porPeriodo, isLoading } = useReportes();
+
+  const [reservasRecientes, setReservasRecientes] = useState<Reserva[]>([]);
+  const [loadingRecientes, setLoadingRecientes] = useState(true);
+
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const todas = await getTodasLasReservas();
+        setReservasRecientes(todas.slice(0, 5));
+      } catch (err) {
+        setReservasRecientes([]);
+      } finally {
+        setLoadingRecientes(false);
+      }
+    };
+    fetch();
+  }, []);
+
+  const dataMensual = porPeriodo.map((p) => ({
+    mes: formatPeriodo(p.periodo),
+    reservas: p.reservas,
+    ingresos: p.ingresos,
+  }));
+
+  const fechaHoy = new Date().toLocaleDateString("es-HN", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-black text-foreground" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
           Panel de Control
         </h1>
-        <p className="text-muted-foreground text-sm mt-0.5">Lunes, 22 de junio de 2026</p>
+        <p className="text-muted-foreground text-sm mt-0.5 capitalize">{fechaHoy}</p>
       </div>
 
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
-        <StatCard title="Reservas hoy" value="8" sub="↑ 2 vs. ayer" icon={<CalendarDays size={18} />} accent />
-        <StatCard title="Ingresos del mes" value="L. 94,800" sub="ISV incluido" icon={<CreditCard size={18} />} />
-        <StatCard title="Canchas activas" value="5/6" sub="1 en mantenimiento" icon={<Layers size={18} />} />
-        <StatCard title="Usuarios" value="42" sub="4 nuevos esta semana" icon={<Users size={18} />} />
+        <StatCard
+          title="Reservas hoy"
+          value="—"
+          sub="Endpoint pendiente"
+          icon={<CalendarDays size={18} />}
+          accent
+        />
+        <StatCard
+          title="Ingresos del mes"
+          value={isLoading ? "..." : formatCurrency(kpis.ingresosBrutos)}
+          sub="ISV incluido"
+          icon={<CreditCard size={18} />}
+        />
+        <StatCard
+          title="Canchas activas"
+          value="—"
+          sub="Endpoint pendiente"
+          icon={<Layers size={18} />}
+        />
+        <StatCard
+          title="Usuarios"
+          value="—"
+          sub="Endpoint pendiente"
+          icon={<Users size={18} />}
+        />
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <div className="bg-white rounded-2xl border border-border p-6">
           <h3 className="font-bold text-foreground mb-5">Reservas por mes</h3>
           <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={DATA_MENSUAL} barSize={28}>
+            <BarChart data={dataMensual} barSize={28}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e6f4ec" />
               <XAxis dataKey="mes" tick={{ fontSize: 12, fill: "#5c7a68" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 11, fill: "#5c7a68" }} axisLine={false} tickLine={false} />
@@ -53,7 +116,7 @@ function AdminDashboardPage() {
         <div className="bg-white rounded-2xl border border-border p-6">
           <h3 className="font-bold text-foreground mb-5">Ingresos mensuales (L.)</h3>
           <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={DATA_MENSUAL}>
+            <LineChart data={dataMensual}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e6f4ec" />
               <XAxis dataKey="mes" tick={{ fontSize: 12, fill: "#5c7a68" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 11, fill: "#5c7a68" }} axisLine={false} tickLine={false} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
@@ -76,29 +139,47 @@ function AdminDashboardPage() {
           </button>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/50">
-              <tr>
-                {["ID", "Cliente", "Cancha", "Fecha", "Estado", "Total"].map((h) => (
-                  <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {RESERVACIONES.slice(0, 5).map((r) => (
-                <tr key={r.id} className="border-t border-border hover:bg-muted/30 transition-colors">
-                  <td className="px-5 py-3.5 font-mono text-xs text-muted-foreground">{r.id}</td>
-                  <td className="px-5 py-3.5 font-medium">{r.usuario}</td>
-                  <td className="px-5 py-3.5 text-muted-foreground">{r.cancha.split("—")[0].trim()}</td>
-                  <td className="px-5 py-3.5 text-muted-foreground">{r.fecha} · {r.horaInicio}</td>
-                  <td className="px-5 py-3.5">
-                    <Badge variant = "success" className={`${estadoStyle[r.estado]} border-transparent`}>{estadoLabel[r.estado]}</Badge>
-                  </td>
-                  <td className="px-5 py-3.5 font-bold text-primary">{formatCurrency(r.total)}</td>
+          {loadingRecientes ? (
+            <div className="flex items-center justify-center py-8 text-muted-foreground text-sm gap-2">
+              <Loader2 size={16} className="animate-spin" /> Cargando reservas...
+            </div>
+          ) : reservasRecientes.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground text-sm">
+              No hay reservas registradas.
+            </div>
+          ) : (
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  {["ID", "Cliente", "Cancha", "Fecha", "Estado", "Total"].map((h) => (
+                    <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">{h}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {reservasRecientes.map((r) => (
+                  <tr key={r.reservaId} className="border-t border-border hover:bg-muted/30 transition-colors">
+                    <td className="px-5 py-3.5 font-mono text-xs text-muted-foreground">{r.reservaId}</td>
+                    <td className="px-5 py-3.5 font-medium">
+                      {r.cliente ? `${r.cliente.primerNombre} ${r.cliente.primerApellido}` : `Usuario #${r.usuarioId}`}
+                    </td>
+                    <td className="px-5 py-3.5 text-muted-foreground">
+                      {r.bloques[0]?.nombreCancha ?? "—"}
+                    </td>
+                    <td className="px-5 py-3.5 text-muted-foreground">
+                      {r.bloques[0]?.fecha ?? "—"} {r.bloques[0] ? `· ${r.bloques[0].horaInicio}` : ""}
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <Badge className={`${estadoStyle[r.estadoReserva]} border-transparent`}>
+                        {estadoLabel[r.estadoReserva]}
+                      </Badge>
+                    </td>
+                    <td className="px-5 py-3.5 font-bold text-primary">{formatCurrency(r.total)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </div>

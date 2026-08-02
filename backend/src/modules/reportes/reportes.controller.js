@@ -20,3 +20,8 @@ export const getHistorialPorUsuario = asyncHandler(async (req, res) => {
   const data = await reportesService.obtenerHistorialPorUsuario(req.params.usuarioId);
   res.json(data);
 });
+
+export const getReservasHoy = asyncHandler(async (req, res) => {
+  const reservasHoy = await reportesService.obtenerReservasHoy();
+  res.json({ reservasHoy });
+});

@@ -11,5 +11,6 @@ router.get("/kpis",                 soloAdmin, reportesController.getKpis);
 router.get("/reservas-por-periodo", soloAdmin, reportesController.getReservasPorPeriodo);
 router.get("/canchas-mas-usadas",   soloAdmin, reportesController.getCanchasMasUsadas);
 router.get("/historial/:usuarioId", soloAdmin, reportesController.getHistorialPorUsuario);
+router.get("/reservas-hoy", soloAdmin, reportesController.getReservasHoy);
 
 export default router;

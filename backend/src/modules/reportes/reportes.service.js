@@ -75,3 +75,8 @@ export async function obtenerHistorialPorUsuario(usuarioId) {
   if (!filas || filas.length === 0) return [];
   return agruparListado(filas);
 }
+
+export async function obtenerReservasHoy() {
+  const row = await reportesRepository.obtenerReservasHoy();
+  return row?.reservashoy ?? 0;
+}

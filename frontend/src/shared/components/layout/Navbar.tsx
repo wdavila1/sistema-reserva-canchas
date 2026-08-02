@@ -4,6 +4,7 @@ import { Button } from "../ui/Button";
 import { X, Menu, User, LogOut } from "lucide-react";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { navLinks } from "@/shared/config/navigation";
+import NotificationBell from "@/features/notificaciones/components/NotificacionesBell";
 
 function Navbar() {
     const navigate = useNavigate();
@@ -35,9 +36,8 @@ function Navbar() {
     return (
         <header
             //Reemplazamos el "shadow-sm" por el "shadow-[0_4px_0px_0px_#ff6b2b]" naranja
-            className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 border-b border-border ${
-                scrolled ? "bg-white backdrop-blur shadow-[0_4px_0px_0px_#ff6b2b]" : "bg-white"
-            }`}
+            className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 border-b border-border ${scrolled ? "bg-white backdrop-blur shadow-[0_4px_0px_0px_#ff6b2b]" : "bg-white"
+                }`}
         >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-4">
                 {/* Logo */}
@@ -73,6 +73,7 @@ function Navbar() {
                 <div className="hidden md:flex items-center gap-2">
                     {isAuthenticated ? (
                         <>
+                            <NotificationBell />
                             {isAdmin && (
                                 <Button size="sm" variant="ghost" onClick={() => goTo("/admin")}>
                                     Panel admin
@@ -122,6 +123,10 @@ function Navbar() {
                     <div className="pt-2 border-t border-border flex flex-col gap-2">
                         {isAuthenticated ? (
                             <>
+                                <div className="self-start">
+                                    <NotificationBell />
+                                </div>
+
                                 <Button size="sm" variant="ghost" onClick={() => goTo("/mis-reservas")}>
                                     <User size={14} /> Mis reservas
                                 </Button>
