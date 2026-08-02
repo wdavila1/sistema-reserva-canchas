@@ -16,8 +16,6 @@ export function ModalConfirmarPago({
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
       <div className="bg-card rounded-2xl w-full max-w-sm shadow-2xl border border-border/50 overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
-
-        {/* HEADER DEL MODAL*/}
         <div className="bg-primary px-6 py-5 relative overflow-hidden">
           <div className="absolute -top-8 -right-8 w-24 h-24 bg-secondary/20 rounded-full blur-xl" />
           <h2 className="font-[family-name:var(--font-headline-lg)] text-primary-foreground text-2xl uppercase tracking-wide relative">
@@ -28,7 +26,7 @@ export function ModalConfirmarPago({
           </p>
         </div>
 
-        {/* DETALLES DE LA RESERVA*/}
+        {/* DETALLES DE LA RESERVA */}
         <div className="px-6 py-5 space-y-2.5">
           {[
             ["Cliente", pago.nombreusuario],
@@ -68,7 +66,7 @@ export function ModalConfirmarPago({
           </div>
         </div>
 
-        {/* CHECKBOX DE TÉRMINOS -- FALTA IMPLEMENTAR UN COLUMNA EN LA BD PARA ESTO */}
+        {/* CHECKBOX DE TÉRMINOS (Aca es por lo de politicas de no reembolso) */}
         <div className="px-6 pb-4 flex items-start gap-3">
           <div className="flex h-5 items-center">
             <input
@@ -96,7 +94,7 @@ export function ModalConfirmarPago({
           </label>
         </div>
 
-        {/* FOOTER / BOTONES PARA CANCELAR Y CONFIRMAR */}
+        {/* BOTONES PARA CANCELAR Y CONFIRMAR LO DEL PAGO */}
         <div className="flex gap-2 px-6 pb-6">
           <button
             onClick={onCancelar}

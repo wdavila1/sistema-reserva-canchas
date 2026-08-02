@@ -1,21 +1,21 @@
-import type { PagoConfirmado } from "@/features/pagos/types/PagoConfirmado";
 import { axiosClient } from "@/shared/services/axiosClient";
 
-import type { PagoPendiente } from "@/features/pagos/types/PagoPendiente";
 import type { RegistroPago } from "../types/RegistroPago";
 import type { ConfirmacionPago } from "../types/ConfirmacionPago";
+import type { PagoPendienteResponse } from "../types/PagoPendienteResponse";
+import type { PagoConfirmadoResponse } from "../types/PagosConfirmadosResponse";
 
 // GET /pagos/pendientes
-export const obtenerPagosPendientes = async (): Promise<PagoPendiente[]> => {
-    const response = await axiosClient.get<PagoPendiente[]>("pagos/pendientes");
-    return response.data;
+export const obtenerPagosPendientes = async (page : number = 1, limit : number = 5): Promise<PagoPendienteResponse> => {
+  const response = await axiosClient.get<PagoPendienteResponse>("pagos/pendientes", { params: { page, limit }, });
+  return response.data;
 };
 
 //GET /pagos/confirmados
-export const obtenerPagosConfirmados = async (): Promise<PagoConfirmado[]> => {
-    const response = await axiosClient.get<PagoConfirmado[]>("pagos/confirmados");
-    return response.data;
-}
+export const obtenerPagosConfirmados = async (page : number = 1, limit : number = 5, facturado : boolean | null) : Promise<PagoConfirmadoResponse> => {
+  const response = await axiosClient.get<PagoConfirmadoResponse>("pagos/confirmados", { params: { page, limit, facturado },});
+  return response.data; 
+};
 
 //POST /pagos/registrar
 export const registrarPago = async (data: RegistroPago): Promise<ConfirmacionPago> => {

@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ChevronRight, ChevronLeft, Check, AlertCircle } from "lucide-react";
+import { ChevronRight, ChevronLeft, Check, AlertCircle, Tag } from "lucide-react";
 
 //API
 import { getCanchaById, getDisponibilidad } from "@/features/canchas/services/canchas.api";
 import type { Cancha } from "@/features/canchas/services/canchas.api";
 import { crearReserva } from "@/features/reservas/services/reservas.api";
 import type { Reserva } from "@/features/reservas/services/reservas.api";
+import { getPromocionesActivas } from "@/features/promociones/services/promociones.api";
+import type { Promocion } from "@/features/promociones/services/promociones.api";
 
 //HOOKS
 import { useAuth } from "../../auth/hooks/useAuth";
@@ -43,6 +45,13 @@ function hoyISO() {
   return `${yyyy}-${mm}-${dd}`;
 }
 
+//funcion para determinar las horas de reservas, si la fecha es de hoy, paraa evitar reservas en horas que ya pasaron y muestre horas disponibles 1 hora adelante de la actual
+function horaMinimaReservable(fecha: string): number {
+  if (fecha !== hoyISO()) return 0;
+  const ahora = new Date();
+  return ahora.getHours() + 1;
+}
+
 function ReservasPage() {
   const { courtId } = useParams<{ courtId: string }>();
   const navigate = useNavigate();
@@ -62,17 +71,23 @@ function ReservasPage() {
       .finally(() => setLoadingCourt(false));
   }, [courtId]);
 
-  // ---- Wizard ----
-  const [step, setStep] = useState(1);
-  const [date, setDate] = useState(hoyISO());
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
-  const [nombre, setNombre] = useState(usuario?.nombre ?? "");
-  const [email, setEmail] = useState(usuario?.email ?? "");
+  // ---- Promociones activas ----
+  const [promociones, setPromociones] = useState<Promocion[]>([]);
+  useEffect(() => {
+    getPromocionesActivas().then(setPromociones).catch(() => {});
+  }, []);
+
+  // Estados para controlar los pasos de la reserva
+  const [step, setStep] = useState(1); //proceso actual de la reserva
+  const [date, setDate] = useState(hoyISO()); // fecha seleccionada para la reserva
+  const [startTime, setStartTime] = useState(""); //hora de inicio
+  const [endTime, setEndTime] = useState(""); //hora final
+  const [nombre, setNombre] = useState(usuario?.nombre ?? ""); //nombre del ususario
+  const [email, setEmail] = useState(usuario?.email ?? ""); /*correo del usuario */
   const [telefono, setTelefono] = useState(usuario?.telefono ?? "");
   const [error, setError] = useState("");
 
-  // ---- Disponibilidad real de la cancha para la fecha elegida ----
+  //  Disponibilidad real de la cancha para la fecha elegida 
   const [horasDisponibles, setHorasDisponibles] = useState<string[]>([]);
   const [loadingDisponibilidad, setLoadingDisponibilidad] = useState(false);
 
@@ -111,12 +126,46 @@ function ReservasPage() {
     );
   }
 
-  // tarifa diferenciada de fin de semana -- por eso ya no hay lógica de "finde" aquí.
+  // tarifa base
   const pph = Number(court.PrecioPorHora);
   const startHour = startTime ? parseInt(startTime.split(":")[0]) : 0;
   const endHour = endTime ? parseInt(endTime.split(":")[0]) : 0;
   const duration = (endTime && startTime && endHour > startHour) ? endHour - startHour : 0;
-  const subtotal = pph * duration;
+  
+  const subtotalBruto = pph * duration;
+
+  // Lógica de promociones
+  let promocionAplicada: Promocion | null = null;
+  let montoDescuento = 0;
+
+  if (date && startTime && duration > 0) {
+    const sel = new Date(date + "T12:00:00");
+    const dow = sel.getDay(); // 0 = Domingo, 6 = Sábado
+    
+    for (let h = startHour; h < endHour; h++) {
+      const horaActualStr = `${String(h).padStart(2, '0')}:00`;
+
+      const aplicables = promociones.filter((p) => {
+        // Match día
+        if (p.diasemana !== null && p.diasemana !== undefined && p.diasemana !== dow) return false;
+        // Match hora
+        if (p.horainicio && horaActualStr < p.horainicio.slice(0, 5)) return false;
+        if (p.horafin && horaActualStr >= p.horafin.slice(0, 5)) return false;
+        return true;
+      });
+
+      if (aplicables.length > 0) {
+        // Tomar la del mayor descuento para esta hora
+        const mejorPromo = aplicables.reduce((prev, current) => 
+          (Number(prev.porcentajedescuento) > Number(current.porcentajedescuento)) ? prev : current
+        );
+        montoDescuento += pph * (Number(mejorPromo.porcentajedescuento) / 100);
+        promocionAplicada = mejorPromo; // Guardamos la última aplicada para mostrar el badge
+      }
+    }
+  }
+
+  const subtotal = subtotalBruto - montoDescuento;
   const isv = subtotal * 0.15;
   const total = subtotal + isv;
 
@@ -160,12 +209,15 @@ function ReservasPage() {
 
   const today = hoyISO();
 
-  // Horas de inicio: la intersección entre el horario de operación fijo y lo que el backend dice que está libre para esa cancha/fecha.
-  const availableHours = HORARIOS.filter((h) => horasDisponibles.includes(h));
+  // Horas de inicio: la intersección entre el horario de operación fijo, lo
+  // que el backend dice que está libre para esa cancha/fecha, y (si la fecha elegida es hoy) que no sea una hora que ya pasó.
+  const horaMinima = horaMinimaReservable(date);
+  const availableHours = HORARIOS.filter(
+    (h) => horasDisponibles.includes(h) && parseInt(h.split(":")[0], 10) >= horaMinima
+  );
 
   // Horas de fin válidas: TODAS las marcas de hora entre inicio y fin
-  // deben estar libres (no solo la última), para no dejar reservar sobre
-  // un hueco ya ocupado en medio del rango.
+  // deben estar libres (no solo la última), para no dejar reservar sobre un hueco ya ocupado en medio del rango.
   const availableEndHours = startTime
     ? HORAS_FIN_POSIBLES.filter((h) => {
         const sH = parseInt(startTime.split(":")[0]);
@@ -274,6 +326,14 @@ function ReservasPage() {
                       {date} // {startTime} – {endTime} // {duration} HR{duration > 1 ? 'S' : ''}
                     </p>
                     <div className="bg-background/20 p-4 border-2 border-primary-foreground/30">
+                        {promocionAplicada && (
+                          <div className="mb-2 p-2 bg-primary-foreground/10 border border-primary-foreground/20 rounded-md">
+                            <p className="text-sm font-bold uppercase flex items-center gap-2">
+                              <Tag size={16} /> ¡{promocionAplicada.porcentajedescuento}% DE DESCUENTO APLICADO!
+                            </p>
+                            <p className="text-xs opacity-80">{promocionAplicada.titulo}</p>
+                          </div>
+                        )}
                         <p className="font-headline-md text-xl uppercase tracking-wider flex justify-between items-center">
                         <span>Total estimado:</span>
                         <span className="font-data-display text-2xl">{formatCurrency(total)}</span>
@@ -335,7 +395,17 @@ function ReservasPage() {
                   
                   <div className="pt-4 space-y-2">
                     <div className="flex justify-between font-data-display text-sm text-muted-foreground">
-                      <span>SUBTOTAL ({formatCurrency(pph)} × {duration}h)</span>
+                      <span>SUBTOTAL BRUTO ({formatCurrency(pph)} × {duration}h)</span>
+                      <span>{formatCurrency(subtotalBruto)}</span>
+                    </div>
+                    {promocionAplicada && (
+                      <div className="flex justify-between font-data-display text-sm text-green-600 font-bold">
+                        <span>DESCUENTO ({promocionAplicada.porcentajedescuento}% - {promocionAplicada.titulo})</span>
+                        <span>-{formatCurrency(montoDescuento)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between font-data-display text-sm text-muted-foreground">
+                      <span>SUBTOTAL</span>
                       <span>{formatCurrency(subtotal)}</span>
                     </div>
                     <div className="flex justify-between font-data-display text-sm text-muted-foreground">

@@ -1,4 +1,4 @@
-import type { UserAccount } from "../features/auth/types/UserAccount";
+import type { UserAccount } from "@/features/auth/types/UserAccount";
 
 export const USUARIOS: UserAccount[] = [
   { id: 1, nombre: "Carlos Mejía", email: "cmejia@gmail.com", telefono: "+504 9876-5432", rol: "cliente", fechaRegistro: "2026-01-15", totalReservas: 12 },

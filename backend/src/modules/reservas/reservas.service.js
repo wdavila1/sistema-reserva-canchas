@@ -1,5 +1,6 @@
 import * as reservasRepository from "./reservas.repository.js";
 import * as canchasService from "../canchas/canchas.service.js";
+import * as promocionesService from "../promociones/promociones.service.js";
 import { ApiError } from "../../utils/ApiError.js";
 
 const ISV = 0.15;
@@ -53,6 +54,7 @@ function agruparReserva(filas) {
       horaFin: f.horafin,
       precioHora: f.preciohora,
       subtotal: f.subtotal,
+      descuento: f.descuento,
     })),
   };
 }
@@ -86,6 +88,7 @@ export function agruparListado(filas) {
       horaFin: f.horafin,
       precioHora: f.preciohora,
       subtotal: f.subtotal,
+      descuento: f.descuento,
     });
   }
  
@@ -102,10 +105,41 @@ export async function calcularHoras(horaInicio, horaFin) {
   
 }
 
-//mostrar todas las reservas para el administrador
-export async function obtenerTodasLasReservas() {
-  const filas = await reservasRepository.obtenerTodasLasReservas();
-  return agruparListado(filas);
+//mostrar todas las reservas para el administrador, paginado
+export async function obtenerTodasLasReservas(limit, page, estado) {
+  const offset = (page - 1) * limit;
+  const filtroEstado = estado && estado !== "Todos" ? estado : null;
+
+  const filas = await reservasRepository.obtenerTodasLasReservas(limit, offset, filtroEstado);
+
+  const totalItems = filas.length > 0 ? Number(filas[0].totalregistros) : 0;
+  const totalPages = Math.ceil(totalItems / limit);
+
+  const data = filas.map((f) => ({
+    reservaId: f.reservaid,
+    usuarioId: f.usuarioid,
+    estadoReserva: f.estadoreserva,
+    total: f.total,
+    fechaReserva: f.fechareserva,
+    fechaModificacion: f.fechamodificacion,
+    cliente: { primerNombre: f.primernombre, primerApellido: f.primerapellido, correo: f.correo },
+    canchas: f.canchas,
+    fechas: f.fechas,
+    horaInicio: f.horainicio,
+    horaFin: f.horafin,
+  }));
+
+  return {
+    data,
+    pagination: {
+      page,
+      limit,
+      totalItems,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPreviousPage: page > 1,
+    },
+  };
 }
 
 export async function obtenerReservaPorId(reservaId, usuarioId, esAdmin = false) {
@@ -181,18 +215,42 @@ export async function crearReserva(usuarioId, camposSolicitados) {
 
     }
 
-    const horas = await calcularHoras(bloque.horaInicio, bloque.horaFin);
-    const subtotal = Number((cancha.PrecioPorHora * horas).toFixed(2));
+    const startHour = parseInt(bloque.horaInicio.split(":")[0]);
+    const endHour = parseInt(bloque.horaFin.split(":")[0]);
 
-    bloquesParaInsertar.push({
-      canchaId: bloque.canchaId,
-      fecha: bloque.fecha,
-      horaInicio: bloque.horaInicio,
-      horaFin: bloque.horaFin,
-      precioHora: cancha.PrecioPorHora,
-      subtotal,
-    });
-    total += subtotal;
+    for (let h = startHour; h < endHour; h++) {
+      const horaActual = `${String(h).padStart(2, '0')}:00`;
+      const horaFinActual = `${String(h + 1).padStart(2, '0')}:00`;
+      
+      const subtotalBruto = Number(cancha.PrecioPorHora); // Es exactamente 1 hora
+
+      // Sistema Experto: buscar promoción activa para esta hora específica
+      const promocion = await promocionesService.buscarPromocionAplicable(
+        bloque.fecha,
+        horaActual
+      );
+
+      let descuento = 0;
+      let promocionId = null;
+      if (promocion) {
+        descuento = Number((subtotalBruto * (promocion.porcentajedescuento / 100)).toFixed(2));
+        promocionId = promocion.promocionid;
+      }
+
+      const subtotal = Number((subtotalBruto - descuento).toFixed(2));
+
+      bloquesParaInsertar.push({
+        canchaId: bloque.canchaId,
+        fecha: bloque.fecha,
+        horaInicio: horaActual,
+        horaFin: horaFinActual,
+        precioHora: cancha.PrecioPorHora,
+        subtotal,
+        descuento,
+        promocionId,
+      });
+      total += subtotal;
+    }
   }
 
   total = Number((total * (1 + ISV)).toFixed(2));

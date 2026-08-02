@@ -1,0 +1,64 @@
+/*. Fuente para Dislexia (OpenDyslexic) */
+@font-face {
+    font-family: 'OpenDyslexic';
+    src: url('https://cdn.jsdelivr.net/npm/opendyslexic@1.0.3/OpenDyslexic-Regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+body.a11y-dyslexic * {
+  font-family: 'Verdana', 'Arial', sans-serif !important;
+}
+
+
+/* . Resaltar Enlaces y Botones */
+body.a11y-highlight-links a,
+body.a11y-highlight-links button {
+  border: 2px solid #0056b3 !important; 
+  border-radius: 4px;
+  outline: 3px solid rgba(0, 86, 179, 0.5) !important;
+}
+  
+/* --- Guía de Lectura Corta y Centrada --- */
+#a11y-reading-guide {
+  position: fixed;
+  width: 700px; 
+  height: 10px; 
+  background-color: #0056b3; 
+  opacity: 0.9;
+  box-shadow: 0 2px 8px rgba(0, 86, 179, 0.5);
+  pointer-events: none; 
+  z-index: 9998;
+  border-radius: 6px;
+  display: none;
+  transition: transform 0.05s ease-out; 
+}
+
+/* --- Modo Enfocado --- */
+.a11y-focus-mask {
+  position: fixed;
+  left: 0;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.65); 
+  pointer-events: none;
+  z-index: 9997;
+  display: none;
+}
+
+#a11y-focus-top {
+  top: 0;
+}
+
+#a11y-focus-bottom {
+  bottom: 0;
+}
+
+/* Desactiva animaciones y transiciones de todos los elementos */
+body.a11y-no-animations *,
+body.a11y-no-animations *::before,
+body.a11y-no-animations *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}

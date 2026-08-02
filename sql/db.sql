@@ -153,6 +153,7 @@ CREATE TABLE CAIControl (
     FechaFin DATE NOT NULL,
     RangoInicial VARCHAR(150) NOT NULL,
     RangoFinal VARCHAR(150) NOT NULL,
+    UltimoCorrelativo INT NOT NULL DEFAULT 0,
     Estado BOOLEAN NOT NULL DEFAULT TRUE,  -- TRUE = Activo, FALSE = Expirado
     CONSTRAINT CK_CAI_Fechas CHECK (FechaFin > FechaInicio)
 );
@@ -180,6 +181,8 @@ CREATE TABLE Facturas (
     Exoneracion NUMERIC(10,2) NOT NULL DEFAULT 0.00,
     Total NUMERIC(10,2) NOT NULL,
     EstadoFactura BOOLEAN NOT NULL DEFAULT TRUE, -- TRUE = activa, FALSE = anulada
+    RTNCliente VARCHAR(40),
+    RazonSocialCliente VARCHAR(100),
     FechaCreacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FechaModificacion TIMESTAMP
 );

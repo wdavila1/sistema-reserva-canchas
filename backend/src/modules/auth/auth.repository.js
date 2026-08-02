@@ -19,8 +19,9 @@ export async function buscarUsuarioParaLogin(identificador) {
 
 export async function buscarUsuarioPorId(usuarioId) {
   const { rows } = await pool.query(
-    `SELECT u.UsuarioID, u.RolID, u.FechaCreacion, r.NombreRol,
-            p.PersonaID, p.PrimerNombre, p.PrimerApellido, p.Correo, p.Telefono
+    `SELECT u.UsuarioID, u.RolID, u.NombreUsuario, u.FechaCreacion, r.NombreRol,
+            p.PersonaID, p.PrimerNombre, p.PrimerApellido, p.Correo, p.Telefono,
+            p.FotoPerfilURL
        FROM Usuarios u
        JOIN Personas p ON p.PersonaID = u.PersonaID
        JOIN Roles r ON r.RolID = u.RolID

@@ -33,6 +33,8 @@ function mapUsuarioPublico(row) {
     fechaRegistro: row.fechacreacion,
     // TODO: calcular con un COUNT real contra Reservas cuando exista modules/reservas.
     totalReservas: 0,
+    fotoPerfilURL: row.fotoperfilurl ?? null,
+    nombreUsuario: row.nombreusuario ?? null,
   };
 }
 
@@ -127,6 +129,8 @@ export async function registrar({
   // Reutilizamos el login para no duplicar la lógica de generación de tokens.
   return login({ identificador: nombreUsuario, contrasena });
 }
+
+//LOGIN ----------------------------------------------------------------------------------
 
 export async function login({ identificador, contrasena }) {
   if (!identificador || !contrasena) {

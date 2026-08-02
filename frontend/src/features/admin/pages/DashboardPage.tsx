@@ -9,7 +9,10 @@ import {
 
 //API
 import { useReportes } from "@/features/reportes/hooks/useReportes";
-import { getTodasLasReservas, type Reserva } from "@/features/reservas/services/reservas.api";
+import { getTodasLasReservas, type ReservaAdminResumen } from "@/features/reservas/services/reservas.api";
+import type { ReservationStatus } from "@/features/reservas/types/ReservationStatus";
+import { getCanchas, type Cancha } from "@/features/canchas/services/canchas.api";
+import { getUsuarios } from "@/features/usuarios/services/usuarios.api";
 
 //COMPONENTS
 import { Badge } from "@/shared/components/ui/Badge";
@@ -29,14 +32,38 @@ function AdminDashboardPage() {
   const navigate = useNavigate();
   const { kpis, porPeriodo, isLoading } = useReportes();
 
-  const [reservasRecientes, setReservasRecientes] = useState<Reserva[]>([]);
+  const [reservasRecientes, setReservasRecientes] = useState<ReservaAdminResumen[]>([]);
   const [loadingRecientes, setLoadingRecientes] = useState(true);
+
+  const [canchas, setCanchas] = useState<Cancha[]>([]);
+  const [usuariosCount, setUsuariosCount] = useState(0);
+  const [loadingExtras, setLoadingExtras] = useState(true);
+
+  useEffect(() => {
+    const fetchExtras = async () => {
+      try {
+        const [todasCanchas, usuarios] = await Promise.all([
+          getCanchas(),
+          getUsuarios({ page: 1, limit: 1 }),
+        ]);
+        setCanchas(todasCanchas);
+        setUsuariosCount(usuarios.pagination.totalItems);
+      } catch (err) {
+      } finally {
+        setLoadingExtras(false);
+      }
+    };
+    fetchExtras();
+  }, []);
+
+  const canchasActivas = canchas.filter((c) => c.Estado === "Disponible").length;
+  const totalCanchas = canchas.length;
 
   useEffect(() => {
     const fetch = async () => {
       try {
-        const todas = await getTodasLasReservas();
-        setReservasRecientes(todas.slice(0, 5));
+        const respuesta = await getTodasLasReservas(1, 5);
+        setReservasRecientes(respuesta.data);
       } catch (err) {
         setReservasRecientes([]);
       } finally {
@@ -70,9 +97,9 @@ function AdminDashboardPage() {
 
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
         <StatCard
-          title="Reservas hoy"
-          value="—"
-          sub="Endpoint pendiente"
+          title="Reservas del período"
+          value={isLoading ? "..." : String(kpis.totalReservas)}
+          sub="Últimos 6 meses"
           icon={<CalendarDays size={18} />}
           accent
         />
@@ -84,14 +111,14 @@ function AdminDashboardPage() {
         />
         <StatCard
           title="Canchas activas"
-          value="—"
-          sub="Endpoint pendiente"
+          value={loadingExtras ? "..." : `${canchasActivas}/${totalCanchas}`}
+          sub={canchasActivas === totalCanchas ? "Todas disponibles" : `${totalCanchas - canchasActivas} no disponible(s)`}
           icon={<Layers size={18} />}
         />
         <StatCard
           title="Usuarios"
-          value="—"
-          sub="Endpoint pendiente"
+          value={loadingExtras ? "..." : String(usuariosCount)}
+          sub="Registrados"
           icon={<Users size={18} />}
         />
       </div>
@@ -130,7 +157,6 @@ function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* Recent reservations */}
       <div className="bg-white rounded-2xl border border-border overflow-hidden">
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <h3 className="font-bold text-foreground">Reservas recientes</h3>
@@ -164,14 +190,14 @@ function AdminDashboardPage() {
                       {r.cliente ? `${r.cliente.primerNombre} ${r.cliente.primerApellido}` : `Usuario #${r.usuarioId}`}
                     </td>
                     <td className="px-5 py-3.5 text-muted-foreground">
-                      {r.bloques[0]?.nombreCancha ?? "—"}
+                      {r.canchas || "—"}
                     </td>
                     <td className="px-5 py-3.5 text-muted-foreground">
-                      {r.bloques[0]?.fecha ?? "—"} {r.bloques[0] ? `· ${r.bloques[0].horaInicio}` : ""}
+                      {r.fechas || "—"} {r.horaInicio ? `· ${r.horaInicio.slice(0, 5)}–${r.horaFin.slice(0, 5)}` : ""}
                     </td>
                     <td className="px-5 py-3.5">
-                      <Badge className={`${estadoStyle[r.estadoReserva]} border-transparent`}>
-                        {estadoLabel[r.estadoReserva]}
+                      <Badge className={`${estadoStyle[r.estadoReserva.toLowerCase() as ReservationStatus]} border-transparent`}>
+                        {estadoLabel[r.estadoReserva.toLowerCase() as ReservationStatus]}
                       </Badge>
                     </td>
                     <td className="px-5 py-3.5 font-bold text-primary">{formatCurrency(r.total)}</td>

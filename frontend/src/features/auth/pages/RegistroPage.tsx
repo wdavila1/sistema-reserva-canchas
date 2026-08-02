@@ -188,7 +188,7 @@ function RegistroPage() {
             {/* ── Contacto ── */}
             <Input label="Correo electrónico *" type="email" placeholder="tu@correo.com"       value={form.correo}        onChange={set("correo")} />
             <Input label="Nombre de usuario *"              placeholder="Min. 3 caracteres (sin espacios)"  value={form.nombreUsuario} onChange={set("nombreUsuario")} />
-            <Input label="Teléfono *"           type="tel"  placeholder="+50400000000"       value={form.telefono}      onChange={set("telefono")} />
+            <Input label="Teléfono *"           type="tel"  placeholder="+50400000000"       value={form.telefono}      onChange={set("telefono")} pattern="^\+?[\d\s\-]{8,15}$" title="Ingrese un número de teléfono válido (mínimo 8 dígitos)" />
 
             {/* ── Identidad / Fiscal ── */}
             <div className="border-t border-dashed border-border pt-4 mt-2">
@@ -197,13 +197,17 @@ function RegistroPage() {
               </p>
               <Input
                 label="Número de identidad *"
-                placeholder="Ej: 0801199900001 (13 dígitos)"
+                placeholder="Ej: 0801199900001 (13 dígitos sin guiones)"
                 value={form.numeroIdentidad}
                 onChange={set("numeroIdentidad")}
                 inputMode="numeric"
+                pattern="^\d{13}$"
+                maxLength={13}
+                minLength={13}
+                title="El número de identidad debe tener exactamente 13 dígitos numéricos sin guiones ni espacios."
               />
               <div className="grid grid-cols-2 gap-3 mt-3">
-                <Input label="RTN"       placeholder="14 dígitos (opcional)" value={form.rtn}      onChange={set("rtn")} inputMode="numeric" />
+                <Input label="RTN"       placeholder="14 dígitos sin guiones (opcional)" value={form.rtn}      onChange={set("rtn")} inputMode="numeric" pattern="^\d{14}$" maxLength={14} minLength={14} title="El RTN debe tener exactamente 14 dígitos numéricos sin guiones ni espacios." />
                 <Input label="Dirección" placeholder="(opcional)"             value={form.direccion} onChange={set("direccion")} />
               </div>
             </div>

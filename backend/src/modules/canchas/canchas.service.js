@@ -83,7 +83,11 @@ export async function obtenerDisponibilidad(canchaId, fecha) {
   const ocupadas = await CanchaRepository.obtenerHorasOcupadas(canchaId, fecha);
 
   const disponibles = HORARIO_OPERACION.filter((hora) => {
-    return !ocupadas.some((o) => hora >= o.horainicio && hora < o.horafin);
+    return !ocupadas.some((o) => {
+      const hIni = o.horainicio.slice(0, 5);
+      const hFin = o.horafin.slice(0, 5);
+      return hora >= hIni && hora < hFin;
+    });
   });
   return { canchaId, fecha, horasDisponibles: disponibles };
 }
@@ -123,7 +127,11 @@ export async function obtenerDisponibilidadSemana(canchaId, fechaInicio, fechaFi
     );
 
     disponibilidad[fechaString] = HORARIO_OPERACION.filter((hora) => {
-      return !ocupadasDelDia.some((o) => hora >= o.horainicio && hora < o.horafin);
+      return !ocupadasDelDia.some((o) => {
+        const hIni = o.horainicio.slice(0, 5);
+        const hFin = o.horafin.slice(0, 5);
+        return hora >= hIni && hora < hFin;
+      });
     });
 
     fechaActual.setDate(fechaActual.getDate() + 1);

@@ -4,18 +4,30 @@
 import { asyncHandler } from "../../../utils/asyncHandler.js"
 import * as pagosService from "../service/pagos.service.js"
 
-//GET /pagos/pendientes
+//GET /pagos/pendientes?limit=5&page=1
 export const obtenerPagosPendientes = asyncHandler(async (req, res) => {
-    const pagosPendientes = await pagosService.obtenerPagosPendientes();
+    let { limit = 5, page = 1 } = req.query;
 
-    res.status(200).json(pagosPendientes);
-})
+    limit = Math.max(Number(limit), 1);
+    page = Math.max(Number(page), 1);
+
+    const response = await pagosService.obtenerPagosPendientes(limit, page);
+
+    res.status(200).json(response);
+});
 
 //GET /pagos/confirmados
 export const obtenerPagosConfirmados = asyncHandler(async (req, res) => {
-    const pagosCompletados = await pagosService.obtenerPagosConfirmados();
+    let { limit = 5, page = 1 } = req.query;
 
-    res.status(200).json(pagosCompletados);
+    const facturado = req.query.facturado === undefined ? null : req.query.facturado === "true";
+
+    limit = Math.max(Number(limit), 1);
+    page = Math.max(Number(page), 1);
+
+    const response = await pagosService.obtenerPagosConfirmados(limit, page, facturado);
+
+    res.status(200).json(response);
 })
 
 

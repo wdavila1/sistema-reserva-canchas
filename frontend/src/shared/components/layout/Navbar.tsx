@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "../ui/Button";
-import { X, Menu, User, LogOut } from "lucide-react";
+import { X, Menu, User, LogOut, ChevronDown } from "lucide-react";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { navLinks } from "@/shared/config/navigation";
 import NotificationBell from "@/features/notificaciones/components/NotificacionesBell";
@@ -9,10 +9,11 @@ import NotificationBell from "@/features/notificaciones/components/Notificacione
 function Navbar() {
     const navigate = useNavigate();
     const location = useLocation();
-    const { isAuthenticated, isAdmin, logout } = useAuth();
+    const { isAuthenticated, isAdmin, logout, usuario } = useAuth();
 
     const [scrolled, setScrolled] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [userMenuOpen, setUserMenuOpen] = useState(false);
 
     useEffect(() => {
         const fn = () => setScrolled(window.scrollY > 16);
@@ -49,7 +50,7 @@ function Navbar() {
                         Logo
                     </span>
                     <span className="font-headline-md text-foreground text-2xl uppercase tracking-tight hidden sm:block">
-                        Proyecto<span className="text-primary group-hover:text-secondary transition-colors"> Expertos</span>
+                        POTRA<span className="text-primary group-hover:text-secondary transition-colors"> PLAY</span>
                     </span>
                 </button>
 
@@ -80,11 +81,54 @@ function Navbar() {
                                 </Button>
                             )}
                             <Button size="sm" variant="ghost" onClick={() => goTo("/mis-reservas")}>
-                                <User size={15} /> Mis reservas
+                                Mis reservas
                             </Button>
-                            <Button size="sm" variant="outline" onClick={handleLogout}>
-                                <LogOut size={14} /> Salir
-                            </Button>
+
+                            {/* Avatar con dropdown */}
+                            <div className="relative">
+                                <button
+                                    onClick={() => setUserMenuOpen((o) => !o)}
+                                    className="flex items-center gap-2 px-3 py-1.5 border-2 border-primary hover:bg-muted transition-colors"
+                                >
+                                    <div className="w-7 h-7 rounded-full bg-secondary flex items-center justify-center overflow-hidden flex-shrink-0">
+                                        {usuario?.fotoPerfilURL ? (
+                                            <img src={usuario.fotoPerfilURL} alt="Avatar"
+                                                className="w-full h-full object-cover" />
+                                        ) : (
+                                            <User size={14} className="text-primary" />
+                                        )}
+                                    </div>
+                                    <span className="text-xs font-semibold text-primary hidden sm:block max-w-[100px] truncate"
+                                        style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                                        {usuario?.nombre?.split(" ")[0] ?? "Usuario"}
+                                    </span>
+                                    <ChevronDown size={13} className={`text-primary transition-transform ${userMenuOpen ? "rotate-180" : ""}`} />
+                                </button>
+
+                                {userMenuOpen && (
+                                    <>
+                                        {/* Overlay para cerrar */}
+                                        <div className="fixed inset-0 z-40" onClick={() => setUserMenuOpen(false)} />
+                                        <div className="absolute right-0 top-full mt-2 w-48 bg-white border-2 border-primary shadow-[6px_6px_0px_0px_#0b1f3a] z-50">
+                                            <button
+                                                onClick={() => { goTo("/mi-perfil"); setUserMenuOpen(false); }}
+                                                className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-muted transition-colors"
+                                            >
+                                                <User size={15} className="text-muted-foreground" />
+                                                Mi perfil
+                                            </button>
+                                            <div className="border-t border-border" />
+                                            <button
+                                                onClick={() => { handleLogout(); setUserMenuOpen(false); }}
+                                                className="w-full flex items-center gap-3 px-4 py-3 text-sm text-destructive hover:bg-red-50 transition-colors"
+                                            >
+                                                <LogOut size={15} />
+                                                Cerrar sesión
+                                            </button>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
                         </>
                     ) : (
                         <>
@@ -128,7 +172,10 @@ function Navbar() {
                                 </div>
 
                                 <Button size="sm" variant="ghost" onClick={() => goTo("/mis-reservas")}>
-                                    <User size={14} /> Mis reservas
+                                    Mis reservas
+                                </Button>
+                                <Button size="sm" variant="ghost" onClick={() => goTo("/mi-perfil")}>
+                                    <User size={14} /> Mi perfil
                                 </Button>
                                 <Button size="sm" variant="outline" onClick={() => { handleLogout(); setMobileOpen(false); }}>
                                     <LogOut size={14} /> Salir
