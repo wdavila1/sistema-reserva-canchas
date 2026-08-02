@@ -67,11 +67,7 @@ export async function obtenerCanchasMasUsadas(filtros = {}) {
   }));
 }
 
-export async function obtenerHistorialPorUsuario(usuarioId) {
-  if (!usuarioId) {
-    throw new ApiError(400, "Debes enviar el ID del usuario.");
-  }
-  const filas = await reportesRepository.historialPorUsuario(usuarioId);
-  if (!filas || filas.length === 0) return [];
-  return agruparListado(filas);
+export async function obtenerReservasHoy() {
+  const row = await reportesRepository.obtenerReservasHoy();
+  return row?.reservashoy ?? 0;
 }

@@ -208,6 +208,27 @@ CREATE TABLE Pagos (
 
 CREATE INDEX IX_Pagos_Reserva ON Pagos (ReservaID);
 
+CREATE TABLE Notificaciones (
+    NotificacionID INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    UsuarioID INT NOT NULL REFERENCES Usuarios(UsuarioID),
+    ReservaID INT REFERENCES Reservas(ReservaID),
+    Tipo VARCHAR(30) NOT NULL DEFAULT 'Recordatorio',
+    Mensaje VARCHAR(255) NOT NULL,
+    FechaCreacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FechaProgramada TIMESTAMP NOT NULL,
+    Leido BOOLEAN NOT NULL DEFAULT FALSE,
+    FechaLeido TIMESTAMP
+);
+
+CREATE INDEX IX_Notificaciones_Usuario_Leido ON Notificaciones (UsuarioID, Leido);
+CREATE INDEX IX_Notificaciones_FechaProgramada ON Notificaciones (FechaProgramada);
+
+ALTER TABLE Notificaciones ENABLE ROW LEVEL SECURITY;
+
+CREATE UNIQUE INDEX UX_Notificaciones_Reserva_Tipo 
+  ON Notificaciones (ReservaID, Tipo) 
+  WHERE ReservaID IS NOT NULL;
+
 -- =====================================================================
 -- Notas de diseño
 -- =====================================================================
@@ -221,3 +242,4 @@ CREATE INDEX IX_Pagos_Reserva ON Pagos (ReservaID);
 --   la URL pública del archivo; el archivo en sí vive en Supabase Storage.
 --   El backend es el único que sube a Storage (con la Service Role Key) y
 --   luego guarda esa URL en estas columnas — el frontend nunca sube directo.
+

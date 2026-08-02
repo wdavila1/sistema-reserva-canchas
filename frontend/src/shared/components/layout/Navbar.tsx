@@ -4,6 +4,7 @@ import { Button } from "../ui/Button";
 import { X, Menu, User, LogOut, ChevronDown } from "lucide-react";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { navLinks } from "@/shared/config/navigation";
+import NotificationBell from "@/features/notificaciones/components/NotificacionesBell";
 
 function Navbar() {
     const navigate = useNavigate();
@@ -73,6 +74,7 @@ function Navbar() {
                 <div className="hidden md:flex items-center gap-2">
                     {isAuthenticated ? (
                         <>
+                            <NotificationBell />
                             {isAdmin && (
                                 <Button size="sm" variant="ghost" onClick={() => goTo("/admin")}>
                                     Panel admin
@@ -165,6 +167,10 @@ function Navbar() {
                     <div className="pt-2 border-t border-border flex flex-col gap-2">
                         {isAuthenticated ? (
                             <>
+                                <div className="self-start">
+                                    <NotificationBell />
+                                </div>
+
                                 <Button size="sm" variant="ghost" onClick={() => goTo("/mis-reservas")}>
                                     Mis reservas
                                 </Button>

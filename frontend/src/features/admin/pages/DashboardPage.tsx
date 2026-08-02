@@ -1,11 +1,18 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { StatCard } from "@/shared/components/ui/StatCard";
-import { CalendarDays, CreditCard, Users, Layers, Flame, Lightbulb } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, } from "recharts";
+import { CalendarDays, CreditCard, Users, Layers, Loader2 } from "lucide-react";
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, LineChart, Line,
+} from "recharts";
 
-//MOCKS
-import { RESERVACIONES } from "@/shared/mocks/reservaciones";
-import { DATA_MENSUAL } from "@/shared/mocks/dataMensual";
+//API
+import { useReportes } from "@/features/reportes/hooks/useReportes";
+import { getTodasLasReservas, type ReservaAdminResumen } from "@/features/reservas/services/reservas.api";
+import type { ReservationStatus } from "@/features/reservas/types/ReservationStatus";
+import { getCanchas, type Cancha } from "@/features/canchas/services/canchas.api";
+import { getUsuarios } from "@/features/usuarios/services/usuarios.api";
 
 //COMPONENTS
 import { Badge } from "@/shared/components/ui/Badge";
@@ -15,17 +22,69 @@ import { estadoStyle } from "@/shared/utils/estadoStyle";
 import { estadoLabel } from "@/shared/utils/estadoLabel";
 import { formatCurrency } from "@/shared/utils/formatCurrency";
 
-// SISTEMA EXPERTO
-import { useResumenExperto } from "@/features/experto/hooks/useExperto";
+const MESES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+function formatPeriodo(p: string) {
+  const [y, m] = p.split("-");
+  return `${MESES[Number(m) - 1]} ${y}`;
+}
 
 function AdminDashboardPage() {
   const navigate = useNavigate();
-  const { resumen } = useResumenExperto();
+  const { kpis, porPeriodo, isLoading } = useReportes();
 
-  const hoy = new Date().toLocaleDateString("es-HN", {
-    weekday: "long", year: "numeric", month: "long", day: "numeric",
+  const [reservasRecientes, setReservasRecientes] = useState<ReservaAdminResumen[]>([]);
+  const [loadingRecientes, setLoadingRecientes] = useState(true);
+
+  const [canchas, setCanchas] = useState<Cancha[]>([]);
+  const [usuariosCount, setUsuariosCount] = useState(0);
+  const [loadingExtras, setLoadingExtras] = useState(true);
+
+  useEffect(() => {
+    const fetchExtras = async () => {
+      try {
+        const [todasCanchas, usuarios] = await Promise.all([
+          getCanchas(),
+          getUsuarios({ page: 1, limit: 1 }),
+        ]);
+        setCanchas(todasCanchas);
+        setUsuariosCount(usuarios.pagination.totalItems);
+      } catch (err) {
+      } finally {
+        setLoadingExtras(false);
+      }
+    };
+    fetchExtras();
+  }, []);
+
+  const canchasActivas = canchas.filter((c) => c.Estado === "Disponible").length;
+  const totalCanchas = canchas.length;
+
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const respuesta = await getTodasLasReservas(1, 5);
+        setReservasRecientes(respuesta.data);
+      } catch (err) {
+        setReservasRecientes([]);
+      } finally {
+        setLoadingRecientes(false);
+      }
+    };
+    fetch();
+  }, []);
+
+  const dataMensual = porPeriodo.map((p) => ({
+    mes: formatPeriodo(p.periodo),
+    reservas: p.reservas,
+    ingresos: p.ingresos,
+  }));
+
+  const fechaHoy = new Date().toLocaleDateString("es-HN", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
   });
-  const hoyStr = hoy.charAt(0).toUpperCase() + hoy.slice(1);
 
   return (
     <div className="space-y-8">
@@ -33,54 +92,42 @@ function AdminDashboardPage() {
         <h1 className="text-3xl font-black text-foreground" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
           Panel de Control
         </h1>
-        <p className="text-muted-foreground text-sm mt-0.5">{hoyStr}</p>
+        <p className="text-muted-foreground text-sm mt-0.5 capitalize">{fechaHoy}</p>
       </div>
 
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
-        <StatCard title="Reservas hoy" value="8" sub="↑ 2 vs. ayer" icon={<CalendarDays size={18} />} accent />
-        <StatCard title="Ingresos del mes" value="L. 94,800" sub="ISV incluido" icon={<CreditCard size={18} />} />
-        <StatCard title="Canchas activas" value="5/6" sub="1 en mantenimiento" icon={<Layers size={18} />} />
-        <StatCard title="Usuarios" value="42" sub="4 nuevos esta semana" icon={<Users size={18} />} />
-      </div>
-
-      {/* Sistema Experto — Alertas rápidas */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <button
-          onClick={() => navigate("/admin/sistema-experto")}
-          className="flex items-center gap-4 p-4 bg-red-50 border-2 border-red-300 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all text-left"
-        >
-          <div className="w-12 h-12 bg-red-500 flex items-center justify-center rounded-lg flex-shrink-0">
-            <Flame size={22} className="text-white" />
-          </div>
-          <div>
-            <p className="font-bold text-red-700 text-lg leading-tight">
-              {resumen ? resumen.horarios_pico : "—"} horario{resumen?.horarios_pico !== 1 ? "s" : ""} pico
-            </p>
-            <p className="text-sm text-red-500">Detectados en los últimos 60 días → Ver análisis</p>
-          </div>
-        </button>
-
-        <button
-          onClick={() => navigate("/admin/sistema-experto")}
-          className="flex items-center gap-4 p-4 bg-yellow-50 border-2 border-yellow-300 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all text-left"
-        >
-          <div className="w-12 h-12 bg-yellow-400 flex items-center justify-center rounded-lg flex-shrink-0">
-            <Lightbulb size={22} className="text-white" />
-          </div>
-          <div>
-            <p className="font-bold text-yellow-700 text-lg leading-tight">
-              {resumen ? resumen.sugerencias_pendientes : "—"} promocione{resumen?.sugerencias_pendientes !== 1 ? "s" : ""} sugeridas
-            </p>
-            <p className="text-sm text-yellow-600">Por baja ocupación → Aprobar sugerencias</p>
-          </div>
-        </button>
+        <StatCard
+          title="Reservas del período"
+          value={isLoading ? "..." : String(kpis.totalReservas)}
+          sub="Últimos 6 meses"
+          icon={<CalendarDays size={18} />}
+          accent
+        />
+        <StatCard
+          title="Ingresos del mes"
+          value={isLoading ? "..." : formatCurrency(kpis.ingresosBrutos)}
+          sub="ISV incluido"
+          icon={<CreditCard size={18} />}
+        />
+        <StatCard
+          title="Canchas activas"
+          value={loadingExtras ? "..." : `${canchasActivas}/${totalCanchas}`}
+          sub={canchasActivas === totalCanchas ? "Todas disponibles" : `${totalCanchas - canchasActivas} no disponible(s)`}
+          icon={<Layers size={18} />}
+        />
+        <StatCard
+          title="Usuarios"
+          value={loadingExtras ? "..." : String(usuariosCount)}
+          sub="Registrados"
+          icon={<Users size={18} />}
+        />
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <div className="bg-white rounded-2xl border border-border p-6">
           <h3 className="font-bold text-foreground mb-5">Reservas por mes</h3>
           <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={DATA_MENSUAL} barSize={28}>
+            <BarChart data={dataMensual} barSize={28}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e6f4ec" />
               <XAxis dataKey="mes" tick={{ fontSize: 12, fill: "#5c7a68" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 11, fill: "#5c7a68" }} axisLine={false} tickLine={false} />
@@ -96,7 +143,7 @@ function AdminDashboardPage() {
         <div className="bg-white rounded-2xl border border-border p-6">
           <h3 className="font-bold text-foreground mb-5">Ingresos mensuales (L.)</h3>
           <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={DATA_MENSUAL}>
+            <LineChart data={dataMensual}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e6f4ec" />
               <XAxis dataKey="mes" tick={{ fontSize: 12, fill: "#5c7a68" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 11, fill: "#5c7a68" }} axisLine={false} tickLine={false} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
@@ -110,7 +157,6 @@ function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* Recent reservations */}
       <div className="bg-white rounded-2xl border border-border overflow-hidden">
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <h3 className="font-bold text-foreground">Reservas recientes</h3>
@@ -119,29 +165,47 @@ function AdminDashboardPage() {
           </button>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/50">
-              <tr>
-                {["ID", "Cliente", "Cancha", "Fecha", "Estado", "Total"].map((h) => (
-                  <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {RESERVACIONES.slice(0, 5).map((r) => (
-                <tr key={r.id} className="border-t border-border hover:bg-muted/30 transition-colors">
-                  <td className="px-5 py-3.5 font-mono text-xs text-muted-foreground">{r.id}</td>
-                  <td className="px-5 py-3.5 font-medium">{r.usuario}</td>
-                  <td className="px-5 py-3.5 text-muted-foreground">{r.cancha.split("—")[0].trim()}</td>
-                  <td className="px-5 py-3.5 text-muted-foreground">{r.fecha} · {r.horaInicio}</td>
-                  <td className="px-5 py-3.5">
-                    <Badge variant = "success" className={`${estadoStyle[r.estado]} border-transparent`}>{estadoLabel[r.estado]}</Badge>
-                  </td>
-                  <td className="px-5 py-3.5 font-bold text-primary">{formatCurrency(r.total)}</td>
+          {loadingRecientes ? (
+            <div className="flex items-center justify-center py-8 text-muted-foreground text-sm gap-2">
+              <Loader2 size={16} className="animate-spin" /> Cargando reservas...
+            </div>
+          ) : reservasRecientes.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground text-sm">
+              No hay reservas registradas.
+            </div>
+          ) : (
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  {["ID", "Cliente", "Cancha", "Fecha", "Estado", "Total"].map((h) => (
+                    <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">{h}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {reservasRecientes.map((r) => (
+                  <tr key={r.reservaId} className="border-t border-border hover:bg-muted/30 transition-colors">
+                    <td className="px-5 py-3.5 font-mono text-xs text-muted-foreground">{r.reservaId}</td>
+                    <td className="px-5 py-3.5 font-medium">
+                      {r.cliente ? `${r.cliente.primerNombre} ${r.cliente.primerApellido}` : `Usuario #${r.usuarioId}`}
+                    </td>
+                    <td className="px-5 py-3.5 text-muted-foreground">
+                      {r.canchas || "—"}
+                    </td>
+                    <td className="px-5 py-3.5 text-muted-foreground">
+                      {r.fechas || "—"} {r.horaInicio ? `· ${r.horaInicio.slice(0, 5)}–${r.horaFin.slice(0, 5)}` : ""}
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <Badge className={`${estadoStyle[r.estadoReserva.toLowerCase() as ReservationStatus]} border-transparent`}>
+                        {estadoLabel[r.estadoReserva.toLowerCase() as ReservationStatus]}
+                      </Badge>
+                    </td>
+                    <td className="px-5 py-3.5 font-bold text-primary">{formatCurrency(r.total)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </div>
