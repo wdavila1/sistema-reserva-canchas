@@ -45,9 +45,13 @@ function Navbar() {
                     onClick={() => goTo("/")}
                     className="flex items-center gap-3 flex-shrink-0 group outline-none"
                 >
-                    <span className="w-12 h-12 bg-primary flex items-center justify-center text-primary-foreground font-headline-md text-xl border-2 border-primary group-hover:bg-secondary group-hover:border-secondary transition-colors">
-                        Logo
-                    </span>
+                    <div className="w-12 h-12 bg-primary flex items-center justify-center border-2 border-primary group-hover:bg-secondary group-hover:border-secondary transition-colors p-1">
+                        <img 
+                            src="/logo.png" 
+                            alt="Logo Potra Play" 
+                            className="w-full h-full object-contain"
+                        />
+                    </div>
                     <span className="font-headline-md text-foreground text-2xl uppercase tracking-tight hidden sm:block">
                         POTRA<span className="text-primary group-hover:text-secondary transition-colors"> PLAY</span>
                     </span>
