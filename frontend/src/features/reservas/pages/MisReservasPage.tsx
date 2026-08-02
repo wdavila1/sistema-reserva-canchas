@@ -16,9 +16,7 @@ import type { ReservationStatus } from "../types/ReservationStatus";
 import { Badge } from "@/shared/components/ui/Badge";
 import { Button } from "@/shared/components/ui/Button";
 
-/** El backend devuelve EstadoReserva con mayúscula inicial ("Pendiente",
- * "Confirmada", ...), pero estadoStyle/estadoLabel están indexados en
- * minúsculas -- se normaliza aquí antes de usarlos. */
+/** El backend devuelve EstadoReserva con mayúscula inicial ("Pendiente", minúsculas -- se normaliza aquí antes de usarlos. */
 function normalizarEstado(estado: string): ReservationStatus {
   return estado.toLowerCase() as ReservationStatus;
 }

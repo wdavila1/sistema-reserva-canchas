@@ -45,6 +45,13 @@ function hoyISO() {
   return `${yyyy}-${mm}-${dd}`;
 }
 
+//funcion para determinar las horas de reservas, si la fecha es de hoy, paraa evitar reservas en horas que ya pasaron y muestre horas disponibles 1 hora adelante de la actual
+function horaMinimaReservable(fecha: string): number {
+  if (fecha !== hoyISO()) return 0;
+  const ahora = new Date();
+  return ahora.getHours() + 1;
+}
+
 function ReservasPage() {
   const { courtId } = useParams<{ courtId: string }>();
   const navigate = useNavigate();
@@ -70,17 +77,17 @@ function ReservasPage() {
     getPromocionesActivas().then(setPromociones).catch(() => {});
   }, []);
 
-  // ---- Wizard ----
-  const [step, setStep] = useState(1);
-  const [date, setDate] = useState(hoyISO());
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
-  const [nombre, setNombre] = useState(usuario?.nombre ?? "");
-  const [email, setEmail] = useState(usuario?.email ?? "");
+  // Estados para controlar los pasos de la reserva
+  const [step, setStep] = useState(1); //proceso actual de la reserva
+  const [date, setDate] = useState(hoyISO()); // fecha seleccionada para la reserva
+  const [startTime, setStartTime] = useState(""); //hora de inicio
+  const [endTime, setEndTime] = useState(""); //hora final
+  const [nombre, setNombre] = useState(usuario?.nombre ?? ""); //nombre del ususario
+  const [email, setEmail] = useState(usuario?.email ?? ""); /*correo del usuario */
   const [telefono, setTelefono] = useState(usuario?.telefono ?? "");
   const [error, setError] = useState("");
 
-  // ---- Disponibilidad real de la cancha para la fecha elegida ----
+  //  Disponibilidad real de la cancha para la fecha elegida 
   const [horasDisponibles, setHorasDisponibles] = useState<string[]>([]);
   const [loadingDisponibilidad, setLoadingDisponibilidad] = useState(false);
 
@@ -202,12 +209,15 @@ function ReservasPage() {
 
   const today = hoyISO();
 
-  // Horas de inicio: la intersección entre el horario de operación fijo y lo que el backend dice que está libre para esa cancha/fecha.
-  const availableHours = HORARIOS.filter((h) => horasDisponibles.includes(h));
+  // Horas de inicio: la intersección entre el horario de operación fijo, lo
+  // que el backend dice que está libre para esa cancha/fecha, y (si la fecha elegida es hoy) que no sea una hora que ya pasó.
+  const horaMinima = horaMinimaReservable(date);
+  const availableHours = HORARIOS.filter(
+    (h) => horasDisponibles.includes(h) && parseInt(h.split(":")[0], 10) >= horaMinima
+  );
 
   // Horas de fin válidas: TODAS las marcas de hora entre inicio y fin
-  // deben estar libres (no solo la última), para no dejar reservar sobre
-  // un hueco ya ocupado en medio del rango.
+  // deben estar libres (no solo la última), para no dejar reservar sobre un hueco ya ocupado en medio del rango.
   const availableEndHours = startTime
     ? HORAS_FIN_POSIBLES.filter((h) => {
         const sH = parseInt(startTime.split(":")[0]);

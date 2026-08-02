@@ -105,10 +105,41 @@ export async function calcularHoras(horaInicio, horaFin) {
   
 }
 
-//mostrar todas las reservas para el administrador
-export async function obtenerTodasLasReservas() {
-  const filas = await reservasRepository.obtenerTodasLasReservas();
-  return agruparListado(filas);
+//mostrar todas las reservas para el administrador, paginado
+export async function obtenerTodasLasReservas(limit, page, estado) {
+  const offset = (page - 1) * limit;
+  const filtroEstado = estado && estado !== "Todos" ? estado : null;
+
+  const filas = await reservasRepository.obtenerTodasLasReservas(limit, offset, filtroEstado);
+
+  const totalItems = filas.length > 0 ? Number(filas[0].totalregistros) : 0;
+  const totalPages = Math.ceil(totalItems / limit);
+
+  const data = filas.map((f) => ({
+    reservaId: f.reservaid,
+    usuarioId: f.usuarioid,
+    estadoReserva: f.estadoreserva,
+    total: f.total,
+    fechaReserva: f.fechareserva,
+    fechaModificacion: f.fechamodificacion,
+    cliente: { primerNombre: f.primernombre, primerApellido: f.primerapellido, correo: f.correo },
+    canchas: f.canchas,
+    fechas: f.fechas,
+    horaInicio: f.horainicio,
+    horaFin: f.horafin,
+  }));
+
+  return {
+    data,
+    pagination: {
+      page,
+      limit,
+      totalItems,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPreviousPage: page > 1,
+    },
+  };
 }
 
 export async function obtenerReservaPorId(reservaId, usuarioId, esAdmin = false) {

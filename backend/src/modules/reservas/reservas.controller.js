@@ -32,9 +32,15 @@ export const disponibilidad = asyncHandler(async (req, res) =>{
 });
  
 
+// encargado de recibir las solicitudes para consultar las reservas desde el panel administrativo. Permite establecer la cantidad de registros por pagina, el numero de pagina y filtrar las reservas
+//filra las reservas por estado
 export const listarTodas = asyncHandler(async (req,res) => {
-    const reservas = await reservasService.obtenerTodasLasReservas();
-    res.json({reservas});
+    let { limit = 5, page = 1, estado } = req.query;
+    limit = Math.max(Number(limit), 1);
+    page = Math.max(Number(page), 1);
+
+    const response = await reservasService.obtenerTodasLasReservas(limit, page, estado);
+    res.status(200).json(response);
 });
 
 
