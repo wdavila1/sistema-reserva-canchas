@@ -1,17 +1,17 @@
 import { axiosClient } from "@/shared/services/axiosClient";
+import type { Paginacion } from "@/shared/types/Paginacion";
 
-/* Debe calzar exactamente con el CHECK de EstadoReserva en db.sql. */
 export type EstadoReserva = "Pendiente" | "Confirmada" | "Cancelada" | "Completada";
 
 /* Lo que se manda al crear una reserva -- un arreglo porque el backend soporta reservar varios bloques (canchas/horarios) en una sola petición. */
 export interface BloqueReservaInput {
   canchaId: number;
-  fecha: string; // "YYYY-MM-DD"
+  fecha: string; // formatos que manejamos "YYYY-MM-DD"
   horaInicio: string; // "HH:MM"
   horaFin: string; // "HH:MM"
 }
 
-/* Un bloque tal como lo devuelve el backend (reservas.service.js -> agruparReserva/agruparListado). */
+/* Un bloque tal como lo devuelve el backend (reservas.service.js agruparReserva/agruparListado). */
 export interface BloqueReserva {
   detalleReservaId: number;
   canchaId: number;
@@ -24,7 +24,7 @@ export interface BloqueReserva {
   subtotal: number;
 }
 
-/** Una reserva completa (encabezado + sus bloques). */
+/** Una reserva completa (encabezado y sus bloques). */
 export interface Reserva {
   reservaId: number;
   usuarioId: number;
@@ -65,10 +65,38 @@ export async function cancelarReserva(reservaId: number): Promise<Reserva> {
   return data.reserva;
 }
 
-/* GET /api/reservas -- solo admin. */
-export async function getTodasLasReservas(): Promise<Reserva[]> {
-  const { data } = await axiosClient.get<{ reservas: Reserva[] }>("/reservas");
-  return data.reservas;
+// Fila de la tabla del admin -- viene ya agrupada por reserva desde SQL, fechas y canchas son cadenass separadas por comas y las horas de inicio y fin el rango de aceracion
+
+export interface ReservaAdminResumen {
+  reservaId: number;
+  usuarioId: number;
+  estadoReserva: EstadoReserva;
+  total: number;
+  fechaReserva: string;
+  fechaModificacion: string | null;
+  cliente: { primerNombre: string; primerApellido: string; correo: string };
+  canchas: string;
+  fechas: string;
+  horaInicio: string;
+  horaFin: string;
+}
+
+export interface ReservasAdminResponse {
+  data: ReservaAdminResumen[];
+  pagination: Paginacion;
+}
+
+/** GET /api/reservas -- solo admin, paginado (mismo patrón que
+ * obtenerPagosPendientes/obtenerPagosConfirmados en el módulo de pagos). */
+export async function getTodasLasReservas(
+  page = 1,
+  limit = 5,
+  estado?: string
+): Promise<ReservasAdminResponse> {
+  const { data } = await axiosClient.get<ReservasAdminResponse>("/reservas", {
+    params: { page, limit, estado: estado && estado !== "Todos" ? estado : undefined },
+  });
+  return data;
 }
 
 /* PATCH /api/reservas/:id/estado -- solo admin. Para cancelar usar cancelarReserva(), no esta función. */
@@ -79,4 +107,3 @@ export async function actualizarEstadoReserva(
   const { data } = await axiosClient.patch<{ reserva: Reserva }>(`/reservas/${reservaId}/estado`, { estado });
   return data.reserva;
 }
-
