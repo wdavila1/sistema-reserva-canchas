@@ -35,7 +35,6 @@ function Navbar() {
 
     return (
         <header
-            //Reemplazamos el "shadow-sm" por el "shadow-[0_4px_0px_0px_#ff6b2b]" naranja
             className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 border-b border-border ${
                 scrolled ? "bg-white backdrop-blur shadow-[0_4px_0px_0px_#ff6b2b]" : "bg-white"
             }`}
