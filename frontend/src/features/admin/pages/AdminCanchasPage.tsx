@@ -8,6 +8,7 @@ import { sportColor } from "@/shared/utils/sportColor";
 // COMPONENTS
 import { Badge } from "@/shared/components/ui/Badge";
 import { Button } from "@/shared/components/ui/Button";
+import { ConfirmDialog } from "@/shared/components/ui/ConfirmDialog";
 
 
 
@@ -20,6 +21,8 @@ function AdminCanchas() {
   const navigate = useNavigate();
   const [courts, setCourts] = useState<Cancha[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [canchaToDelete, setCanchaToDelete] = useState<{ id: number; nombre: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const fetchCourts = async () => {
@@ -47,14 +50,21 @@ function AdminCanchas() {
     }
   };
 
-  const handleDelete = async (id: number, nombre: string) => {
-    if (window.confirm(`¿Estás seguro de que deseas eliminar permanentemente la cancha "${nombre}"?`)) {
-      try {
-        await deleteCancha(id);
-        setCourts((cs) => cs.filter(c => c.CanchaID !== id));
-      } catch (error: any) {
-        alert(error.response?.data?.mensaje || "Error al comunicarse con el servidor.");
-      }
+  const handleDeleteClick = (id: number, nombre: string) => {
+    setCanchaToDelete({ id, nombre });
+  };
+
+  const confirmDelete = async () => {
+    if (!canchaToDelete) return;
+    try {
+      setIsDeleting(true);
+      await deleteCancha(canchaToDelete.id);
+      setCourts((cs) => cs.filter(c => c.CanchaID !== canchaToDelete.id));
+      setCanchaToDelete(null);
+    } catch (error: any) {
+      alert(error.response?.data?.mensaje || "Error al comunicarse con el servidor.");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -141,7 +151,7 @@ function AdminCanchas() {
                             <Edit2 size={14} />
                           </button>
                           <button 
-                            onClick={() => handleDelete(c.CanchaID, c.NombreCancha)}
+                            onClick={() => handleDeleteClick(c.CanchaID, c.NombreCancha)}
                             className="p-1.5 rounded-lg hover:bg-red-50 text-muted-foreground hover:text-destructive transition-colors" title="Eliminar">
                             <Trash2 size={14} />
                           </button>
@@ -155,6 +165,18 @@ function AdminCanchas() {
           </table>
         </div>
       </div>
+
+      <ConfirmDialog
+        isOpen={!!canchaToDelete}
+        onClose={() => setCanchaToDelete(null)}
+        onConfirm={confirmDelete}
+        title="Eliminar Cancha"
+        description={`¿Estás seguro de que deseas eliminar permanentemente la cancha "${canchaToDelete?.nombre}"? Esta acción no se puede deshacer.`}
+        confirmText="Sí, eliminar"
+        cancelText="Cancelar"
+        variant="danger"
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

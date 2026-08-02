@@ -83,3 +83,19 @@ export const getDisponibilidadSemana = async (
     });
   return response.data;
 };
+
+// Subir imagen física de cancha a Supabase (PATCH)
+export const uploadCanchaImagen = async (id: string | number, file: File): Promise<{ imagenUrl: string; mensaje: string }> => {
+    const formData = new FormData();
+    formData.append("imagen", file);
+    const response = await axiosClient.patch(`/canchas/${id}/imagen`, formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+    });
+    return response.data;
+};
+
+// Eliminar imagen de cancha (DELETE)
+export const deleteCanchaImagen = async (id: string | number): Promise<{ mensaje: string }> => {
+    const response = await axiosClient.delete(`/canchas/${id}/imagen`);
+    return response.data;
+};

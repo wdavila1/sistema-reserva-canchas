@@ -71,3 +71,15 @@ export const deleteCancha = asyncHandler(async (req, res) => {
   const resultado = await CanchaService.eliminarCancha(id);
   res.status(200).json(resultado);
 });
+
+// PATCH /api/canchas/:id/imagen
+export const uploadImagen = asyncHandler(async (req, res) => {
+  const resultado = await CanchaService.subirImagenCancha(req.params.id, req.file);
+  res.status(200).json(resultado);
+});
+
+// DELETE /api/canchas/:id/imagen
+export const deleteImagen = asyncHandler(async (req, res) => {
+  const resultado = await CanchaService.eliminarImagenCancha(req.params.id);
+  res.status(200).json(resultado);
+});
