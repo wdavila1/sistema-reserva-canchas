@@ -64,29 +64,6 @@ export async function kpisResumen({ fechaInicio, fechaFin, soloConIngreso = true
     return rows[0] || null;
 }
 
-// Reservas detalladas de un usuario
-export async function historialPorUsuario(usuarioID) {
-
-    const { rows } = await pool.query(
-        `SELECT r.ReservaID, r.UsuarioID, r.FechaReserva, r.EstadoReserva, r.Total, r.FechaModificacion,
-                d.DetalleReservaID, d.CanchaID, d.Fecha, d.HoraInicio, d.HoraFin, d.PrecioHora, d.SubTotal,
-                c.NombreCancha, c.TipoCanchaID,
-                t.NombreTipo,
-                p.PrimerNombre, p.PrimerApellido, p.Correo,
-                u.NombreUsuario
-            FROM Reservas r
-            JOIN Usuarios u ON u.UsuarioID = r.UsuarioID
-            JOIN Personas p ON p.PersonaID = u.PersonaID
-            JOIN DetalleReservas d ON d.ReservaID = r.ReservaID
-            JOIN Canchas c ON c.CanchaID = d.CanchaID
-            JOIN TiposCancha t ON t.TipoCanchaID = c.TipoCanchaID
-            WHERE r.UsuarioID = $1
-            ORDER BY r.FechaReserva DESC, d.Fecha, d.HoraInicio`,
-        [usuarioID]
-    );
-    return rows;
-}
-
 export async function obtenerReservasHoy() {
   const { rows } = await pool.query(
     `SELECT COUNT(*)::int AS reservashoy
