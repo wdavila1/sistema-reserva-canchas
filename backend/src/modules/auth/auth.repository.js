@@ -42,11 +42,11 @@ export async function existeCorreoOUsuario(correo, nombreUsuario) {
   return rows.length > 0;
 }
 
-/**
- * Comprueba si NumeroIdentidad o RTN ya están en uso.
- * Retorna un objeto { identidad: boolean, rtn: boolean } para que el service
- * pueda dar un mensaje de error preciso según cuál campo esté duplicado.
- * Solo verifica los valores que no sean null/undefined.
+/*
+ Comprueba si NumeroIdentidad o RTN ya están en uso.
+ Retorna un objeto { identidad: boolean, rtn: boolean } para que el service
+ pueda dar un mensaje de error  según cuál campo esté duplicado.
+ Solo verifica los valores que no sean null/undefined.
  */
 export async function existeIdentidadORtn(numeroIdentidad, rtn) {
   const result = { identidad: false, rtn: false };

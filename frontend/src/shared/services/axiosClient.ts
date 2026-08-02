@@ -7,12 +7,11 @@ export const axiosClient = axios.create({
   withCredentials: true, // necesario para mandar/recibir la cookie httpOnly del refresh token
 });
 
-// ────────────────────────────────────────────────────────────
+
 // Access token en memoria
 // AuthContext es el dueño real del token (vive en su estado de React).
 // Aquí solo guardamos una referencia para que el interceptor pueda leerla
 // sin que cada servicio tenga que pasar el token a mano.
-// ────────────────────────────────────────────────────────────
 let accessToken: string | null = null;
 
 export function setAccessToken(token: string | null) {
@@ -21,17 +20,18 @@ export function setAccessToken(token: string | null) {
 
 axiosClient.interceptors.request.use((config) => {
   if (accessToken) {
+    // Si tenemos un Access Token en memoria, lo pegamos en la cabecera
     config.headers.Authorization = `Bearer ${accessToken}`;
   }
   return config;
 });
 
-// ────────────────────────────────────────────────────────────
+
 // Refresh automático ante un 401
 // Si el access token venció, intentamos refrescarlo UNA vez con la cookie
 // httpOnly (POST /auth/refresh) y reintentamos la petición original.
 // Si el refresh también falla, avisamos a AuthContext para que deslogue.
-// ────────────────────────────────────────────────────────────
+
 let onAuthFailure: (() => void) | null = null;
 
 export function setOnAuthFailure(callback: () => void) {

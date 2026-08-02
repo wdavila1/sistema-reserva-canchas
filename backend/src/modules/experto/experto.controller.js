@@ -10,7 +10,7 @@ const DIAS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "
  * Requiere token (el usuarioId viene del JWT).
  */
 export const sugerenciaUsuario = asyncHandler(async (req, res) => {
-  const usuarioId = req.user.userId;
+  const usuarioId = req.user.usuarioId;
   const resultado = await expertoService.obtenerHorarioOptimoUsuario(usuarioId);
 
   if (!resultado) {

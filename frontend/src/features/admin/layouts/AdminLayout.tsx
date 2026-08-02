@@ -33,10 +33,17 @@ function AdminLayout() {
       >
         {/* Logo */}
         <div className="p-6 border-b-2 border-white/10 flex items-center justify-between">
-          <div className="flex flex-col">
-            <span className="font-headline-lg text-[28px] font-bold text-white tracking-tighter uppercase italic leading-none">
-              POTRA <span className="text-secondary">PLAY</span>
-            </span>
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <img 
+                  src="/logo.png" 
+                  alt="Logo Admin" 
+                  className="h-8 w-auto object-contain" 
+              />
+              <span className="font-headline-lg text-[24px] font-bold text-white tracking-tighter uppercase italic leading-none">
+                POTRA <span className="text-secondary">PLAY</span>
+              </span>
+            </div>
             <span className="font-label-sm text-secondary uppercase tracking-widest text-[10px]">
               Admin Panel
             </span>

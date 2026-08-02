@@ -41,10 +41,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUsuario((prev) => (prev ? { ...prev, ...cambios } : prev));
   };
 
-  // Al montar la app: intenta restaurar la sesión con la cookie httpOnly del
-  // refresh token (el usuario refrescó la página o volvió a abrir la pestaña).
+  // Al montar la app: intentamos restaurar la sesión con la cookie httpOnly del
+  // refresh token (si el usuario refrescó la página o volvió a abrir la pestaña).
   // Si no hay cookie válida, el backend responde 401 y simplemente nos quedamos
-  // deslogueados — es el flujo normal de un visitante sin sesión.
+  // deslogueados
   useEffect(() => {
     authApi
       .refresh()
@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // Si en medio de la sesión el refresh automático del interceptor también
-  // falla (ej. el refresh token expiró de verdad, 7 días), axiosClient nos
+  // falla (ej. el refresh token expiró de verdad, 1 día), axiosClient nos
   // avisa aquí para reflejarlo en el estado de React.
   useEffect(() => {
     setOnAuthFailure(() => {
