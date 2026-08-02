@@ -171,9 +171,9 @@ function AdminCanchas() {
         onClose={() => setCanchaToDelete(null)}
         onConfirm={confirmDelete}
         title="Eliminar Cancha"
-        description={`¿Estás seguro de que deseas eliminar permanentemente la cancha "${canchaToDelete?.nombre}"? Esta acción no se puede deshacer.`}
-        confirmText="Sí, eliminar"
-        cancelText="Cancelar"
+        message={`¿Estás seguro de que deseas eliminar permanentemente la cancha "${canchaToDelete?.nombre}"? Esta acción no se puede deshacer.`}
+        confirmLabel="Sí, eliminar"
+        cancelLabel="Cancelar"
         variant="danger"
         isLoading={isDeleting}
       />
