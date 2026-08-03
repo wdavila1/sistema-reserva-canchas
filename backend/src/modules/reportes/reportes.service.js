@@ -1,4 +1,3 @@
-import { ApiError } from "../../utils/ApiError.js";
 import * as reportesRepository from "./reportes.repository.js";
 
 function round2(n) {
@@ -16,21 +15,13 @@ function defaultRango() {
   return { fechaInicio: toISODate(inicio), fechaFin: toISODate(fin) };
 }
 
-function normalizarRango({ fechaInicio, fechaFin } = {}) {
-  if (!fechaInicio || !fechaFin) return defaultRango();
-  return { fechaInicio, fechaFin };
-}
-
-function validarRango({ fechaInicio, fechaFin }) {
-  if (fechaInicio > fechaFin) {
-    throw new ApiError(400, "fechaInicio no puede ser mayor que fechaFin.");
-  }
+function normalizarRango() {
+  return defaultRango();
 }
 
 // Devuelve los KPIs del dashboard
-export async function obtenerKpis(filtros = {}) {
-  const rango = normalizarRango(filtros);
-  validarRango(rango);
+export async function obtenerKpis() {
+  const rango = normalizarRango();
   const row = await reportesRepository.kpisResumen({ ...rango, soloConIngreso: true });
   if (!row) {
     return { totalReservas: 0, ingresosBrutos: 0, isv: 0, ingresosNetos: 0 };
@@ -43,9 +34,8 @@ export async function obtenerKpis(filtros = {}) {
   };
 }
 
-export async function obtenerReservasPorPeriodo(filtros = {}) {
-  const rango = normalizarRango(filtros);
-  validarRango(rango);
+export async function obtenerReservasPorPeriodo() {
+  const rango = normalizarRango();
   const filas = await reportesRepository.obtenerReporteReservasPorPeriodo({ ...rango, soloConIngreso: true });
   return filas.map((f) => ({
     periodo: f.periodo,
@@ -54,9 +44,8 @@ export async function obtenerReservasPorPeriodo(filtros = {}) {
   }));
 }
 
-export async function obtenerCanchasMasUsadas(filtros = {}) {
-  const rango = normalizarRango(filtros);
-  validarRango(rango);
+export async function obtenerCanchasMasUsadas() {
+  const rango = normalizarRango();
   const filas = await reportesRepository.canchasMasUsadas({ ...rango, soloConIngreso: true });
   return filas.map((f) => ({
     canchaId: f.canchaid,
